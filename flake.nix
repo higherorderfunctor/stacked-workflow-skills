@@ -3,15 +3,21 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nvfetcher = {
+      url = "github:berberman/nvfetcher";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
     ...
-  }: let
+  } @ inputs: let
     forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
   in {
+    overlays.default = import ./overlays {inherit inputs;};
+
     devShells = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
@@ -25,6 +31,9 @@
           pkgs.git-absorb
           pkgs.git-branchless
           pkgs.git-revise
+
+          # Version tracking
+          inputs.nvfetcher.packages.${system}.default
         ];
       };
     });
@@ -36,7 +45,7 @@
         pkgs.runCommand "check-formatting" {
           nativeBuildInputs = [pkgs.alejandra];
         } ''
-          alejandra --check ${self}
+          alejandra --check --exclude ${self}/overlays/.nvfetcher ${self}
           touch $out
         '';
     });
