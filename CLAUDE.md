@@ -44,6 +44,38 @@ nix flake check      # Validate flake and run checks
 - **skills/** — SKILL.md files for each stack operation
 - **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
 
+## Skill Routing — MANDATORY
+
+When the user is working with stacked commits, use the appropriate skill
+instead of running commands manually via Bash.
+
+<!-- dprint-ignore -->
+| Operation | Skill | Use INSTEAD of |
+|-----------|-------|----------------|
+| Fix lines in earlier commit | `/stack-fix` | `git absorb`, `git commit --fixup`, manual checkout + amend |
+| Edit earlier commit (content moves, structural changes) | `/stack-fix` | Manual `git prev` + edit + `git amend` + `git restack --merge` |
+
+**RULE: Before running any git-branchless, git-absorb, or git-revise command
+via Bash, check if a skill covers the operation.** Skills include pre-flight
+checks, dry-run previews, conflict guidance, and post-operation verification
+that manual commands miss.
+
+## Stack Modification Tool Selection
+
+Before modifying a stack, identify the operation and select the right tool.
+Not every operation has a skill — some are best done with direct commands.
+
+<!-- dprint-ignore -->
+| Operation | First choice | Fallback | Why |
+|-----------|-------------|----------|-----|
+| Fix lines in earlier commit | `/stack-fix` | `git absorb --and-rebase` | skill adds dry-run preview |
+| Move content between commits | `/stack-fix` (Path B) | checkout + `git amend` | skill guides conflict resolution |
+| Reorder commits | `git move -s <src> -d <dest>` | `git revise -i` | in-memory, handles subtrees |
+| Reword a message | `git reword <commit>` | `git revise <commit>` | no checkout needed |
+| Squash commits | `git move` + manual amend | N/A | `git move -F` panics on conflicts |
+
+See `references/philosophy.md` § Bulk Stack Modification for the full pattern.
+
 ## Key Commands
 
 **Navigation:** `git sl` (smartlog), `git next`/`git prev` (`-a` all,
