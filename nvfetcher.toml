@@ -1,0 +1,11 @@
+[git-absorb]
+src.github = "tummychow/git-absorb"
+fetch.github = "tummychow/git-absorb"
+
+[git-branchless]
+src.github = "arxanas/git-branchless"
+fetch.github = "arxanas/git-branchless"
+
+[git-revise]
+src.pypi = "git-revise"
+fetch.pypi = "git_revise"
