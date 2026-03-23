@@ -58,6 +58,7 @@ instead of running commands manually via Bash.
 | Plan and build a commit stack from a description | `/stack-plan` | Ad-hoc `git record` / `git commit` without a plan |
 | Restructure/reorder existing commits | `/stack-plan` | `git rebase -i`, `git reset --soft`, `git move` sequences |
 | Commit uncommitted work as an atomic stack | `/stack-plan` | `git add -A && git commit` (single monolithic commit) |
+| Push stack for review | `/stack-submit` | Manual `git sync` + `git submit` |
 | Test across stack | `/stack-test` | Manual `git test run` or looping `git checkout` + test |
 
 **RULE: Before running any git-branchless, git-absorb, or git-revise command

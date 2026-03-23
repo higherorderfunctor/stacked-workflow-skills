@@ -45,6 +45,7 @@ load the flake dev shell (`.envrc` uses `use flake` which requires nix-direnv).
 | `/stack-fix` | Absorb fixes into correct stack commits (auto via git-absorb, guided manual fallback for content moves) |
 | `/stack-split` | Split a large commit into reviewable atomic commits |
 | `/stack-plan` | Plan and build a commit stack from a description, uncommitted work, or existing commits |
+| `/stack-submit` | Sync, validate, and push an entire commit stack |
 | `/stack-test` | Run tests or formatters across every commit in a stack |
 
 ### References

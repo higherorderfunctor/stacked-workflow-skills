@@ -68,7 +68,6 @@ introduced (typos, bug fixes, adjustments to existing code).
    itself is excluded from candidates. To include commit X, use `--base <X>^`
    (its parent). If absorb reports "no available commit to fix up" with your
    target as the base, this is why.
-
 3. **Review the dry-run output.** Show the user which hunks will be absorbed
    into which commits. If any hunks can't be absorbed (they commute with all
    commits), warn that those will remain staged.
