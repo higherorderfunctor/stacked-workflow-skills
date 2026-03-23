@@ -8,4 +8,6 @@ fetch.github = "arxanas/git-branchless"
 
 [git-revise]
 src.pypi = "git-revise"
-fetch.pypi = "git_revise"
+src.from_pattern = "^(.*)$"
+src.to_pattern = "v\\1"
+fetch.github = "mystor/git-revise"

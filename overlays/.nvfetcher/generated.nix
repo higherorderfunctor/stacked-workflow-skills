@@ -29,10 +29,13 @@
   };
   git-revise = {
     pname = "git-revise";
-    version = "0.8.0";
-    src = fetchurl {
-      url = "https://pypi.org/packages/source/g/git_revise/git_revise-0.8.0.tar.gz";
-      sha256 = "sha256-MjmxgJzWWbM/bzI9O/ylx+Op6y6s4iPPY7NG+RyMgxw=";
+    version = "v0.8.0";
+    src = fetchFromGitHub {
+      owner = "mystor";
+      repo = "git-revise";
+      rev = "v0.8.0";
+      fetchSubmodules = false;
+      sha256 = "sha256-OdkhYEq30RtDOeCQWl/L9FMgCttznzihbYgT8B6KYuY=";
     };
   };
 }

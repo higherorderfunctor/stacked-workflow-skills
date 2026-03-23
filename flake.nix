@@ -25,6 +25,7 @@
       default = import ./overlays {inherit inputs;};
       git-absorb = perPkg "git-absorb";
       git-branchless = perPkg "git-branchless";
+      git-revise = perPkg "git-revise";
     };
 
     packages = forAllSystems (system: let
@@ -33,26 +34,26 @@
         overlays = [self.overlays.default];
       };
     in {
-      inherit (pkgs) git-absorb git-branchless;
+      inherit (pkgs) git-absorb git-branchless git-revise;
     });
 
     devShells = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [self.overlays.default];
+      };
     in {
       default = pkgs.mkShellNoCC {
-        packages = [
-          # Formatting
-          pkgs.alejandra
-          pkgs.dprint
+        packages =
+          builtins.attrValues self.packages.${system}
+          ++ [
+            # Formatting
+            pkgs.alejandra
+            pkgs.dprint
 
-          # Stacked workflow tools
-          pkgs.git-absorb
-          pkgs.git-branchless
-          pkgs.git-revise
-
-          # Version tracking
-          inputs.nvfetcher.packages.${system}.default
-        ];
+            # Version tracking
+            inputs.nvfetcher.packages.${system}.default
+          ];
       };
     });
 
