@@ -267,7 +267,8 @@ changed, re-assess and update the cache.
    For each label in the cached `value-labels` list, fetch all matching issues:
    ```bash
    # Paginate to get all issues with this label, filtering out PRs
-   gh api "repos/${owner}/${repo}/issues?labels=${label_name}&state=all&per_page=100${since_param}" \
+   encoded_label=$(printf '%s' "$label_name" | jq -sRr @uri)
+   gh api "repos/${owner}/${repo}/issues?labels=${encoded_label}&state=all&per_page=100${since_param}" \
      --paginate --jq '.[] | select(has("pull_request") | not) | "## Issue #\(.number): \(.title)\n\(.body)\n"'
    ```
 
@@ -306,7 +307,7 @@ changed, re-assess and update the cache.
              }
            }
          }
-       }' --jq '.data.search.nodes[]' >> "$tmp_dir/keyword-discussions.json" 2>/dev/null || true
+       }' --jq '.data.search.nodes[] | @json' >> "$tmp_dir/keyword-discussions.jsonl" 2>/dev/null || true
    done
    ```
 
@@ -331,9 +332,10 @@ changed, re-assess and update the cache.
    comments from maintainers are especially valuable — note the resolution.
 
 6. **Extract Local Notes** from the existing reference doc (if it exists).
-   Parse everything between `<!-- BEGIN LOCAL NOTES -->` and
-   `<!-- END LOCAL NOTES -->` (inclusive of the markers). Store it verbatim —
-   this block must be spliced back into the regenerated doc unchanged.
+   Parse all lines from the one that starts with `<!-- BEGIN LOCAL NOTES` through
+   the one that starts with `<!-- END LOCAL NOTES` (inclusive of those full marker
+   lines, which may include trailing text and the closing `-->`). Store this block
+   verbatim — it must be spliced back into the regenerated doc unchanged.
 
 7. **Read all fetched content** and distill into a reference doc with this
    structure:
@@ -463,8 +465,9 @@ changed, re-assess and update the cache.
 - The `issue-stats` in frontmatter help the user understand coverage on future
   runs — always keep them accurate
 - **Local Notes are sacred** — never modify, reorder, or omit content between
-  the `<!-- BEGIN LOCAL NOTES -->` and `<!-- END LOCAL NOTES -->` markers during
-  regeneration. Extract before rewriting, splice back verbatim.
+  the marker lines that start with `<!-- BEGIN LOCAL NOTES` and `<!-- END LOCAL NOTES`
+  during regeneration. Extract before rewriting, then splice the original block back
+  verbatim.
 - When you solve a pain point or discover undocumented behavior for a tool that
   has a reference doc, add it to that doc's Local Notes section. Format each
   entry as a `### <short title>` with the problem, solution, and context.
