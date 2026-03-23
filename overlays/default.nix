@@ -5,6 +5,7 @@
     ./sources.nix
     ./git-absorb.nix
     ./git-branchless.nix
+    ./git-revise.nix
   ];
 in
   lib.composeManyExtensions (map import' overlays)

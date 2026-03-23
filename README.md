@@ -12,6 +12,8 @@ any tool that supports SKILL.md files.
   --git https://github.com/tummychow/git-absorb`
 - [git-branchless](https://github.com/arxanas/git-branchless) — `cargo install
   --git https://github.com/arxanas/git-branchless git-branchless`
+- [git-revise](https://github.com/mystor/git-revise) (optional) — `pip install
+  git-revise`
 
 ### Nix overlay
 

@@ -49,11 +49,17 @@
         "passthru": null,
         "pinned": false,
         "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
             "name": null,
-            "sha256": "sha256-MjmxgJzWWbM/bzI9O/ylx+Op6y6s4iPPY7NG+RyMgxw=",
-            "type": "url",
-            "url": "https://pypi.org/packages/source/g/git_revise/git_revise-0.8.0.tar.gz"
+            "owner": "mystor",
+            "repo": "git-revise",
+            "rev": "v0.8.0",
+            "sha256": "sha256-OdkhYEq30RtDOeCQWl/L9FMgCttznzihbYgT8B6KYuY=",
+            "sparseCheckout": [],
+            "type": "github"
         },
-        "version": "0.8.0"
+        "version": "v0.8.0"
     }
 }
