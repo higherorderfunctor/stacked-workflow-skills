@@ -43,6 +43,7 @@ Distilled docs for each tool — command reference, recipes, anti-patterns,
 integration notes:
 
 - `references/philosophy.md` — atomic commit principles and ordering conventions
+- `references/git-branchless.md` — smartlog, move, sync, submit, revsets
 
 Or use the combined overlay for all tools:
 
