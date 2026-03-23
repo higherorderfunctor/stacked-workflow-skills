@@ -55,6 +55,9 @@ instead of running commands manually via Bash.
 | Fix lines in earlier commit | `/stack-fix` | `git absorb`, `git commit --fixup`, manual checkout + amend |
 | Edit earlier commit (content moves, structural changes) | `/stack-fix` | Manual `git prev` + edit + `git amend` + `git restack --merge` |
 | Split a large commit | `/stack-split` | `git rebase -i` + edit, `git reset HEAD^` |
+| Plan and build a commit stack from a description | `/stack-plan` | Ad-hoc `git record` / `git commit` without a plan |
+| Restructure/reorder existing commits | `/stack-plan` | `git rebase -i`, `git reset --soft`, `git move` sequences |
+| Commit uncommitted work as an atomic stack | `/stack-plan` | `git add -A && git commit` (single monolithic commit) |
 | Test across stack | `/stack-test` | Manual `git test run` or looping `git checkout` + test |
 
 **RULE: Before running any git-branchless, git-absorb, or git-revise command
@@ -75,7 +78,9 @@ Not every operation has a skill — some are best done with direct commands.
 | Reorder commits | `git move -s <src> -d <dest>` | `git revise -i` | in-memory, handles subtrees |
 | Reword a message | `git reword <commit>` | `git revise <commit>` | no checkout needed |
 | Split a commit | `/stack-split` | `git split`, `git rebase -i` + edit | skill handles full workflow |
+| Restructure entire stack | `/stack-plan` | `git reset --soft main` + recommit | skill handles full workflow |
 | Squash commits | `git move` + manual amend | N/A | `git move -F` panics on conflicts |
+| Bulk insert/reorder (3+ changes) | batch-at-tip + scripted rebase | individual `git record -I` | avoids conflict cascades |
 
 See `references/philosophy.md` § Bulk Stack Modification for the full pattern.
 
