@@ -15,6 +15,7 @@ any tool that supports SKILL.md files.
 | `/stack-plan` | Plan and build a commit stack from a description, uncommitted work, or existing commits |
 | `/stack-split` | Split a large commit into reviewable atomic commits |
 | `/stack-submit` | Sync, validate, push stack, and create stacked PRs |
+| `/stack-summary` | Analyze stack quality, flag violations, produce planner-ready summary |
 | `/stack-test` | Run tests or formatters across every commit in a stack |
 
 ### References
