@@ -40,7 +40,7 @@ nix flake check      # Validate flake and run checks
 
 ## Flake Structure
 
-- **flake.nix** — nixpkgs input, devShell with stacked workflow tools, formatter
+- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib.gitConfig/gitConfigFull
 - **skills/** — SKILL.md files for each stack operation
 - **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
 

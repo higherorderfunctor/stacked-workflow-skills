@@ -21,6 +21,11 @@
     perPkg = name:
       lib.composeManyExtensions [sources (import' ./overlays/${name}.nix)];
   in {
+    lib = {
+      gitConfig = import ./lib/git-config.nix;
+      gitConfigFull = import ./lib/git-config-full.nix;
+    };
+
     overlays = {
       default = import ./overlays {inherit inputs;};
       git-absorb = perPkg "git-absorb";
