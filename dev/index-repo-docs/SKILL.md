@@ -93,8 +93,8 @@ On re-run:
    - `doc-sources` external URLs → spot-check reachability on full regeneration
 5. **Check for new issues** updated since `issues-indexed`:
    ```bash
-   gh api "repos/${owner}/${repo}/issues?sort=reactions-+1&state=all&per_page=1&since=${issues_indexed}T00:00:00Z" \
-     --jq 'length'
+   gh api "search/issues?q=repo:${owner}/${repo}+type:issue+updated:>=${issues_indexed}T00:00:00Z&per_page=1" \
+     --jq '.total_count'
    ```
 6. **Check for new discussions** (if enabled) since `discussions-indexed`
 7. If ALL sources are up to date, report "already up to date" and skip
@@ -183,8 +183,13 @@ changed, re-assess and update the cache.
    #### 4b. Scan repo tree for doc-like files
    Fetch the repo tree and filter for documentation files. Don't hardcode
    directory names — search broadly:
+   First, get the default branch:
    ```bash
-   gh api "repos/${owner}/${repo}/git/trees/HEAD?recursive=1" \
+   default_branch=$(gh api "repos/${owner}/${repo}" --jq '.default_branch')
+   ```
+
+   ```bash
+   gh api "repos/${owner}/${repo}/git/trees/${default_branch}?recursive=1" \
      --jq '.tree[] | select(.type=="blob") | .path' \
      | grep -iE '\.(md|adoc|rst|txt)$' \
      | grep -iE '^(docs?/|documentation/|man/|guide|readme|contributing|changelog|faq|usage|tutorial)' \
@@ -192,7 +197,7 @@ changed, re-assess and update the cache.
    ```
    Also catch top-level doc files that aren't README:
    ```bash
-   gh api "repos/${owner}/${repo}/git/trees/HEAD?recursive=1" \
+   gh api "repos/${owner}/${repo}/git/trees/${default_branch}?recursive=1" \
      --jq '.tree[] | select(.type=="blob") | .path' \
      | grep -iE '^[^/]*\.(adoc|rst)$' \
      >> "$tmp_dir/doc-paths.txt"
@@ -239,10 +244,14 @@ changed, re-assess and update the cache.
 
    #### 5a. Count total issues to determine strategy
 
+   Use the search API to get accurate issue counts (the REST issues endpoint
+   and `open_issues_count` both include pull requests):
    ```bash
-   total_issues=$(gh api "repos/${owner}/${repo}" --jq '.open_issues_count')
-   total_closed=$(gh api "repos/${owner}/${repo}/issues?state=closed&per_page=1" \
-     --jq '.[0].number // 0')
+   total_open=$(gh api "search/issues?q=repo:${owner}/${repo}+type:issue+state:open&per_page=1" \
+     --jq '.total_count')
+   total_closed=$(gh api "search/issues?q=repo:${owner}/${repo}+type:issue+state:closed&per_page=1" \
+     --jq '.total_count')
+   total_issues=$((total_open + total_closed))
    ```
 
    - **< 500 total** (open + closed): Fetch all, paginating fully. Filter out
@@ -259,9 +268,9 @@ changed, re-assess and update the cache.
 
    For each label in the cached `value-labels` list, fetch all matching issues:
    ```bash
-   # Paginate to get all issues with this label
+   # Paginate to get all issues with this label, filtering out PRs
    gh api "repos/${owner}/${repo}/issues?labels=${label_name}&state=all&per_page=100${since_param}" \
-     --paginate --jq '.[] | "## Issue #\(.number): \(.title)\n\(.body)\n"'
+     --paginate --jq '.[] | select(has("pull_request") | not) | "## Issue #\(.number): \(.title)\n\(.body)\n"'
    ```
 
    #### 5c. Keyword searches
@@ -308,8 +317,9 @@ changed, re-assess and update the cache.
    Also fetch top most-reacted issues as a catch-all for popular content that
    keyword and label searches might miss:
    ```bash
-   gh api "repos/${owner}/${repo}/issues?sort=reactions-+1&state=all&per_page=100${since_param}" \
-     --paginate --jq '.[] | {number, title, body, labels: [.labels[].name], reactions: .reactions.total_count}'
+   gh search issues --repo "${owner}/${repo}" --sort reactions --order desc --state all \
+     --limit 100 --json number,title,body,labels,reactions \
+     --jq '.[] | {number, title, body: (.body // "" | .[0:2000]), labels: [.labels[].name], reactions: .reactions.total_count}'
    ```
 
    #### 5e. Deduplicate and filter
