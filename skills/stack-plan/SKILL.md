@@ -40,6 +40,8 @@ Plan and execute a commit stack. Determines mode automatically based on input:
 
 Examine `$ARGUMENTS` and repo state to select the mode:
 
+- If `$ARGUMENTS` contains `--root` or requests a from-root restructure →
+  **Restructure mode (from-root)**
 - If `$ARGUMENTS` looks like a commit range (`main..HEAD`, `hash1..hash2`,
   branch name) → **Restructure mode**
 - If `$ARGUMENTS` is a natural-language description of work to do →
@@ -152,57 +154,120 @@ Existing commits need to be reorganized into a clean atomic stack.
    # For a branch name, find the merge-base:
    BASE=$(git merge-base main <branch>)
    TIP=<branch>
+
+   # For --root (entire history):
+   BASE=<empty tree>
+   TIP=HEAD
    ```
 
 2. **Understand the current state**:
    ```bash
    git sl
-   git log --oneline $BASE..$TIP
+   git log --oneline --reverse $BASE..$TIP   # or --root for from-root
+   git log --reverse --stat --format="=== %h %s ===" $BASE..$TIP
    git diff --stat $BASE..$TIP
-   git diff $BASE..$TIP
+
+   # From-root (no base commit):
+   git log --oneline --reverse --root
+   git log --reverse --stat --format="=== %h %s ===" --root
+   git diff --stat $(git hash-object -t tree /dev/null) HEAD
    ```
-   Read the full diff. Count total lines changed.
+   Read the full diff and per-commit stats. Count total lines changed.
 
 3. **Classify every change** into logical groups (same as Working Tree mode
    step 2).
 
-4. **Present the plan** (same format as Plan mode step 4).
+4. **Identify files with intermediate states**: before planning the commit
+   sequence, list every file that will have DIFFERENT content across multiple
+   commits (e.g. README.md, CLAUDE.md, flake.nix growing incrementally).
+   For each, note what content exists at each commit boundary. This prevents
+   accidentally committing the final version too early and having to reset.
+
+5. **Present the plan** (same format as Plan mode step 4).
    **Wait for user approval.**
 
-5. **Check for uncommitted work** before flattening:
+6. **Check for uncommitted work** before flattening:
    ```bash
    git status --short
    ```
    If there are uncommitted changes, warn the user and ask whether to stash
    or commit them first.
 
-6. **Flatten the range** into the working tree:
+7. **Create a backup branch**:
    ```bash
+   git branch backup-before-restructure
+   ```
+   If a branch with this name already exists, delete it first or use a unique
+   name (e.g., `backup-restructure-$(date +%s)`).
+
+8. **Save the tree hash** for post-verification:
+   ```bash
+   FINAL_TREE=$(git rev-parse HEAD^{tree})
+   ```
+
+9. **Flatten the range** into the working tree:
+   ```bash
+   # Standard range (has a base commit):
    git reset --soft $BASE
    git restore --staged .
+
+   # From-root (no base commit):
+   git checkout --orphan restructure-wip
+   git reset
+   # Note: git-branchless hook will panic on orphan branches — this is
+   # harmless. The checkout succeeds. Suppress noise with:
+   #   2>&1 | grep -v "^branchless:"
    ```
    Verify the working tree matches the original diff:
    ```bash
+   # Standard range (files are unstaged):
    git diff --stat   # should match step 2's total diff
+
+   # From-root (all files are untracked after orphan+reset):
+   git status --short | wc -l   # should match step 2's file count
    ```
 
-7. **Commit each group** in plan order (same as Working Tree mode step 4).
+10. **Commit each group** in plan order (same as Working Tree mode step 4).
+    For files with intermediate states (identified in step 4), use the Write
+    or Edit tool to set the correct content BEFORE staging for each commit.
+    Do not rely on the final working tree content — it represents the end
+    state, not intermediate states.
 
 ## Post-execution
 
-1. **Verify the result**:
+1. **Move branch pointer** (from-root only):
+   ```bash
+   # If on orphan branch, move main to the new history:
+   git checkout -B main
+   ```
+
+2. **Verify the result**:
    ```bash
    git sl
+   git log --oneline --reverse
    ```
    Show the user the new stack.
 
-2. **Confirm total diff is identical** (Restructure mode only — `$BASE` is
+3. **Confirm total diff is identical** (Restructure mode only — `$BASE` is
    only defined in Restructure mode, not Working Tree mode):
    ```bash
+   # Standard range:
    git diff $BASE..HEAD --stat   # should match the original
+
+   # From-root (compare tree hashes):
+   test "$(git rev-parse HEAD^{tree})" = "$FINAL_TREE" && echo "trees match"
+   # Or compare against backup:
+   git diff backup-before-restructure HEAD --stat
    ```
 
-3. **Run tests** if a test command is identifiable:
+4. **Clean up stale artifacts**: check for self-referencing symlinks or
+   other working tree debris:
+   ```bash
+   git status --short   # should be clean
+   ```
+   Remove any untracked artifacts that weren't in the original tree.
+
+5. **Run tests** if a test command is identifiable:
    ```bash
    git test run -x '<test-command>' 'stack()'
    ```
@@ -221,3 +286,24 @@ Existing commits need to be reorganized into a clean atomic stack.
 - Commit messages should explain WHY, not just WHAT.
 - If the user wants to keep some original commit boundaries, respect that —
   not every restructure needs to flatten everything.
+- **From-root restructures** flatten the entire history. Use
+  `git checkout --orphan` + `git reset` (not `git reset --soft` which needs
+  a parent commit). The branchless hook will panic — ignore it.
+- **Intermediate file states are the #1 source of rework.** Files like
+  README.md and CLAUDE.md that grow across many commits must be written with
+  partial content at each step. Plan these states BEFORE flattening.
+- When building tables incrementally (one row per commit), the final row
+  order may differ from a monolithic table. This is cosmetic — don't waste
+  time reordering unless the user cares.
+- For files with complex structure (nested sections, cross-references), a
+  full rewrite at the appropriate commit is often cleaner than incremental
+  Edit operations that can cause structural nesting errors.
+- **Sentinel commits** (TODO.md, CHANGELOG.md) must stay at the tip of the
+  stack. When adding new commits, check the tip first — if it's a sentinel,
+  insert before it or move it back to tip afterward with
+  `git move -f -x <sentinel-hash> -d HEAD`.
+- **Avoid scripted `GIT_SEQUENCE_EDITOR` reorders when files are built
+  incrementally.** Moving a commit that touches README.md to an earlier
+  position cascades conflicts through every subsequent commit that also
+  touches README.md. Use `git move -x <hash> -d <dest>` for individual
+  commit reorders — it's in-memory and avoids context-dependent conflicts.
