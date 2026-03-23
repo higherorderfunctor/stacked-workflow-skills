@@ -37,6 +37,14 @@ Optional: [direnv](https://direnv.net/) with
 [nix-direnv](https://github.com/nix-community/nix-direnv) to automatically
 load the flake dev shell (`.envrc` uses `use flake` which requires nix-direnv).
 
+### References
+
+Distilled docs for each tool — command reference, recipes, anti-patterns,
+integration notes:
+
+- `references/philosophy.md` — atomic commit principles and ordering conventions
+- `references/git-branchless.md` — smartlog, move, sync, submit, revsets
+
 Or use the combined overlay for all tools:
 
 ```nix

@@ -44,6 +44,42 @@ nix flake check      # Validate flake and run checks
 - **skills/** — SKILL.md files for each stack operation
 - **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
 
+## Key Commands
+
+**Navigation:** `git sl` (smartlog), `git next`/`git prev` (`-a` all,
+`-b` branch), `git sw -i` (fuzzy switch)
+
+**Committing:** `git record -m "msg"`, `git record -i` (interactive),
+`git record -I` (insert mid-stack), `git amend` (amend + auto-restack)
+
+**Rewriting:** `git reword <commit>`, `git move -s <src> -d <dest>`,
+`git split`, `git restack`
+
+**Stack Management:** `git sync --pull`, `git submit -c`,
+`git hide -r <hash>`, `git undo` (`-i` interactive)
+
+**Testing:** `git test run -x '<cmd>'` (`--jobs 0` parallel),
+`git test fix -x '<fmt>'`
+
+See `references/git-branchless.md` for full details.
+
+## Revset Quick Reference
+
+<!-- dprint-ignore -->
+| Revset | Matches |
+|--------|---------|
+| `stack()` | Current stack |
+| `draft()` | All draft (non-public) commits |
+| `main()` | Tip of main branch |
+| `branches()` | Commits with branches |
+| `children(x)` / `parents(x)` | Graph traversal |
+| `paths.changed(pattern)` | Commits touching files |
+| `message(pattern)` | Commits matching message |
+| `x::y` | Range (descendants of x AND ancestors of y) |
+| `x % y` | Only (ancestors of x NOT ancestors of y) |
+
+See `references/git-branchless.md` for the full revset language.
+
 ## Initialization
 
 Before using any branchless commands in a repo, check if initialized:
