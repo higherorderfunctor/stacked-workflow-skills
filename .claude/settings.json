@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git absorb*)",
+      "Bash(git add*)",
+      "Bash(git amend*)",
+      "Bash(git branch*)",
+      "Bash(git branchless*)",
+      "Bash(git diff*)",
+      "Bash(git hide*)",
+      "Bash(git log*)",
+      "Bash(git move*)",
+      "Bash(git next*)",
+      "Bash(git prev*)",
+      "Bash(git query*)",
+      "Bash(git record*)",
+      "Bash(git reset HEAD*)",
+      "Bash(git restack*)",
+      "Bash(git restore --staged*)",
+      "Bash(git revise*)",
+      "Bash(git reword*)",
+      "Bash(git show*)",
+      "Bash(git sl*)",
+      "Bash(git smartlog*)",
+      "Bash(git split*)",
+      "Bash(git status*)",
+      "Bash(git submit*)",
+      "Bash(git sw*)",
+      "Bash(git sync*)",
+      "Bash(git test*)",
+      "Bash(git undo*)",
+      "Bash(git unhide*)",
+      "Read(references/*)"
+    ]
+  }
+}

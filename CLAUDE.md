@@ -44,6 +44,23 @@ nix flake check      # Validate flake and run checks
 - **skills/** — SKILL.md files for each stack operation
 - **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
 
+## Initialization
+
+Before using any branchless commands in a repo, check if initialized:
+
+```bash
+if [ ! -d ".git/branchless" ]; then git branchless init; fi
+```
+
+All skills include this as a pre-flight check. Run it before the first
+branchless command in any session.
+
+## Code Quality
+
+Permissions for git-branchless, git-absorb, and git-revise commands are
+pre-approved in `.claude/settings.json`. Reference docs in `references/` are
+also pre-approved for reading.
+
 ## Coding Standards
 
 ### Bash
