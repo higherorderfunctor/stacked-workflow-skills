@@ -44,6 +44,7 @@ integration notes:
 
 - `references/philosophy.md` — atomic commit principles and ordering conventions
 - `references/git-branchless.md` — smartlog, move, sync, submit, revsets
+- `references/git-absorb.md` — automatic fixup routing
 
 Or use the combined overlay for all tools:
 
