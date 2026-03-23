@@ -1,0 +1,18 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "dictionaries": ["project-terms"],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-terms",
+      "path": ".cspell/project-terms.txt",
+      "addWords": true
+    }
+  ],
+  "ignorePaths": [
+    ".direnv",
+    ".git",
+    "overlays/.nvfetcher",
+    "result"
+  ]
+}

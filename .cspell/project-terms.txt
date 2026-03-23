@@ -1,0 +1,66 @@
+# Git terms
+autosquash
+unstash
+difftool
+gitref
+gpgsign
+mergetool
+oneline
+pathspec
+reauthor
+reftable
+reflog
+reparent
+rerere
+revset
+revsets
+revwalk
+smartlog
+unhide
+unskipped
+unstages
+worktree
+worktrees
+
+# Git tools and their terms
+branchless
+bitemporality
+
+# GitHub usernames and repos
+arxanas
+higherorderfunctor
+mystor
+tummychow
+
+# Nix ecosystem
+attrset
+direnv
+envrc
+nixos
+nixpkgs
+nvfetcher
+pkgs
+
+# Shell
+bashisms
+errexit
+pipefail
+shopt
+
+# File formats and tools
+adoc
+frontmatter
+gitbook
+jsonl
+mktemp
+
+# General terms
+agentic
+dedup
+frontloaded
+kiro
+libgit
+partialclone
+pasteable
+revertibility
+zdiff
