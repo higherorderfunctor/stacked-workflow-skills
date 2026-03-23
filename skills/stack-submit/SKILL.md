@@ -47,14 +47,14 @@ as a revset to select which commits to submit. Default is the current stack.
 
 2. **Determine the commit range**:
    ```bash
-   # If argument is a revset:
-   git log --oneline $ARGUMENTS
+   # If argument is a revset (use git sl or git branchless log, not git log):
+   git sl
 
    # If no argument, try stack():
-   git log --oneline 'stack()'
+   git sl
 
    # If on main with no stack, use draft():
-   git log --oneline 'draft()'
+   git query 'draft()'
 
    # If all commits are public (on main), the user needs to specify
    # a range explicitly or use --root
@@ -281,7 +281,8 @@ that commit.
 **Never `git add` + `git amend` after a failed `git checkout`.** If checkout
 fails (e.g. "local changes would be overwritten"), you are still on the
 PREVIOUS branch. Any subsequent `git amend` goes into that commit, not the
-one you intended. Always verify `git branch --show-current` before amending.
+one you intended. Always verify with `git log --oneline -1` before amending
+(`git branch --show-current` prints nothing in detached HEAD).
 If checkout fails, stash or commit your changes first, then retry.
 
 **Conflict resolution during restack:** If the amend changes a file that

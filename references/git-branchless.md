@@ -170,7 +170,7 @@ Visibility rules: shows checked-out commit, commits with branches, your
 commits (not hidden), commits with visible descendants, and hidden public
 commits that were rewritten. Commits made before `git branchless init`
 won't appear. For color in pipes: `git branchless --color always smartlog`
-(flag goes before subcommand, #1308).
+(flag goes before subcommand, arxanas/git-branchless#1308).
 
 ### Navigation
 
@@ -212,7 +212,7 @@ git amend                 # amend with all unstaged changes
 git add file && git amend # amend with only staged changes
 git amend --reparent      # amend without rebasing children (for formatters)
 ```
-**Gotcha:** `git amend` skips pre-commit hooks (#1275). Use `git commit --amend` + `git restack` if hooks are needed.
+**Gotcha:** `git amend` skips pre-commit hooks (arxanas/git-branchless#1275). Use `git commit --amend` + `git restack` if hooks are needed.
 
 ### Rewriting
 
@@ -223,7 +223,7 @@ git reword <hash>                  # edit specific commit's message
 git reword <hash> -m "new msg"     # replace message inline
 git reword 'stack()'               # batch reword entire stack
 ```
-**Gotcha:** `git reword` rewrites all stack commits even when only one message changed (#1385).
+**Gotcha:** `git reword` rewrites all stack commits even when only one message changed (arxanas/git-branchless#1385).
 
 **`git move`** — Move commits/subtrees in the graph (in-memory rebase).
 ```bash
@@ -266,9 +266,9 @@ git sync --merge          # resolve conflicts for all stacks
 Conflict handling: skips conflicting stacks by default, prints summary.
 Fix individually: `git move -b <hash> -d main --merge`.
 
-**Gotcha:** `git sync --pull` with a dirty working tree can strand you on an old commit (#1137). Commit or stash first.
-**Gotcha:** `git sync` in worktrees may corrupt the index in other worktrees (#1524). Check `git status` afterward.
-**Gotcha:** Squash-merged PRs are not detected by `git sync` — manually `git hide -r <hash>` (#965).
+**Gotcha:** `git sync --pull` with a dirty working tree can strand you on an old commit (arxanas/git-branchless#1137). Commit or stash first.
+**Gotcha:** `git sync` in worktrees may corrupt the index in other worktrees (arxanas/git-branchless#1524). Check `git status` afterward.
+**Gotcha:** Squash-merged PRs are not detected by `git sync` — manually `git hide -r <hash>` (arxanas/git-branchless#965).
 
 **`git submit`** — Push branches to remote.
 ```bash
@@ -281,11 +281,11 @@ git submit 'draft()'      # push all draft branches
 Note: force-pushes by design (updating review branches). Set
 `git config remote.pushDefault origin` for `--create`.
 
-**Gotcha:** `git submit` skips commits with 2+ branches attached (#1131). One branch per commit.
+**Gotcha:** `git submit` skips commits with 2+ branches attached (arxanas/git-branchless#1131). One branch per commit.
 
 **Known issue:** GitHub forge (`--forge github`) requires two executions —
-first creates PR with wrong base, second fixes it (#1550). Multiple bugs
-with stack reorder (#1259). Prefer manual `gh pr create` workflow.
+first creates PR with wrong base, second fixes it (arxanas/git-branchless#1550). Multiple bugs
+with stack reorder (arxanas/git-branchless#1259). Prefer manual `gh pr create` workflow.
 
 ### Undo & Recovery
 
@@ -559,7 +559,7 @@ git record -I -m "new middle commit"   # insert + restack children
 git restack -f                 # force past the check
 git restack 'draft()'          # target only drafts
 ```
-Happens when main was force-pushed or commits unexpectedly became public (#988).
+Happens when main was force-pushed or commits unexpectedly became public (arxanas/git-branchless#988).
 
 ### 17. Clean up stale commits after squash-merge
 ```bash
@@ -567,7 +567,7 @@ git sync --pull                # auto-cleans linearly merged stacks
 git hide -r <hash>             # manually hide squash-merged stacks
 git hide "draft() & message('substr:WIP')"  # bulk hide by pattern
 ```
-`git sync` only detects linear merges, not squash merges (#965, #977, #1218).
+`git sync` only detects linear merges, not squash merges (arxanas/git-branchless#965, arxanas/git-branchless#977, arxanas/git-branchless#1218).
 
 ## Anti-Patterns
 
@@ -599,33 +599,33 @@ you're ready to resolve. This lets you safely try operations without risk.
 
 ### Don't use `feature.manyFiles = true` without workaround
 Git v2.40.0+ with `index.skipHash` (set by `feature.manyFiles`) causes
-libgit2 crashes. Same crash with `--index-version 4` (#1363). Workaround:
+libgit2 crashes. Same crash with `--index-version 4` (arxanas/git-branchless#1363). Workaround:
 `git config --local index.skipHash false`.
 
 ### Don't commit on `main`
 Commits on `main` are treated as public — they vanish from draft smartlog
-and can't be rewritten. Always detach first (`git checkout --detach`) (#860).
+and can't be rewritten. Always detach first (`git checkout --detach`) (arxanas/git-branchless#860).
 
 ### Don't init in a worktree
 `git branchless init` only works from the main worktree, not from
-`git worktree add` worktrees (#540).
+`git worktree add` worktrees (arxanas/git-branchless#540).
 
 ### GPG/SSH signing not supported
 git-branchless cannot sign commits. All rewrite operations produce unsigned
-commits. This is a known limitation (issue #465, labeled "help wanted").
-Community PR #1538 pending.
+commits. This is a known limitation (arxanas/git-branchless#465, labeled "help wanted").
+Community arxanas/git-branchless#1538 pending.
 
 ## Known Bugs
 
 - **"Could not parse reference-transaction-line"** — harmless ERROR log on
-  newer Git versions. Operations complete normally (#1388, #1321).
+  newer Git versions. Operations complete normally (arxanas/git-branchless#1388, arxanas/git-branchless#1321).
 - **Git v2.46+ test failures** — reference-transaction hook changes break
-  some tests; user impact unclear (#1416).
+  some tests; user impact unclear (arxanas/git-branchless#1416).
 - **`git sync` slow on `main`** — redundant checkout per stack. Detach
-  first to avoid (#1155).
+  first to avoid (arxanas/git-branchless#1155).
 - **Anti-GC ref accumulation** — 100k+ refs under `refs/branchless/*` over
-  months. `git branchless gc` partially helps (#1125).
-- **Rust 1.89+ build failure** — fails to compile with newer Rust (#1585).
+  months. `git branchless gc` partially helps (arxanas/git-branchless#1125).
+- **Rust 1.89+ build failure** — fails to compile with newer Rust (arxanas/git-branchless#1585).
 
 ## Integration
 
@@ -657,17 +657,17 @@ branchless has equivalents (`reword`, `split`, `move`), prefer those.
 5. After merge: `git sync --pull` auto-cleans merged commits
 
 Set PR base to the previous branch in the stack; GitHub auto-updates
-dependent PRs on merge (#716).
+dependent PRs on merge (arxanas/git-branchless#716).
 
 ### Hooks Requirement
 Hooks installed by `git branchless init` are required for commit tracking,
 undo, and auto-restack. Without them, `git move` still works for basic
-rebasing but loses commit tracking (#1286).
+rebasing but loses commit tracking (arxanas/git-branchless#1286).
 
 ### Git Version Compatibility
 - **v2.29+**: Full support including `git undo`
 - **v2.24-2.27**: Supported, no `git undo`
 - **v2.28**: Not supported (reference-transaction bug)
-- **v2.46+**: Some test failures (#1416)
+- **v2.46+**: Some test failures (arxanas/git-branchless#1416)
 - **<= v2.23**: Not supported
 
