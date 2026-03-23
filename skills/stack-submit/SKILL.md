@@ -190,18 +190,20 @@ PRs auto-update when their branches are force-pushed. No need to recreate PRs.
 Only branches downstream of the changed commit need updating, but pushing all
 is safe — unchanged branches are skipped automatically.
 
-After each squash-merged PR, you MUST sync and force-push remaining branches.
-Without this, downstream PRs show the full diff of all prior commits (the
-squash merge creates a new commit hash that downstream branches don't share).
+After each squash-merged PR, you MUST sync, update PR bases, and force-push
+remaining branches. Without this, downstream PRs show the full diff of all
+prior commits (the squash merge creates a new commit hash that downstream
+branches don't share).
 
 ```bash
 # 1. Sync: rebases stack onto the new squash-merged main
-git checkout <any-stack-branch>
-git branch -f main origin/main
 git sync --pull
 
-# 2. Force-push ALL remaining branches so PRs show clean single-commit diffs
-git push -u --force origin <branch-1> <branch-2> ... <branch-N>
+# 2. Update the next PR's base to main (it was pointing at the merged branch)
+gh pr edit <next-PR-number> --base main
+
+# 3. Force-push ALL remaining branches so PRs show clean single-commit diffs
+git push --force-with-lease origin <branch-1> <branch-2> ... <branch-N>
 ```
 
 This must be done after EVERY squash merge, not just the first. Each merge
@@ -270,7 +272,27 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
    git checkout <tip-branch>   # e.g. todo/pre-publish or the last PR branch
    ```
 
-6. **Reply to and resolve** the review comments.
+6. **Reply to and resolve** each review comment. Replying alone does NOT
+   close the conversation — you must resolve the thread via GraphQL:
+   ```bash
+   # Get thread IDs for a PR
+   gh api graphql -f query='{
+     repository(owner: "<owner>", name: "<repo>") {
+       pullRequest(number: <N>) {
+         reviewThreads(first: 100) {
+           nodes { id isResolved }
+         }
+       }
+     }
+   }' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not) | .id'
+
+   # Resolve each thread
+   gh api graphql -f query='mutation {
+     resolveReviewThread(input: {threadId: "<thread-id>"}) {
+       thread { isResolved }
+     }
+   }'
+   ```
 
 **Always use `--base` when absorbing review feedback.** Without it, absorb
 searches the full stack by diff context and may route to a later commit with
