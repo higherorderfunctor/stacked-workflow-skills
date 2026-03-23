@@ -43,6 +43,7 @@ load the flake dev shell (`.envrc` uses `use flake` which requires nix-direnv).
 | Skill | What it does |
 |-------|-------------|
 | `/stack-fix` | Absorb fixes into correct stack commits (auto via git-absorb, guided manual fallback for content moves) |
+| `/stack-split` | Split a large commit into reviewable atomic commits |
 
 ### References
 
