@@ -54,6 +54,7 @@ instead of running commands manually via Bash.
 |-----------|-------|----------------|
 | Fix lines in earlier commit | `/stack-fix` | `git absorb`, `git commit --fixup`, manual checkout + amend |
 | Edit earlier commit (content moves, structural changes) | `/stack-fix` | Manual `git prev` + edit + `git amend` + `git restack --merge` |
+| Split a large commit | `/stack-split` | `git rebase -i` + edit, `git reset HEAD^` |
 
 **RULE: Before running any git-branchless, git-absorb, or git-revise command
 via Bash, check if a skill covers the operation.** Skills include pre-flight
@@ -72,6 +73,7 @@ Not every operation has a skill — some are best done with direct commands.
 | Move content between commits | `/stack-fix` (Path B) | checkout + `git amend` | skill guides conflict resolution |
 | Reorder commits | `git move -s <src> -d <dest>` | `git revise -i` | in-memory, handles subtrees |
 | Reword a message | `git reword <commit>` | `git revise <commit>` | no checkout needed |
+| Split a commit | `/stack-split` | `git split`, `git rebase -i` + edit | skill handles full workflow |
 | Squash commits | `git move` + manual amend | N/A | `git move -F` panics on conflicts |
 
 See `references/philosophy.md` § Bulk Stack Modification for the full pattern.
