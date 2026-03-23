@@ -3,6 +3,7 @@
   import' = path: import path {};
   overlays = [
     ./sources.nix
+    ./git-branchless.nix
   ];
 in
   lib.composeManyExtensions (map import' overlays)
