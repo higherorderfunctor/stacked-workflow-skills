@@ -8,6 +8,8 @@ any tool that supports SKILL.md files.
 
 ### Manual
 
+- [git-absorb](https://github.com/tummychow/git-absorb) — `cargo install
+  --git https://github.com/tummychow/git-absorb`
 - [git-branchless](https://github.com/arxanas/git-branchless) — `cargo install
   --git https://github.com/arxanas/git-branchless git-branchless`
 

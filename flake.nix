@@ -23,6 +23,7 @@
   in {
     overlays = {
       default = import ./overlays {inherit inputs;};
+      git-absorb = perPkg "git-absorb";
       git-branchless = perPkg "git-branchless";
     };
 
@@ -32,7 +33,7 @@
         overlays = [self.overlays.default];
       };
     in {
-      inherit (pkgs) git-branchless;
+      inherit (pkgs) git-absorb git-branchless;
     });
 
     devShells = forAllSystems (system: let
