@@ -164,9 +164,7 @@ changed, re-assess and update the cache.
 
 3. **Fetch the wiki** (if it exists):
    ```bash
-   tmp_dir="/tmp/claude-repo-index/${owner}-${repo}"
-   rm -rf "$tmp_dir"
-   mkdir -p "$tmp_dir"
+   tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/claude-repo-index.XXXXXX")
    git clone --depth 1 "https://github.com/${owner}/${repo}.wiki.git" "$tmp_dir/wiki" 2>/dev/null || true
    ```
 
@@ -177,7 +175,7 @@ changed, re-assess and update the cache.
 
    #### 4a. Fetch README (always)
    ```bash
-   gh api "repos/${owner}/${repo}/readme" --jq '.content' | base64 -d > "$tmp_dir/README.md"
+   gh api "repos/${owner}/${repo}/readme" --jq '.content | @base64d' > "$tmp_dir/README.md"
    ```
 
    #### 4b. Scan repo tree for doc-like files
@@ -206,8 +204,8 @@ changed, re-assess and update the cache.
    ```bash
    while read -r doc_path; do
      encoded=$(printf '%s' "$doc_path" | jq -sRr @uri)
-     gh api "repos/${owner}/${repo}/contents/${encoded}" --jq '.content' \
-       | base64 -d > "$tmp_dir/repo-$(echo "$doc_path" | tr '/' '-')" 2>/dev/null || true
+     gh api "repos/${owner}/${repo}/contents/${encoded}" --jq '.content | @base64d' \
+       > "$tmp_dir/repo-$(echo "$doc_path" | tr '/' '-')" 2>/dev/null || true
    done < "$tmp_dir/doc-paths.txt"
    ```
 
@@ -417,7 +415,7 @@ changed, re-assess and update the cache.
 
 8. **Write the draft to a temp file** — never directly to the reference doc.
    ```bash
-   # e.g. /tmp/claude-repo-index/<owner>-<repo>/draft.md
+   # e.g. ${tmp_dir}/draft.md
    ```
 
 9. **Present a change summary for user review.** Do NOT write the final doc
@@ -439,7 +437,7 @@ changed, re-assess and update the cache.
 
 11. **Clean up**:
     ```bash
-    rm -rf "/tmp/claude-repo-index/${owner}-${repo}"
+    rm -rf "$tmp_dir"
     ```
 
 12. **Report** what was generated (full/incremental/skipped), how many source
