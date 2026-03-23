@@ -27,6 +27,7 @@ integration notes:
 - `references/git-branchless.md` — smartlog, move, sync, submit, revsets
 - `references/git-absorb.md` — automatic fixup routing
 - `references/git-revise.md` — in-memory commit rewriting
+- `references/recommended-config.md` — git settings for stacked workflows
 
 ## Prerequisites
 
@@ -79,6 +80,40 @@ nix develop github:higherorderfunctor/stacked-workflow-skills
 Optional: [direnv](https://direnv.net/) with
 [nix-direnv](https://github.com/nix-community/nix-direnv) to automatically
 load the flake dev shell (`.envrc` uses `use flake` which requires nix-direnv).
+
+## Git Configuration
+
+The tools work best with specific git settings. See
+`references/recommended-config.md` for the full list with explanations.
+
+### Quick setup (manual)
+
+```bash
+# Required
+git config --global init.defaultBranch main
+git config --global branchless.core.mainBranch main
+
+# Strongly recommended
+git config --global absorb.fixupTargetAlwaysSHA true
+git config --global absorb.maxStack 50
+git config --global absorb.oneFixupPerCommit true
+git config --global merge.conflictStyle zdiff3
+git config --global pull.ff only
+git config --global pull.rebase true
+git config --global rebase.autoSquash true
+git config --global rebase.autoStash true
+git config --global rebase.updateRefs true
+git config --global rerere.enabled true
+git config --global rerere.autoupdate true
+```
+
+### Nix (home-manager)
+
+```nix
+# Merge the preset into your git config:
+programs.git.extraConfig =
+  inputs.stacked-workflow-skills.lib.gitConfig;
+```
 
 ## Installation
 
