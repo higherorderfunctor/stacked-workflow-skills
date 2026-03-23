@@ -56,6 +56,9 @@
             pkgs.alejandra
             pkgs.dprint
 
+            # Spellcheck
+            pkgs.cspell
+
             # Version tracking
             inputs.nvfetcher.packages.${system}.default
           ];
@@ -70,6 +73,16 @@
           nativeBuildInputs = [pkgs.alejandra];
         } ''
           alejandra --check --exclude ${self}/overlays/.nvfetcher ${self}
+          touch $out
+        '';
+
+      spelling =
+        pkgs.runCommand "check-spelling" {
+          nativeBuildInputs = [pkgs.cspell pkgs.findutils];
+        } ''
+          cd ${self}
+          find . -name '*.md' -not -path './overlays/.nvfetcher/*' \
+            -exec cspell lint --no-progress --no-color --root ${self} {} +
           touch $out
         '';
     });
