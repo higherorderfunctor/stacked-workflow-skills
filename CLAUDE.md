@@ -30,6 +30,20 @@ or a specific skill name (e.g., `stack-fix`, `stack-split`)
 
 Keep descriptions lowercase, imperative mood, no trailing period.
 
+## Build & Dev Commands
+
+```bash
+nix develop          # Enter devShell (git-branchless, git-absorb, git-revise)
+nix fmt              # Format all Nix files with alejandra
+nix flake check      # Validate flake and run checks
+```
+
+## Flake Structure
+
+- **flake.nix** — nixpkgs input, devShell with stacked workflow tools, formatter
+- **skills/** — SKILL.md files for each stack operation
+- **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
+
 ## Coding Standards
 
 ### Bash
