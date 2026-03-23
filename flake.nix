@@ -15,8 +15,25 @@
     ...
   } @ inputs: let
     forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
+    inherit (nixpkgs) lib;
+    import' = path: import path {};
+    sources = import' ./overlays/sources.nix;
+    perPkg = name:
+      lib.composeManyExtensions [sources (import' ./overlays/${name}.nix)];
   in {
-    overlays.default = import ./overlays {inherit inputs;};
+    overlays = {
+      default = import ./overlays {inherit inputs;};
+      git-branchless = perPkg "git-branchless";
+    };
+
+    packages = forAllSystems (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [self.overlays.default];
+      };
+    in {
+      inherit (pkgs) git-branchless;
+    });
 
     devShells = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
