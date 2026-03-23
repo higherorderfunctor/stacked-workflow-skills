@@ -19,6 +19,7 @@
         packages = [
           # Formatting
           pkgs.alejandra
+          pkgs.dprint
 
           # Stacked workflow tools
           pkgs.git-absorb
@@ -26,6 +27,18 @@
           pkgs.git-revise
         ];
       };
+    });
+
+    checks = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      formatting =
+        pkgs.runCommand "check-formatting" {
+          nativeBuildInputs = [pkgs.alejandra];
+        } ''
+          alejandra --check ${self}
+          touch $out
+        '';
     });
 
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
