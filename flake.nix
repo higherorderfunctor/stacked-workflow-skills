@@ -44,6 +44,86 @@
       };
     in {
       inherit (pkgs) git-absorb git-branchless git-revise;
+
+      install = pkgs.writeShellApplication {
+        name = "stacked-workflow-install";
+        text = let
+          skillsSrc = "${self}/skills";
+          refsSrc = "${self}/references";
+          claudeRouting = self.lib.mkClaudeRouting;
+          kiroRouting = self.lib.mkKiroSteering;
+          copilotRouting = self.lib.mkCopilotInstructions;
+        in ''
+          shopt -s inherit_errexit 2>/dev/null || :
+
+          usage() {
+            cat <<USAGE
+          Usage: stacked-workflow-install [--global | --project | --routing-only | --help]
+
+          Install stacked workflow skills and references.
+
+          Options:
+            --global        Install to ~/.claude/ (default)
+            --project       Install to .claude/ in the current directory
+            --routing-only  Print routing tables for all platforms to stdout
+            --help          Show this help message
+          USAGE
+          }
+
+          MODE="global"
+          while [[ $# -gt 0 ]]; do
+            case "$1" in
+              --global) MODE="global"; shift ;;
+              --project) MODE="project"; shift ;;
+              --routing-only) MODE="routing-only"; shift ;;
+              --help) usage; exit 0 ;;
+              *) echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
+            esac
+          done
+
+          case "$MODE" in
+            global)
+              dest="$HOME/.claude"
+              mkdir -p "$dest/skills" "$dest/references"
+              cp -r ${skillsSrc}/* "$dest/skills/"
+              cp -r ${refsSrc}/* "$dest/references/"
+              echo "Installed skills and references to $dest"
+              echo ""
+              echo "Add the routing table to your ~/.claude/CLAUDE.md:"
+              echo "  stacked-workflow-install --routing-only"
+              ;;
+            project)
+              dest=".claude"
+              mkdir -p "$dest/skills" "$dest/references"
+              cp -r ${skillsSrc}/* "$dest/skills/"
+              cp -r ${refsSrc}/* "$dest/references/"
+              echo "Installed skills and references to $dest/"
+              echo ""
+              echo "Add the routing table to your CLAUDE.md:"
+              echo "  stacked-workflow-install --routing-only"
+              ;;
+            routing-only)
+              echo "=== Claude Code (CLAUDE.md) ==="
+              echo ""
+              cat <<'CLAUDE_ROUTING'
+          ${claudeRouting}
+          CLAUDE_ROUTING
+              echo ""
+              echo "=== Kiro (.kiro/steering/*.md) ==="
+              echo ""
+              cat <<'KIRO_ROUTING'
+          ${kiroRouting}
+          KIRO_ROUTING
+              echo ""
+              echo "=== GitHub Copilot (.github/instructions/*.md) ==="
+              echo ""
+              cat <<'COPILOT_ROUTING'
+          ${copilotRouting}
+          COPILOT_ROUTING
+              ;;
+          esac
+        '';
+      };
     });
 
     devShells = forAllSystems (system: let
