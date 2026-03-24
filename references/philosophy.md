@@ -109,6 +109,35 @@ stack, check what the tip commit is — if it's a sentinel, insert new work
 before it using `git record -I` or move the sentinel back to tip afterward
 with `git move -f -x <sentinel-hash> -d HEAD`.
 
+If a sentinel commit has been modified by later commits in the stack (e.g., a
+TODO update commit removes a completed section), squash those changes into the
+sentinel before moving it. `git move -x` often causes conflicts when
+descendants depend on its changes — for example, when a dependent commit
+modifies a file that no longer exists or has been renamed at the destination.
+
+### Dependency Audit Before `git move -x`
+
+`git move -x` extracts a single commit without its descendants. Before using
+it, run a quick file-overlap audit to spot likely conflicts (this checks
+overlapping paths, not all possible logical dependencies):
+
+```bash
+# Check which files the commit touches
+git show --stat <commit-to-move>
+
+# Check if any commits between it and the destination touch the same files
+git log --stat <commit-to-move>..<destination>
+```
+
+If other commits modify the same files, you have three options (in order of
+preference):
+
+1. **Move together** — use `git move -s` instead of `-x` to bring dependents
+   along
+2. **Squash first** — combine the commit with its dependents before moving
+3. **Resolve conflicts** — use `git move -x <commit> -d <dest> --merge` and
+   fix conflicts on-disk (last resort, error-prone with multiple conflicts)
+
 ## History Hygiene
 
 The commit history should read as a clean narrative — what *should* happen, not
