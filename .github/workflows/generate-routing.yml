@@ -1,0 +1,57 @@
+name: Generate Routing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/routing-*.nix"
+  workflow_dispatch:
+
+concurrency:
+  group: generate-routing
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# TODO: remove once DeterminateSystems/nix-installer-action ships node24
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Generate routing files
+        run: |
+          mkdir -p .generated
+          nix eval --raw .#lib.mkClaudeRouting > .generated/claude-routing.md
+          nix eval --raw .#lib.mkKiroSteering > .generated/kiro-routing.md
+          nix eval --raw .#lib.mkCopilotInstructions > .generated/copilot-routing.md
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet && test -z "$(git status --porcelain)"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create PR
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: auto/generate-routing
+          commit-message: "chore(ci): regenerate routing files"
+          title: "chore(ci): regenerate routing files"
+          body: |
+            Automated regeneration of `.generated/` routing files from
+            `lib/routing-data.nix`.
+
+            Review the diffs to verify routing table accuracy.
+          labels: automated
