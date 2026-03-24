@@ -24,6 +24,10 @@
     lib = {
       gitConfig = import ./lib/git-config.nix;
       gitConfigFull = import ./lib/git-config-full.nix;
+      mkClaudeRouting = import ./lib/routing-claude.nix;
+      mkCopilotInstructions = import ./lib/routing-copilot.nix;
+      mkKiroSteering = import ./lib/routing-kiro.nix;
+      routing = import ./lib/routing-data.nix;
     };
 
     overlays = {
