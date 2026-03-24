@@ -7,8 +7,7 @@ description: >-
   git log inspection when evaluating stack quality.
 argument-hint: "<range | --root | (none for stack())>"
 disable-model-invocation: true
-compatibility:
-  - git-branchless
+compatibility: "Requires git-branchless"
 ---
 
 Analyze a commit stack and produce a structured report. The output serves two
@@ -19,7 +18,8 @@ purposes:
 
 ## Pre-flight
 
-1. **Load references** — read `references/philosophy.md` from this package.
+1. **Load references** — read `references/philosophy.md` (relative to this
+   skill's directory).
 
 2. **Check branchless init**:
    ```bash

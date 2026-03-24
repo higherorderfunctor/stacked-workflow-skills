@@ -6,16 +6,15 @@ description: >-
   wrong parallelism settings, cache misunderstandings.
 argument-hint: "<command> [--fix] [--jobs N] [revset]"
 disable-model-invocation: true
-compatibility:
-  - git-branchless
+compatibility: "Requires git-branchless"
 ---
 
 Run a test command or formatter across commits in the current stack.
 
 ## Pre-flight
 
-1. **Load references** — read `references/git-branchless.md` from this package
-   before proceeding.
+1. **Load references** — read `references/git-branchless.md` (relative to this
+   skill's directory) before proceeding.
 
 2. **Check branchless init**:
    ```bash

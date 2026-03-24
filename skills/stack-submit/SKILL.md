@@ -6,8 +6,7 @@ description: >-
   PR/MR creation with correct base branches, and sentinel commit exclusion.
 argument-hint: "[revset]"
 disable-model-invocation: true
-compatibility:
-  - git-branchless
+compatibility: "Requires git-branchless"
 ---
 
 Submit the current commit stack for review. If an argument is provided, use it
@@ -15,8 +14,8 @@ as a revset to select which commits to submit. Default is the current stack.
 
 ## Pre-flight
 
-1. **Load references** — read `references/git-branchless.md` from this package
-   before proceeding.
+1. **Load references** — read `references/git-branchless.md` (relative to this
+   skill's directory) before proceeding.
 
 2. **Check branchless init**:
    ```bash

@@ -7,8 +7,7 @@ description: >-
   references, git move -F panics, untested intermediate commits.
 argument-hint: "<plan | range | (none for working tree)>"
 disable-model-invocation: true
-compatibility:
-  - git-branchless
+compatibility: "Requires git-branchless"
 ---
 
 Plan and execute a commit stack. Determines mode automatically based on input:
@@ -23,7 +22,8 @@ Plan and execute a commit stack. Determines mode automatically based on input:
 ## Pre-flight
 
 1. **Load references** — read `references/philosophy.md` and
-   `references/git-branchless.md` from this package before proceeding.
+   `references/git-branchless.md` (relative to this skill's directory) before
+   proceeding.
 
 2. **Check branchless init**:
    ```bash
