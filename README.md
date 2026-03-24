@@ -117,80 +117,34 @@ programs.git.extraConfig =
 
 ## Installation
 
-### Claude Code — manual (per-user)
+<!-- dprint-ignore -->
+| Method | Best for | Details |
+|--------|----------|---------|
+| **Nix home-manager module** | Declarative per-user setup | `homeManagerModules.default` — auto-detects `programs.claude-code` |
+| **Nix raw paths** | DevShells, custom configs | `lib.paths.skillsDir` / `lib.paths.referencesDir` |
+| **Manual copy** | Non-Nix users | `cp -r skills/* ~/.claude/skills/` |
+| **Agentic** | AI tool self-installs | Point the tool at `INSTALL.md` |
 
-Copy or symlink into your global Claude Code config:
+See **[INSTALL.md](INSTALL.md)** for detailed instructions, routing table
+setup, and examples for Claude Code, Kiro, and GitHub Copilot.
+
+### Quick Start (Nix Home-Manager)
+
+```nix
+imports = [ inputs.stacked-workflow-skills.homeManagerModules.default ];
+services.stacked-workflow-skills.enable = true;
+```
+
+### Quick Start (Manual)
 
 ```bash
-# Skills (copy contents, not the directory itself)
 mkdir -p ~/.claude/skills ~/.claude/references
 cp -r skills/* ~/.claude/skills/
-
-# References (skills load these on demand)
 cp -r references/* ~/.claude/references/
 ```
 
-Then add the routing table to your `~/.claude/CLAUDE.md` (or the project's
-`CLAUDE.md`) — see [Routing](#routing) below.
-
-### Claude Code — manual (per-project)
-
-For a specific project, copy into the project's `.claude/` directory:
-
-```bash
-mkdir -p .claude/skills .claude/references
-cp -r skills/* .claude/skills/
-cp -r references/* .claude/references/
-```
-
-Add the routing table to the project's `CLAUDE.md`.
-
-### Claude Code — Nix home-manager
-
-Add this repo as a flake input and use the home-manager module (coming soon):
-
-```nix
-{
-  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
-}
-```
-
-### Other AI Tools (Kiro, Copilot, etc.)
-
-Copy skills into the tool's skill/agent directory and add routing rules per
-the tool's instruction mechanism. See [Routing](#routing) below for the
-routing table to adapt.
-
-## Routing
-
-**This is the critical step.** Skills with `disable-model-invocation: true`
-are not auto-activated by model descriptions alone. You must add routing rules
-to your CLAUDE.md (or equivalent instruction file) so the model knows when to
-invoke them.
-
-Add this table to your `CLAUDE.md`:
-
-```markdown
-## Skill Routing — MANDATORY
-
-When working with stacked commits, use the appropriate skill instead of
-running commands manually via Bash.
-
-| Operation | Skill | Use INSTEAD of |
-|-----------|-------|----------------|
-| Fix lines in earlier commit | `/stack-fix` | `git absorb`, `git commit --fixup` |
-| Edit earlier commit (content moves) | `/stack-fix` | Manual checkout + amend + restack |
-| Plan and build a commit stack | `/stack-plan` | Ad-hoc commits without a plan |
-| Restructure/reorder commits | `/stack-plan` | `git rebase -i`, `git reset --soft` |
-| Commit uncommitted work as stack | `/stack-plan` | Single monolithic commit |
-| Split a large commit | `/stack-split` | `git rebase -i` + edit |
-| Audit stack quality | `/stack-summary` | Manual `git log` inspection |
-| Push stack for review | `/stack-submit` | Manual `git sync` + `git submit` + `gh pr create` |
-| Test across stack | `/stack-test` | Manual `git test run` |
-```
-
-Without this routing table, the model will default to running raw git commands
-instead of invoking the skills.
+Then add the routing table to your CLAUDE.md — see [INSTALL.md](INSTALL.md)
+§ Routing.
 
 ## License
 
