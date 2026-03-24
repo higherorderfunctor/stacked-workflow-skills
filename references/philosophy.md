@@ -101,6 +101,19 @@ files are built incrementally across commits (e.g. README.md gaining one
 section per commit). In that case, prefer `git move -x <hash> -d <dest>` for
 individual commits — it runs in-memory and avoids context-dependent conflicts.
 
+### Stack Rebuild Gotchas
+
+When rebuilding a stack from scratch (`git reset --soft` + recommit):
+
+- **`git add -u` stages everything dirty** — during a multi-commit rebuild,
+  `git add -u` will stage all modified tracked files, not just the ones
+  intended for the current commit. Always use explicit `git add <file>` to
+  avoid pulling unrelated changes into the wrong commit.
+- **Stacked PRs auto-close on force-push** — force-pushing a branch that's
+  the base of a stacked PR can auto-close the dependent PR on GitHub. After
+  restructuring a stack, expect to create new PRs rather than reopen closed
+  ones.
+
 ### Sentinel Commits
 
 Metadata commits like TODO.md, CHANGELOG.md, or pre-publish checklists should
@@ -145,6 +158,9 @@ a diary of what *did* happen during development.
 
 - Never create "addresses feedback", "fix", "WIP", or "tweaks" commits
 - Use `git absorb --and-rebase` to route fixes to the correct stack commit
+  - **Limitation:** absorb sees a line reorder (swap A and B) as a deletion +
+    addition. It may absorb the deletion but leave the addition orphaned,
+    producing a net content loss. For reorders, amend directly instead.
 - Use `git amend` to update the current commit (auto-restacks descendants)
 - Use `git reword` to fix commit messages without checkout
 - Clean up before pushing, not after
