@@ -2,8 +2,8 @@
 name: stack-submit
 description: >-
   Sync, validate, and push an entire commit stack. Use INSTEAD of manual
-  git sync + git submit + gh pr create. Handles branch creation, stacked
-  PR creation with correct base branches, and sentinel commit exclusion.
+  git sync + git submit + PR/MR creation. Handles branch creation, stacked
+  PR/MR creation with correct base branches, and sentinel commit exclusion.
 argument-hint: "[revset]"
 disable-model-invocation: true
 compatibility:
@@ -136,8 +136,14 @@ as a revset to select which commits to submit. Default is the current stack.
    git config remote.pushDefault origin
    ```
 
-9. **Create stacked PRs** — for each non-sentinel branch, create a PR
-   targeting the previous branch in the stack (or `main` for the first):
+9. **Create stacked PRs/MRs** — for each non-sentinel branch, create a
+   pull/merge request targeting the previous branch in the stack (or `main`
+   for the first). Use the commit message as the title. Keep the body
+   minimal — the commit diff speaks for itself.
+
+   **Do NOT create PRs/MRs for sentinel/tracking branches.**
+
+   #### GitHub
 
    ```bash
    # First commit after main:
@@ -157,15 +163,10 @@ as a revset to select which commits to submit. Default is the current stack.
      --title "<commit message>" --body "..."
    ```
 
-   Use the commit message as the PR title. Keep the body minimal — the commit
-   diff speaks for itself.
-
-   **Do NOT create PRs for sentinel/tracking branches.**
-
 10. **Report results** — show a summary table:
 
     ```
-    | # | Branch | PR | Base | Status |
+    | # | Branch | PR/MR | Base | Status |
     |---|--------|----|------|--------|
     | 1 | feat/flake-skeleton | #2 | main | created |
     | 2 | chore/formatting | #3 | feat/flake-skeleton | created |
@@ -183,31 +184,37 @@ git submit    # force-push all existing remote branches (no -c needed)
 If `git submit` produces no output (public commits on main), force-push all
 branches manually:
 ```bash
-git push origin --force <branch-1> <branch-2> ... <branch-N>
+git push --force-with-lease origin <branch-1> <branch-2> ... <branch-N>
 ```
 
-PRs auto-update when their branches are force-pushed. No need to recreate PRs.
+PRs/MRs auto-update when their branches are force-pushed. No need to recreate them.
 Only branches downstream of the changed commit need updating, but pushing all
 is safe — unchanged branches are skipped automatically.
 
-After each squash-merged PR, you MUST sync, update PR bases, and force-push
-remaining branches. Without this, downstream PRs show the full diff of all
-prior commits (the squash merge creates a new commit hash that downstream
-branches don't share).
+After each squash-merged PR/MR, you MUST sync, update the next PR/MR's base,
+and force-push remaining branches. Without this, downstream PRs/MRs show the full
+diff of all prior commits (the squash merge creates a new commit hash that
+downstream branches don't share).
+
+This must be done after EVERY squash merge, not just the first. Each merge
+changes main, and all downstream branches need rebasing onto it.
 
 ```bash
 # 1. Sync: rebases stack onto the new squash-merged main
 git sync --pull
 
-# 2. Update the next PR's base to main (it was pointing at the merged branch)
-gh pr edit <next-PR-number> --base main
+# 2. Update the next PR/MR's base to main (it was pointing at the merged branch)
+#    See platform-specific commands below
 
-# 3. Force-push ALL remaining branches so PRs show clean single-commit diffs
+# 3. Force-push ALL remaining branches so PRs/MRs show clean single-commit diffs
 git push --force-with-lease origin <branch-1> <branch-2> ... <branch-N>
 ```
 
-This must be done after EVERY squash merge, not just the first. Each merge
-changes main, and all downstream branches need rebasing onto it.
+#### GitHub
+
+```bash
+gh pr edit <next-PR-number> --base main
+```
 
 **Gotcha:** Squash-merged PRs are not always detected by `git sync` — manually
 `git hide -r <hash>` if needed (arxanas/git-branchless#965).
@@ -264,7 +271,7 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
 
 4. **Force-push all downstream branches** (target + every branch after it):
    ```bash
-   git push --force origin <target-branch> <downstream-1> ... <downstream-N>
+   git push --force-with-lease origin <target-branch> <downstream-1> ... <downstream-N>
    ```
 
 5. **Return to the stack tip** after pushing:
@@ -272,10 +279,14 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
    git checkout <tip-branch>   # e.g. todo/pre-publish or the last PR branch
    ```
 
-6. **Reply to and resolve** each review comment. Replying alone does NOT
-   close the conversation — you must resolve the thread via GraphQL:
+6. **Reply to and resolve** each review thread. Replying alone does NOT
+   close the conversation — you must explicitly resolve each thread in the
+   UI or via the platform's API/CLI.
+
+   #### GitHub
+
    ```bash
-   # Get thread IDs for a PR
+   # Get unresolved thread IDs for a PR (increase first: or paginate for large PRs)
    gh api graphql -f query='{
      repository(owner: "<owner>", name: "<repo>") {
        pullRequest(number: <N>) {
