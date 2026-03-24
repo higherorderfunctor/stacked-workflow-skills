@@ -35,8 +35,11 @@ Keep descriptions lowercase, imperative mood, no trailing period.
 ```bash
 nix develop          # Enter devShell (git-branchless, git-absorb, git-revise)
 nix fmt              # Format all Nix files with alejandra
-nix flake check      # Validate flake and run checks
+nix flake check      # Validate flake, formatting, and spelling
 ```
+
+**Note:** `nix flake check` only includes tracked files; add new files with
+`git add` before running it in a dirty git tree.
 
 ## Flake Structure
 
