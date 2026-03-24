@@ -120,6 +120,7 @@ programs.git.extraConfig =
 <!-- dprint-ignore -->
 | Method | Best for | Details |
 |--------|----------|---------|
+| **Nix home-manager module** | Declarative per-user setup | `inputs.stacked-workflow-skills.homeManagerModules.default` |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
 | **Manual copy** | Non-Nix users | `cp -r skills/* ~/.claude/skills/` |
 | **Agentic** | AI tool self-installs | Point the tool at `INSTALL.md` |
@@ -130,9 +131,9 @@ setup, and examples for Claude Code, Kiro, and GitHub Copilot.
 ### Quick Start (Manual)
 
 ```bash
-mkdir -p ~/.claude/skills ~/.claude/references
-cp -r skills/* ~/.claude/skills/
-cp -r references/* ~/.claude/references/
+git clone https://github.com/higherorderfunctor/stacked-workflow-skills.git
+ln -sfn "$(pwd)/stacked-workflow-skills/skills" ~/.claude/skills
+ln -sfn "$(pwd)/stacked-workflow-skills/references" ~/.claude/references
 ```
 
 Then add the routing table to your CLAUDE.md — see [INSTALL.md](INSTALL.md)

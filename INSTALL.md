@@ -36,6 +36,50 @@ nix eval --raw github:higherorderfunctor/stacked-workflow-skills#lib.mkKiroSteer
 nix eval --raw github:higherorderfunctor/stacked-workflow-skills#lib.mkCopilotInstructions
 ```
 
+## Nix: Home-Manager Module
+
+The module integrates with `programs.claude-code` when available (home-manager
+>= 25.11), falling back to `home.file` for older versions.
+
+Add the flake input:
+
+```nix
+{
+  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
+}
+```
+
+Import the module and enable it:
+
+```nix
+# In your home-manager config:
+imports = [ inputs.stacked-workflow-skills.homeManagerModules.default ];
+
+services.stacked-workflow-skills.enable = true;
+```
+
+**With `programs.claude-code` (home-manager >= 25.11):**
+
+- Sets `programs.claude-code.skillsDir` to the skills directory
+- Symlinks references to `~/.claude/references/` via `home.file`
+- Appends the Claude Code routing table to `programs.claude-code.memory.text`
+
+**Without `programs.claude-code` (fallback):**
+
+- Symlinks both `skills/` and `references/` to `~/.claude/` via `home.file`
+- You must add the routing table to your CLAUDE.md manually (see
+  [Routing](#routing) above)
+
+### Module Options
+
+<!-- dprint-ignore -->
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `services.stacked-workflow-skills.enable` | bool | `false` | Enable skill and reference installation |
+| `services.stacked-workflow-skills.claudeCode.enable` | bool | auto | Use `programs.claude-code` integration (auto-detected) |
+| `services.stacked-workflow-skills.claudeCode.routing` | bool | `true` | Include routing table in Claude Code memory |
+| `services.stacked-workflow-skills.rawPaths.enable` | bool | auto | Use `home.file` fallback (auto when no `programs.claude-code`) |
+
 ## Nix: Raw Paths
 
 The flake exposes skill and reference directories as paths. Use them in
@@ -84,15 +128,14 @@ programs.git.extraConfig = inputs.stacked-workflow-skills.lib.gitConfigFull;
 
 ## Manual: Claude Code
 
+Symlink from a local clone so `git pull` picks up updates automatically.
+
 ### Per-User
 
 ```bash
 git clone https://github.com/higherorderfunctor/stacked-workflow-skills.git
-cd stacked-workflow-skills
-
-mkdir -p ~/.claude/skills ~/.claude/references
-cp -r skills/* ~/.claude/skills/
-cp -r references/* ~/.claude/references/
+ln -sfn "$(pwd)/stacked-workflow-skills/skills" ~/.claude/skills
+ln -sfn "$(pwd)/stacked-workflow-skills/references" ~/.claude/references
 ```
 
 Then add the routing table to `~/.claude/CLAUDE.md`. Generate it with:
@@ -106,21 +149,19 @@ Paste the output into your CLAUDE.md.
 ### Per-Project
 
 ```bash
-mkdir -p .claude/skills .claude/references
-cp -r /path/to/stacked-workflow-skills/skills/* .claude/skills/
-cp -r /path/to/stacked-workflow-skills/references/* .claude/references/
+ln -sfn /path/to/stacked-workflow-skills/skills .claude/skills
+ln -sfn /path/to/stacked-workflow-skills/references .claude/references
 ```
 
 Add the routing table to the project's `CLAUDE.md`.
 
 ## Manual: Kiro
 
-Copy skills and references into your project:
+Symlink from a local clone:
 
 ```bash
-mkdir -p .kiro/skills .kiro/references
-cp -r /path/to/stacked-workflow-skills/skills/* .kiro/skills/
-cp -r /path/to/stacked-workflow-skills/references/* .kiro/references/
+ln -sfn /path/to/stacked-workflow-skills/skills .kiro/skills
+ln -sfn /path/to/stacked-workflow-skills/references .kiro/references
 ```
 
 Create a steering file with the routing rules. Evaluate the Kiro format:
@@ -133,12 +174,11 @@ Or copy the output into `.kiro/steering/stacked-workflow.md`.
 
 ## Manual: GitHub Copilot
 
-Copy skills and references into your project:
+Symlink from a local clone:
 
 ```bash
-mkdir -p .github/skills .github/references
-cp -r /path/to/stacked-workflow-skills/skills/* .github/skills/
-cp -r /path/to/stacked-workflow-skills/references/* .github/references/
+ln -sfn /path/to/stacked-workflow-skills/skills .github/skills
+ln -sfn /path/to/stacked-workflow-skills/references .github/references
 ```
 
 Create an instructions file with the routing rules. Evaluate the Copilot
@@ -168,6 +208,8 @@ If the project has a `flake.nix`, the agent should:
    inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
    ```
 2. Choose an integration path:
+   - **Home-manager module** — import and enable (see
+     [Nix: Home-Manager Module](#nix-home-manager-module))
    - **DevShell** — add shellHook symlinks (see
      [DevShell (Per-Project)](#devshell-per-project))
    - **Raw paths** — use `home.file` (see [Nix: Raw Paths](#nix-raw-paths))
@@ -178,8 +220,8 @@ If the project has a `flake.nix`, the agent should:
 
 The agent should:
 
-1. Clone or download the skill files
-2. Copy `skills/*` to `.claude/skills/` and `references/*` to `.claude/references/`
+1. Clone the repo
+2. Symlink `skills/` to `.claude/skills` and `references/` to `.claude/references`
 3. Add the routing table to the project's `CLAUDE.md`
 
 ### Kiro / Copilot

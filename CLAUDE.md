@@ -43,7 +43,8 @@ nix flake check      # Validate flake, formatting, and spelling
 
 ## Flake Structure
 
-- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib
+- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib, homeManagerModules
+- **home-manager/** — home-manager module for declarative installation
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
 - **skills/** — SKILL.md files for each stack operation

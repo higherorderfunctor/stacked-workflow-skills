@@ -27,8 +27,11 @@
       mkClaudeRouting = import ./lib/routing-claude.nix;
       mkCopilotInstructions = import ./lib/routing-copilot.nix;
       mkKiroSteering = import ./lib/routing-kiro.nix;
+      paths = import ./home-manager/paths.nix;
       routing = import ./lib/routing-data.nix;
     };
+
+    homeManagerModules.default = import ./home-manager;
 
     overlays = {
       default = import ./overlays {inherit inputs;};
