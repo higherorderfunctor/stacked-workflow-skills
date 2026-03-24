@@ -44,9 +44,10 @@ nix flake check      # Validate flake, formatting, and spelling
 ## Flake Structure
 
 - **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib
+- **.generated/** — pre-generated routing files for Claude, Kiro, Copilot (CI-maintained)
 - **INSTALL.md** — installation and routing setup for all platforms and methods
-- **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
-- **skills/** — SKILL.md files for each stack operation
+- **references/** — canonical reference docs (symlinked into each skill's `references/`)
+- **skills/** — SKILL.md files with per-skill `references/` subdirectories
 
 <!-- Generated from lib/routing-data.nix via `nix eval --raw .#lib.mkClaudeRouting` — keep in sync -->
 
