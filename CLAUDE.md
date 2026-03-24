@@ -43,9 +43,12 @@ nix flake check      # Validate flake, formatting, and spelling
 
 ## Flake Structure
 
-- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib.gitConfig/gitConfigFull
-- **skills/** — SKILL.md files for each stack operation
+- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib
+- **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — distilled reference docs for git-branchless, git-absorb, git-revise
+- **skills/** — SKILL.md files for each stack operation
+
+<!-- Generated from lib/routing-data.nix via `nix eval --raw .#lib.mkClaudeRouting` — keep in sync -->
 
 ## Skill Routing — MANDATORY
 
@@ -55,14 +58,14 @@ instead of running commands manually via Bash.
 <!-- dprint-ignore -->
 | Operation | Skill | Use INSTEAD of |
 |-----------|-------|----------------|
-| Fix lines in earlier commit | `/stack-fix` | `git absorb`, `git commit --fixup`, manual checkout + amend |
-| Edit earlier commit (content moves, structural changes) | `/stack-fix` | Manual `git prev` + edit + `git amend` + `git restack --merge` |
-| Split a large commit | `/stack-split` | `git rebase -i` + edit, `git reset HEAD^` |
-| Plan and build a commit stack from a description | `/stack-plan` | Ad-hoc `git record` / `git commit` without a plan |
-| Restructure/reorder existing commits | `/stack-plan` | `git rebase -i`, `git reset --soft`, `git move` sequences |
-| Commit uncommitted work as an atomic stack | `/stack-plan` | `git add -A && git commit` (single monolithic commit) |
 | Audit stack quality before restructure | `/stack-summary` | Manual `git log` inspection |
+| Commit uncommitted work as an atomic stack | `/stack-plan` | `git add -A && git commit` (single monolithic commit) |
+| Edit earlier commit (content moves, structural changes) | `/stack-fix` | Manual `git prev` + edit + `git amend` + `git restack --merge` |
+| Fix lines in earlier commit | `/stack-fix` | `git absorb`, `git commit --fixup`, manual checkout + amend |
+| Plan and build a commit stack from a description | `/stack-plan` | Ad-hoc `git record` / `git commit` without a plan |
 | Push stack for review | `/stack-submit` | Manual `git sync` + `git submit` + `gh pr create` |
+| Restructure/reorder existing commits | `/stack-plan` | `git rebase -i`, `git reset --soft`, `git move` sequences |
+| Split a large commit | `/stack-split` | `git rebase -i` + edit, `git reset HEAD^` |
 | Test across stack | `/stack-test` | Manual `git test run` or looping `git checkout` + test |
 
 **RULE: Before running any git-branchless, git-absorb, or git-revise command
@@ -141,6 +144,20 @@ branchless command in any session.
 Permissions for git-branchless, git-absorb, and git-revise commands are
 pre-approved in `.claude/settings.json`. Reference docs in `references/` are
 also pre-approved for reading.
+
+## Continuous Improvement
+
+When working in this repo, be introspective about patterns and failures.
+Learnings should be distributed into the skills and references so consumers
+benefit — that's the purpose of this package.
+
+1. **Codify into consumer-facing docs** — new gotchas, strategies, or
+   patterns go into `references/philosophy.md`, relevant skill files, or
+   other reference docs so every consumer gets the improvement
+2. **Track gaps** — if a skill is missing guidance that would have prevented
+   an error, note it for the user
+3. **Codify, don't repeat** — if the same mistake or correction happens twice,
+   it belongs in a reference doc, not just in memory
 
 ## Coding Standards
 
