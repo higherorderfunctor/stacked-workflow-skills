@@ -7,7 +7,13 @@
 let
   data = import ./routing-data.nix;
 
+  frontmatter = ''
+    ---
+    applyTo: "**"
+    ---'';
+
   header = ''
+
     # Stacked Workflow Skill Routing
 
     When working with stacked commits, invoke the appropriate skill instead of
@@ -25,4 +31,4 @@ let
     **Always check if a skill covers the operation before running raw
     git-branchless, git-absorb, or git-revise commands.**'';
 in
-  header + "\n" + rows + "\n" + footer
+  frontmatter + "\n" + header + "\n" + rows + "\n" + footer
