@@ -39,8 +39,6 @@ These prevent common pain points in stacked workflows.
   conflictStyle = zdiff3
 
 [pull]
-  # Never create merge commits — stacked workflows are rebase-only
-  ff = only
   rebase = true
 
 [rebase]
@@ -56,6 +54,10 @@ These prevent common pain points in stacked workflows.
   enabled = true
   autoupdate = true
 ```
+
+> **Caution:** `pull.ff = only` — Since Git 2.34, `pull.ff = only` takes
+> priority over `pull.rebase = true`, causing `git pull` to fail when local
+> commits exist. We recommend `pull.rebase = true` alone.
 
 ## Recommended
 

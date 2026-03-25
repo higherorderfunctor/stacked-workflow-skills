@@ -301,7 +301,7 @@ Existing commits need to be reorganized into a clean atomic stack.
 - **Sentinel commits** (TODO.md, CHANGELOG.md) must stay at the tip of the
   stack. When adding new commits, check the tip first — if it's a sentinel,
   insert before it or move it back to tip afterward with
-  `git move -f -x <sentinel-hash> -d HEAD`.
+  `git move -x <sentinel-hash> -d HEAD`.
 - **Avoid scripted `GIT_SEQUENCE_EDITOR` reorders when files are built
   incrementally.** Moving a commit that touches README.md to an earlier
   position cascades conflicts through every subsequent commit that also

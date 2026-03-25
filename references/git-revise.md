@@ -365,6 +365,12 @@ git revise --autosquash            # in-memory autosquash (fast)
 git restack                        # fix branchless tracking
 ```
 
+> **Caveat:** This workflow requires `absorb.fixupTargetAlwaysSHA = false`.
+> With the recommended config (`= true`), absorb creates `fixup! <SHA>`
+> messages that git-revise `--autosquash` cannot match
+> (mystor/git-revise#79). Prefer `git absorb --and-rebase` instead, which
+> uses git's native autosquash and handles SHA-based fixup targets correctly.
+
 ### Signing Support
 
 git-revise supports GPG, SSH, and X.509 signing (`-S` flag or

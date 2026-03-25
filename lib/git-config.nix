@@ -24,10 +24,7 @@
 
   merge.conflictStyle = "zdiff3";
 
-  pull = {
-    ff = "only";
-    rebase = true;
-  };
+  pull.rebase = true;
 
   rebase = {
     autoSquash = true;
