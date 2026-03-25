@@ -7,9 +7,7 @@ description: >-
   to guided manual amend when absorb cannot route hunks.
 argument-hint: "[--dry-run]"
 disable-model-invocation: true
-compatibility:
-  - git-branchless
-  - git-absorb
+compatibility: "Requires git-branchless and git-absorb"
 ---
 
 Fix earlier commits in the stack. Tries git-absorb first (automatic hunk
@@ -19,7 +17,8 @@ absorb cannot help.
 ## Pre-flight
 
 1. **Load references** — read `references/git-absorb.md` and
-   `references/git-branchless.md` from this package before proceeding.
+   `references/git-branchless.md` (relative to this skill's directory) before
+   proceeding.
 
 2. **Check branchless init**:
    ```bash

@@ -6,8 +6,7 @@ description: >-
   commits, wrong split ordering, missed downstream restack.
 argument-hint: "[commit]"
 disable-model-invocation: true
-compatibility:
-  - git-branchless
+compatibility: "Requires git-branchless"
 ---
 
 Split a large commit into multiple smaller, atomic commits. Target commit
@@ -16,7 +15,8 @@ defaults to HEAD if not specified.
 ## Pre-flight
 
 1. **Load references** — read `references/git-branchless.md` and
-   `references/philosophy.md` from this package before proceeding.
+   `references/philosophy.md` (relative to this skill's directory) before
+   proceeding.
 
 2. **Check branchless init**:
    ```bash
