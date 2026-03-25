@@ -3,14 +3,14 @@ id: "0001"
 title: use MADR-style decision records with confidence scoring
 status: accepted
 date: 2026-03-24
-confidence: 0.80
+confidence: 0.81
 last-reinforced: 2026-03-24
-reinforcement-count: 1
+reinforcement-count: 2
 ---
 
 ## Context
 
-The `/review` skill runs multiple AI reviewer personalities in parallel.
+The `/repo-review` skill runs multiple AI reviewer personalities in parallel.
 Without a mechanism to record decisions, each run re-litigates the same
 questions. We need a "don't re-litigate" system that also acknowledges
 decisions can become stale as ecosystems evolve.
@@ -48,3 +48,6 @@ are themselves subject to review.
   standard (github.com/adr/madr). Confidence scoring is novel but follows
   the pattern of citation freshness models in academic literature.
   (confidence: 0.80)
+- 2026-03-24: First /repo-review run. 4/6 reviewers confirmed the format
+  works as designed for machine + human consumption. No competing formats
+  found. (confidence: 0.80 → 0.81)
