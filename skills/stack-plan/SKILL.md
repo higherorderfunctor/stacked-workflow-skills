@@ -278,23 +278,16 @@ Existing commits need to be reorganized into a clean atomic stack.
 - **Don't lose changes.** After flattening, double-check `git diff --stat`
   matches the original range diff. If anything is missing, stop and
   investigate.
-- Format-only changes (whitespace, import sorting) should ALWAYS be a separate
-  commit — they dominate diffs and obscure real changes.
-- If the total changeset is small enough to group by file (no hunk splitting
-  needed), prefer `git add <files>` over `git add -p` for speed.
-- If a commit exceeds 200 lines, split it further rather than letting it grow.
-- Commit messages should explain WHY, not just WHAT.
-- If the user wants to keep some original commit boundaries, respect that —
-  not every restructure needs to flatten everything.
+- Prefer `git add <files>` over `git add -p` when the changeset groups by
+  file without needing hunk splitting.
+- Respect user-requested commit boundaries — not every restructure needs to
+  flatten everything.
 - **From-root restructures** flatten the entire history. Use
   `git checkout --orphan` + `git reset` (not `git reset --soft` which needs
   a parent commit). The branchless hook will panic — ignore it.
 - **Intermediate file states are the #1 source of rework.** Files like
   README.md and CLAUDE.md that grow across many commits must be written with
   partial content at each step. Plan these states BEFORE flattening.
-- When building tables incrementally (one row per commit), the final row
-  order may differ from a monolithic table. This is cosmetic — don't waste
-  time reordering unless the user cares.
 - For files with complex structure (nested sections, cross-references), a
   full rewrite at the appropriate commit is often cleaner than incremental
   Edit operations that can cause structural nesting errors.
@@ -303,7 +296,5 @@ Existing commits need to be reorganized into a clean atomic stack.
   insert before it or move it back to tip afterward with
   `git move -x <sentinel-hash> -d HEAD`.
 - **Avoid scripted `GIT_SEQUENCE_EDITOR` reorders when files are built
-  incrementally.** Moving a commit that touches README.md to an earlier
-  position cascades conflicts through every subsequent commit that also
-  touches README.md. Use `git move -x <hash> -d <dest>` for individual
+  incrementally.** Use `git move -x <hash> -d <dest>` for individual
   commit reorders — it's in-memory and avoids context-dependent conflicts.
