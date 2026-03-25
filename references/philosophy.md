@@ -101,6 +101,23 @@ files are built incrementally across commits (e.g. README.md gaining one
 section per commit). In that case, prefer `git move -x <hash> -d <dest>` for
 individual commits — it runs in-memory and avoids context-dependent conflicts.
 
+### Distributing Fixes Across a Stack
+
+When applying multiple fixes to different commits (e.g., after a review run):
+
+1. **Survey first** — run `/stack-summary` to understand the current stack
+2. **Classify each fix** — absorb (in-place line edits) vs manual amend
+   (new files, structural changes) vs new commit (new content)
+3. **Execute earliest-first** — amend the earliest commit first, then
+   restack. This minimizes cascading restacks since each amend only
+   restacks its descendants.
+4. **Stage all absorb-candidates at once** — `git absorb` can route
+   multiple hunks to different commits in one pass. Use `--dry-run` first
+   to verify routing, then `--and-rebase`.
+5. **Handle absorb leftovers** — hunks absorb can't route (new files,
+   multi-line format changes, commuting patches) remain staged. Check
+   `git diff --cached` after absorb and handle manually.
+
 ### Stack Rebuild Gotchas
 
 When rebuilding a stack from scratch (`git reset --soft` + recommit):
@@ -120,7 +137,7 @@ Metadata commits like TODO.md, CHANGELOG.md, or pre-publish checklists should
 stay at the tip of the stack. When adding new feature commits to an existing
 stack, check what the tip commit is — if it's a sentinel, insert new work
 before it using `git record -I` or move the sentinel back to tip afterward
-with `git move -f -x <sentinel-hash> -d HEAD`.
+with `git move -x <sentinel-hash> -d HEAD`.
 
 If a sentinel commit has been modified by later commits in the stack (e.g., a
 TODO update commit removes a completed section), squash those changes into the

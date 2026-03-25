@@ -232,7 +232,7 @@ git sync --pull     # may only skip one of the two commits
 If `git sync` doesn't skip the already-merged commit, move the remaining
 stack past it:
 ```bash
-git move -f -s <first-unskipped-hash> -d main
+git move -s <first-unskipped-hash> -d main
 ```
 
 Then hide orphaned commits and force-push all branches.

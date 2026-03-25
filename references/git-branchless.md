@@ -247,6 +247,10 @@ git split --detach        # extracted changes become sibling
 git split --discard       # remove extracted changes entirely
 ```
 
+> **Version note:** `git split` requires unreleased git-branchless (post
+> v0.10.0, introduced in PR #1464, Sept 2025). The command does not exist in
+> v0.10.0. Use `git rebase -i` + edit or `git revise -c` on released versions.
+
 **`git restack`** — Fix abandoned commits after rewrites.
 ```bash
 git restack               # restack all abandoned commits
@@ -485,8 +489,8 @@ git move -b feature -d main    # move feature's lineage onto main
 ### 6. Split a large commit
 ```bash
 git checkout <hash>
-git split                      # interactive: select hunks for new commit
-# or with git rebase:
+git split                      # interactive (requires unreleased > v0.10.0)
+# or with git rebase (works on all versions):
 git rebase -i <hash>^          # mark commit as "edit"
 git reset HEAD^                # unwind, keep changes in working tree
 git add -p && git commit       # first logical group

@@ -103,11 +103,8 @@ merge, or a different author. Use `--base <commit>` for explicit targeting.
 
 ### Stack Boundaries
 
-The revwalk stops at: merge commits, commits by a different author (unless
-`--force-author`), or the configured depth limit. Branches in the ancestry
-also interrupt the search when `--base` is not specified. If the stack ends
-early, absorb warns with the reason (e.g., "merge commit found", "stack limit
-reached") to help you decide whether to use `--base` or `--no-limit`.
+The revwalk stops at: the root commit, merge commits, commits by a different
+author (unless `--force-author`), or the configured depth limit.
 
 ## Command Reference
 
@@ -252,6 +249,24 @@ git add -p
 git absorb --whole-file --and-rebase
 ```
 
+## What Absorb Cannot Do
+
+Absorb only handles **in-place line modifications** — hunks where lines in a
+staged file replace lines introduced by an earlier commit. These operations
+require manual `git commit --amend` or `git checkout` + amend instead:
+
+- **New files** — absorb reports "not in-place file modifications"
+- **Deleted files** — same; can't route a deletion to a commit
+- **Renamed/moved files** — same
+- **Multi-line format changes** (e.g., YAML list → string) where the hunk
+  spans both added and removed lines that don't match a single commit's
+  context — absorb can't find a unique target
+- **Content that commutes with all candidates** — if the staged hunk could
+  apply cleanly to any commit in the stack, absorb can't choose and skips it
+
+When absorb can't route a hunk, it remains staged. Check `git diff --cached`
+after absorb to see what's left, then handle manually.
+
 ## Anti-Patterns
 
 ### Don't use `--force` as a default
@@ -339,7 +354,8 @@ git restack
 Configure `absorb.maxStack=50` to match typical branchless stack depths.
 
 Use `--and-rebase -- --update-refs` to keep stacked branch pointers in sync
-during the autosquash rebase.
+during the autosquash rebase. Redundant if `rebase.updateRefs = true` is
+configured (see recommended-config.md).
 
 ### With git-revise
 
@@ -348,6 +364,11 @@ Alternative to `--and-rebase`:
 git absorb                    # create fixup commits only
 git revise --autosquash       # in-memory autosquash (faster than rebase)
 ```
+
+> **Caveat:** Requires `absorb.fixupTargetAlwaysSHA = false`. With the
+> recommended config (`= true`), absorb creates `fixup! <SHA>` messages
+> that git-revise cannot match (mystor/git-revise#79). Prefer
+> `git absorb --and-rebase` with the recommended config.
 
 A native `--and-revise` flag has been requested (tummychow/git-absorb#188) but is not yet
 implemented.
