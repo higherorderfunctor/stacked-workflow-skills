@@ -244,48 +244,28 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
 1. **Identify the target commit** — the PR tells you which branch/commit the
    feedback applies to.
 
-2. **Choose the fix strategy** based on the type of change:
+2. **Apply the fix** using `/stack-fix`. It handles both absorb (line-level
+   fixes) and manual amend (structural changes) paths, including dry-run
+   preview, conflict resolution, and restacking.
 
-   **Line-level fixes** (typos, adding a line, small edits): use absorb with
-   `--base` to constrain routing to the target commit:
-   ```bash
-   # stage the fix, then:
-   git absorb --and-rebase --base <target-branch>^
-   ```
-
-   **Structural changes** (rewriting sections, moving content, adding files):
-   checkout the target commit and amend directly:
-   ```bash
-   git checkout <target-branch>
-   # edit files...
-   git add <files>
-   git amend
-   ```
-
-3. **Restack descendants** (amend path only — absorb restacks automatically):
-   ```bash
-   git restack          # in-memory, no conflicts usually
-   git restack --merge  # if in-memory fails with conflicts
-   ```
-
-4. **Force-push all downstream branches** (target + every branch after it):
+3. **Force-push all downstream branches** (target + every branch after it):
    ```bash
    git push --force-with-lease origin <target-branch> <downstream-1> ... <downstream-N>
    ```
 
-5. **Return to the stack tip** after pushing:
+4. **Return to the stack tip** after pushing:
    ```bash
    git checkout <tip-branch>   # e.g. todo/pre-publish or the last PR branch
    ```
 
-6. **Reply to and resolve** each review thread. Replying alone does NOT
+5. **Reply to and resolve** each review thread. Replying alone does NOT
    close the conversation — you must explicitly resolve each thread in the
    UI or via the platform's API/CLI.
 
    #### GitHub
 
    ```bash
-   # Get unresolved thread IDs for a PR (increase first: or paginate for large PRs)
+   # Get unresolved thread IDs for a PR
    gh api graphql -f query='{
      repository(owner: "<owner>", name: "<repo>") {
        pullRequest(number: <N>) {
@@ -303,24 +283,6 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
      }
    }'
    ```
-
-**Always use `--base` when absorbing review feedback.** Without it, absorb
-searches the full stack by diff context and may route to a later commit with
-more matching context — especially for files built incrementally across
-commits (README.md, CLAUDE.md). `--base <target>` constrains the search to
-that commit.
-
-**Never `git add` + `git amend` after a failed `git checkout`.** If checkout
-fails (e.g. "local changes would be overwritten"), you are still on the
-PREVIOUS branch. Any subsequent `git amend` goes into that commit, not the
-one you intended. Always verify with `git log --oneline -1` before amending
-(`git branch --show-current` prints nothing in detached HEAD).
-If checkout fails, stash or commit your changes first, then retry.
-
-**Conflict resolution during restack:** If the amend changes a file that
-downstream commits also modify (common with README.md, CLAUDE.md), the restack
-may hit conflicts. Resolve them manually — the fix is usually to keep the
-downstream version and incorporate your amend's change into it.
 
 ## Tips
 
