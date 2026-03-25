@@ -50,7 +50,7 @@ nix flake check      # Validate flake, formatting, and spelling
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — canonical reference docs (symlinked into each skill's `references/`)
 - **skills/** — SKILL.md files with per-skill `references/` subdirectories
-- **dev/** — dev-only skills (review, index-repo-docs), symlinked into `.claude/skills/`
+- **dev/** — dev-only skills (repo-review, index-repo-docs), symlinked into `.claude/skills/`
 
 <!-- Generated from lib/routing-data.nix via `nix eval --raw .#lib.mkClaudeRouting` — keep in sync -->
 
@@ -87,77 +87,17 @@ These skills are for developing this repo, not distributed to consumers:
 | `/index-repo-docs` | Fetch and distill a repo's wiki, docs, and issues into a focused reference doc |
 | `/repo-review` | Multi-perspective repo review with 6 specialized reviewers, decision tracking, and human-approved changes |
 
-## Stack Modification Tool Selection
+## Operations Without Skills
 
-Before modifying a stack, identify the operation and select the right tool.
-Not every operation has a skill — some are best done with direct commands.
+Some stack operations are not fully covered by skills — use direct commands
+when a skill doesn't apply (e.g., single quick reorder, one-off reword):
 
-<!-- dprint-ignore -->
-| Operation | First choice | Fallback | Why |
-|-----------|-------------|----------|-----|
-| Fix lines in earlier commit | `/stack-fix` | `git absorb --and-rebase` | skill adds dry-run preview |
-| Move content between commits | `/stack-fix` (Path B) | checkout + `git amend` | skill guides conflict resolution |
-| Reorder commits | `git move -s <src> -d <dest>` | `git revise -i` | in-memory, handles subtrees |
-| Reword a message | `git reword <commit>` | `git revise <commit>` | no checkout needed |
-| Split a commit | `/stack-split` | `git split`, `git rebase -i` + edit | skill handles full workflow |
-| Restructure entire stack | `/stack-plan` | `git reset --soft main` + recommit | skill handles full workflow |
-| Squash commits | `git move` + manual amend | N/A | `git move -F` panics on conflicts |
-| Bulk insert/reorder (3+ changes) | batch-at-tip + scripted rebase | individual `git record -I` | avoids conflict cascades |
+- **Reorder commits:** `git move -s <src> -d <dest>` (prefer `/stack-plan` for multi-commit reorders)
+- **Reword a message:** `git reword <commit>`
+- **Squash commits:** `git move` + manual amend
 
-See `references/philosophy.md` § Bulk Stack Modification for the full pattern.
-
-## Key Commands
-
-**Navigation:** `git sl` (smartlog), `git next`/`git prev` (`-a` all,
-`-b` branch), `git sw -i` (fuzzy switch)
-
-**Committing:** `git record -m "msg"`, `git record -i` (interactive),
-`git record -I` (insert mid-stack), `git amend` (amend + auto-restack)
-
-**Rewriting:** `git reword <commit>`, `git move -s <src> -d <dest>`,
-`git split`, `git restack`
-
-**Stack Management:** `git sync --pull`, `git submit -c`,
-`git hide -r <hash>`, `git undo` (`-i` interactive)
-
-**Testing:** `git test run -x '<cmd>'` (`--jobs 0` parallel),
-`git test fix -x '<fmt>'`
-
-See `references/git-branchless.md` for full details.
-
-## Revset Quick Reference
-
-<!-- dprint-ignore -->
-| Revset | Matches |
-|--------|---------|
-| `stack()` | Current stack |
-| `draft()` | All draft (non-public) commits |
-| `main()` | Tip of main branch |
-| `branches()` | Commits with branches |
-| `children(x)` / `parents(x)` | Graph traversal |
-| `paths.changed(pattern)` | Commits touching files |
-| `message(pattern)` | Commits matching message |
-| `x::y` | Range (descendants of x AND ancestors of y) |
-| `x % y` | Only (ancestors of x NOT ancestors of y) |
-
-See `references/git-branchless.md` for the full revset language.
-
-## Initialization
-
-Before using any branchless commands in a repo, check if initialized:
-
-```bash
-if [ ! -d ".git/branchless" ]; then git branchless init; fi
-```
-
-All skills include this as a pre-flight check. Run it before the first
-branchless command in any session.
-
-## Code Quality
-
-Permissions for git-branchless, git-absorb, and git-revise commands are
-pre-approved in `.claude/settings.json`. Reference docs in `references/` are
-also pre-approved for reading.
+See `references/philosophy.md` and `references/git-branchless.md` for
+full command reference, revsets, and tool selection guidance.
 
 ## Continuous Improvement
 
