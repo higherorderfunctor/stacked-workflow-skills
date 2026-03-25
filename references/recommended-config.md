@@ -192,7 +192,7 @@ their home-manager git config:
 
 # In home-manager configuration:
 { inputs, ... }: {
-  programs.git.extraConfig =
+  programs.git.settings =
     inputs.stacked-workflow-skills.lib.gitConfig;
 }
 ```
@@ -211,7 +211,7 @@ lib.recursiveUpdate
 For the full Recommended set, use `lib.gitConfigFull`:
 
 ```nix
-programs.git.extraConfig =
+programs.git.settings =
   inputs.stacked-workflow-skills.lib.gitConfigFull;
 ```
 
