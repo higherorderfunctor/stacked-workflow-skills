@@ -3,12 +3,18 @@
 # Includes Required + Strongly Recommended + Recommended settings.
 #
 # Usage in home-manager:
-#   programs.git.extraConfig = inputs.stacked-workflow-skills.lib.gitConfigFull;
+#   programs.git.settings = inputs.stacked-workflow-skills.lib.gitConfigFull;
+#
+# Or via the home-manager module (applies mkDefault to each leaf):
+#   programs.stacked-workflow-skills = { enable = true; git = "full"; };
 #
 # See references/recommended-config.md for explanations of each setting.
 let
   base = import ./git-config.nix;
 in
+  # Shallow merge (//) at the top level. Keys present in both `base` and this
+  # attrset must be explicitly deep-merged (e.g., branchless = base.branchless // { ... }).
+  # If adding a new key that also exists in base, merge it the same way.
   base
   // {
     # ── Recommended: git-branchless ────────────────────────────────────

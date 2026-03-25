@@ -1,7 +1,10 @@
 # Recommended git configuration for stacked commit workflows.
 #
 # Usage in home-manager:
-#   programs.git.extraConfig = inputs.stacked-workflow-skills.lib.gitConfig;
+#   programs.git.settings = inputs.stacked-workflow-skills.lib.gitConfig;
+#
+# Or via the home-manager module (applies mkDefault to each leaf):
+#   programs.stacked-workflow-skills = { enable = true; git = "minimal"; };
 #
 # See references/recommended-config.md for explanations of each setting.
 {

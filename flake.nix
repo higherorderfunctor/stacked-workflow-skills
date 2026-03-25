@@ -30,6 +30,8 @@
       routing = import ./lib/routing-data.nix;
     };
 
+    homeManagerModules.default = import ./home-manager;
+
     overlays = {
       default = import ./overlays {inherit inputs;};
       git-absorb = perPkg "git-absorb";
