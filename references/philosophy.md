@@ -128,6 +128,15 @@ sentinel before moving it. `git move -x` often causes conflicts when
 descendants depend on its changes — for example, when a dependent commit
 modifies a file that no longer exists or has been renamed at the destination.
 
+**New commits that also touch sentinel files:** when inserting a commit before
+the sentinel, do NOT include changes to the sentinel's files (e.g., TODO.md)
+in the new commit. The reorder can conflict when both commits touch the
+same file regions. Instead: (1) commit new work WITHOUT sentinel file changes,
+(2) reorder so it sits before the sentinel, (3) then amend the sentinel to
+include any updates. Alternatively, commit at the tip (after the sentinel)
+and keep sentinel file changes in a separate commit that can be squashed into
+the sentinel without reordering.
+
 ### Dependency Audit Before `git move -x`
 
 `git move -x` extracts a single commit without its descendants. Before using

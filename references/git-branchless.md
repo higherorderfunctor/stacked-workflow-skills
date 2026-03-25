@@ -250,7 +250,7 @@ git split --discard       # remove extracted changes entirely
 **`git restack`** — Fix abandoned commits after rewrites.
 ```bash
 git restack               # restack all abandoned commits
-git restack <hash>        # restack only children of specific hidden commit
+git restack <hash>        # restack only children of specific abandoned commit
 ```
 
 ### Stack Management
@@ -305,6 +305,20 @@ git hide <hash>           # hide single commit
 git hide -r <hash>        # hide commit + all descendants
 git unhide <hash>         # bring back a hidden commit
 ```
+
+**Gotcha:** `git hide` (without `-r`) still deletes branches on the hidden
+commit AND cascades branch deletion to children. If a branch like
+`todo/pre-publish` is on a child commit, it gets deleted even though the
+child commit itself isn't hidden. Use `git undo` to recover. Always check
+`git sl` for child branches before hiding a commit.
+
+**Gotcha:** Directory symlinks in the working tree (e.g., `.claude/skills/foo`
+→ `../../dev/foo`) cause branchless to panic during `git amend`, `git prev`,
+`git next`, and other commands that create working copy snapshots. The error
+is `could not create blob from <path>: Is a directory (os error 21)`. Workaround:
+remove the symlink before the operation, use `git commit --amend --no-edit` +
+`git restack` instead of `git amend`, then recreate the symlink afterward.
+File symlinks (pointing to a file, not a directory) work fine.
 
 ### Testing
 
