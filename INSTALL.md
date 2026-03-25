@@ -108,7 +108,10 @@ Add the flake input and import the module:
 
 ```nix
 {
-  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
+  inputs.stacked-workflow-skills = {
+    url = "github:higherorderfunctor/stacked-workflow-skills";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 }
 
 # In your home-manager config:
@@ -162,7 +165,10 @@ If you prefer not to use the module, configure `programs.claude-code` directly:
 
 ```nix
 {
-  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
+  inputs.stacked-workflow-skills = {
+    url = "github:higherorderfunctor/stacked-workflow-skills";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 }
 
 programs.claude-code = {
@@ -182,7 +188,10 @@ expression:
 
 ```nix
 {
-  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
+  inputs.stacked-workflow-skills = {
+    url = "github:higherorderfunctor/stacked-workflow-skills";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 }
 
 # Example: home.file
@@ -228,43 +237,159 @@ instead, or wrap with `lib.mapAttrsRecursive (_: lib.mkDefault)`.
 
 ## Agentic Installation
 
-AI tools (Claude Code, Kiro, Copilot) can perform the manual installation
-steps autonomously. Point the tool at this guide:
+AI tools can install stacked-workflow-skills interactively. The agent
+detects the project environment, asks what to configure, skips anything
+already done, and executes one step at a time with confirmation.
 
-> Read `INSTALL.md` from
-> `github:higherorderfunctor/stacked-workflow-skills` and follow the
-> appropriate installation method for this project.
+### How to start
 
-### Claude Code — Nix Project
+Give your AI tool this prompt:
 
-If the project has a `flake.nix`, the agent should:
+> Read the Agentic Installation section of INSTALL.md from
+> github:higherorderfunctor/stacked-workflow-skills and follow the
+> interactive install flow for this project.
 
-1. Add the flake input:
-   ```nix
-   inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
-   ```
-2. Choose an integration path:
-   - **Home-manager module** — import and enable (see
-     [Nix: Home-Manager Module](#nix-home-manager-module))
-   - **programs.claude-code** — set `skillsDir` and `memory.text` (see
-     [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct))
-   - **DevShell** — add shellHook symlinks (see
-     [DevShell (Per-Project)](#devshell-per-project))
-   - **Raw paths** — use `home.file` (see [Nix: Raw Paths](#nix-raw-paths))
-3. Add the routing table to `CLAUDE.md` using `lib.mkClaudeRouting`
-4. Optionally add git config:
-   `programs.git.settings = inputs.stacked-workflow-skills.lib.gitConfig;`
+### Agent instructions
 
-### Claude Code — Non-Nix Project
+Follow this flow. Each step has a guard — skip steps that are already done.
+Ask the user before making changes. Do not batch steps silently.
 
-The agent should:
+#### Step 1: Detect environment
 
-1. Clone the repo
-2. Symlink `skills/` to `.claude/skills`
-3. Add the routing table to the project's `CLAUDE.md`
+Check the project and report what you find:
 
-### Kiro / Copilot
+```
+- [ ] flake.nix exists → Nix project
+- [ ] home-manager config detected → HM module path available
+- [ ] .claude/ exists → Claude Code configured
+- [ ] .kiro/ exists → Kiro configured
+- [ ] .github/ exists → Copilot possible
+- [ ] stacked-workflow-skills already in flake inputs
+- [ ] skills already installed (check for stack-fix, stack-plan, etc.)
+- [ ] routing table already in instruction file
+```
 
-Follow the respective manual section above. The agent can evaluate the
-routing generator via `nix eval` if Nix is available, or copy the pre-generated
-routing file from `.generated/`.
+Tell the user what you found and what's missing.
+
+#### Step 2: Add flake input (Nix projects only)
+
+**Guard:** skip if `stacked-workflow-skills` is already in flake inputs.
+
+Add the input with `nixpkgs.follows` (nvfetcher is dev-only — no need to
+follow it):
+
+```nix
+inputs.stacked-workflow-skills = {
+  url = "github:higherorderfunctor/stacked-workflow-skills";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+Run `nix flake lock --update-input stacked-workflow-skills` to fetch.
+
+#### Step 3: Choose integration method
+
+Ask the user:
+
+> How would you like to install the skills?
+>
+> 1. **Home-manager module** — `programs.stacked-workflow-skills.enable = true`
+>    (best for personal machine setup, configures git + ecosystems declaratively)
+> 2. **programs.claude-code** — direct skillsDir + memory.text
+>    (if you already configure Claude Code via HM and want manual control)
+> 3. **DevShell** — per-project shellHook symlinks
+>    (skills available only when `nix develop` is active)
+> 4. **Manual symlinks** — for non-Nix projects
+
+For non-Nix projects, skip to step 5.
+
+#### Step 4: Wire up the chosen method
+
+**Home-manager module (option 1):**
+
+```nix
+# Add to imports:
+imports = [ inputs.stacked-workflow-skills.homeManagerModules.default ];
+
+# Configure:
+programs.stacked-workflow-skills = {
+  enable = true;
+  git = "full"; # "full" | "minimal" | "none" — ask the user
+};
+```
+
+Ask the user which ecosystems to enable. `claude.enable` auto-detects from
+`programs.claude-code.enable`. Kiro and Copilot must be explicitly enabled:
+
+> Which AI tools do you use?
+> - Claude Code (auto-detected if programs.claude-code.enable is true)
+> - Kiro (places files in ~/.kiro/)
+> - Copilot CLI (places files in ~/.copilot/)
+
+Ask which git config preset:
+
+> Git config preset? This sets `programs.git.settings` at `mkDefault`
+> priority — your existing overrides win.
+> - **full** — all recommended settings (branchless, absorb, revise, diff, fetch, push)
+> - **minimal** — required + strongly recommended only
+> - **none** — no git config changes
+
+**programs.claude-code (option 2):**
+
+See [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct).
+Wire `skillsDir`, `memory.text`, and optionally `home.file` for references.
+
+**DevShell (option 3):**
+
+See [DevShell (Per-Project)](#devshell-per-project). Add shellHook symlinks
+and routing table to the project's `CLAUDE.md`.
+
+**Manual symlinks (option 4):**
+
+See [Manual Install](#manual-install). Clone, symlink, add routing table.
+
+#### Step 5: Add routing table (non-HM-module paths only)
+
+**Guard:** skip if using the HM module (it adds the routing table
+automatically via `programs.claude-code.memory.text`).
+
+**Guard:** skip if the routing table is already in the instruction file.
+
+For Claude Code, append to `CLAUDE.md`:
+```bash
+cat .generated/claude-routing.md >> CLAUDE.md
+# or for global:
+cat .generated/claude-routing.md >> ~/.claude/CLAUDE.md
+```
+
+For Kiro, copy `.generated/kiro-routing.md` to `.kiro/steering/`.
+
+For Copilot, copy `.generated/copilot-routing.md` to
+`.github/instructions/`.
+
+#### Step 6: Verify
+
+Run a quick check to confirm skills are working:
+
+```
+- [ ] Skills directory exists and contains SKILL.md files
+- [ ] Routing table is in the instruction file
+- [ ] /stack-summary responds (invoke it to test)
+```
+
+If using the HM module, remind the user to rebuild:
+```bash
+# NixOS:
+sudo nixos-rebuild switch
+
+# Home-manager standalone:
+home-manager switch
+```
+
+Then verify in a new terminal/session.
+
+### Human walkthrough
+
+The steps above also serve as a human checklist. If you're installing
+manually, follow steps 1-6 — the guards tell you what to skip, and the
+questions help you choose the right method for your setup.

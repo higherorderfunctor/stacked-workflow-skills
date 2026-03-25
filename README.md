@@ -56,7 +56,10 @@ installation:
 
 ```nix
 {
-  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
+  inputs.stacked-workflow-skills = {
+    url = "github:higherorderfunctor/stacked-workflow-skills";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 }
 
 # In your configuration or home-manager:
@@ -135,10 +138,21 @@ programs.stacked-workflow-skills = {
 | **Nix (programs.claude-code)** | Direct Claude Code config | `skillsDir` + `memory.text` |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
 | **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
-| **Agentic** | AI tool self-installs | Point the tool at `INSTALL.md` |
+| **Agentic** | AI tool self-installs | Interactive flow in `INSTALL.md` |
 
 See **[INSTALL.md](INSTALL.md)** for detailed instructions, routing table
 setup, and examples for Claude Code, Kiro, and GitHub Copilot.
+
+#### Agentic Install
+
+Tell your AI tool:
+
+> Read the Agentic Installation section of INSTALL.md from
+> github:higherorderfunctor/stacked-workflow-skills and follow the
+> interactive install flow for this project.
+
+The agent detects your environment, asks what to configure, skips what's
+already done, and executes one step at a time with your approval.
 
 ### Quick Start
 
