@@ -45,10 +45,12 @@ nix flake check      # Validate flake, formatting, and spelling
 
 - **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib, homeManagerModules
 - **.generated/** — pre-generated routing files for Claude, Kiro, Copilot (CI-maintained)
+- **docs/decisions/** — MADR-style architecture decision records with confidence scoring
 - **home-manager/** — home-manager module for declarative per-user installation
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — canonical reference docs (symlinked into each skill's `references/`)
 - **skills/** — SKILL.md files with per-skill `references/` subdirectories
+- **dev/** — dev-only skills (review, index-repo-docs), symlinked into `.claude/skills/`
 
 <!-- Generated from lib/routing-data.nix via `nix eval --raw .#lib.mkClaudeRouting` — keep in sync -->
 
@@ -74,6 +76,16 @@ instead of running commands manually via Bash.
 via Bash, check if a skill covers the operation.** Skills include pre-flight
 checks, dry-run previews, conflict guidance, and post-operation verification
 that manual commands miss.
+
+## Dev-Only Skills
+
+These skills are for developing this repo, not distributed to consumers:
+
+<!-- dprint-ignore -->
+| Skill | What it does |
+|-------|-------------|
+| `/index-repo-docs` | Fetch and distill a repo's wiki, docs, and issues into a focused reference doc |
+| `/repo-review` | Multi-perspective repo review with 6 specialized reviewers, decision tracking, and human-approved changes |
 
 ## Stack Modification Tool Selection
 
