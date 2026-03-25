@@ -97,22 +97,74 @@ Copy `.generated/copilot-routing.md` to
 `.github/instructions/stacked-workflow.instructions.md` and add `applyTo: "**"`
 YAML frontmatter.
 
-## Nix: programs.claude-code (Home-Manager >= 25.11)
+## Nix: Home-Manager Module
 
-The upstream `programs.claude-code` module handles skill installation
-directly — no custom module needed.
+The module provides a single `programs.stacked-workflow-skills` option that
+configures git settings, Claude Code, Kiro, and Copilot integration. This is
+for global/per-user setup only — per-project install should use a devShell or
+manual symlinks.
 
-Add the flake input:
+Add the flake input and import the module:
 
 ```nix
 {
   inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
 }
+
+# In your home-manager config:
+imports = [ inputs.stacked-workflow-skills.homeManagerModules.default ];
+
+programs.stacked-workflow-skills = {
+  enable = true;
+  git = "full"; # "full" | "minimal" | "none"
+  # claude.enable auto-detected from programs.claude-code.enable
+  # kiro.enable = true;   # places files in ~/.kiro/
+  # copilot.enable = true; # places files in ~/.copilot/
+};
 ```
 
-Configure in your home-manager config:
+### Module Options
+
+<!-- dprint-ignore -->
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `programs.stacked-workflow-skills.enable` | bool | `false` | Enable skill installation |
+| `programs.stacked-workflow-skills.git` | enum | `"none"` | Git config preset (`"full"`, `"minimal"`, `"none"`) — sets `programs.git.settings` at `mkDefault` priority |
+| `programs.stacked-workflow-skills.claude.enable` | bool | auto | Claude Code integration (auto-detected from `programs.claude-code.enable`) |
+| `programs.stacked-workflow-skills.copilot.enable` | bool | `false` | Copilot CLI (`gh copilot`) — places skills + instructions in `~/.copilot/` |
+| `programs.stacked-workflow-skills.kiro.enable` | bool | `false` | Kiro — places skills + steering in `~/.kiro/` |
+
+### What each option does
+
+**`git = "minimal"`** — sets `programs.git.settings` with required + strongly
+recommended settings (branchless main branch, absorb config, merge/pull/rebase
+defaults, rerere). All values at `mkDefault` priority so your overrides win.
+
+**`git = "full"`** — adds recommended settings on top of minimal (branchless
+smartlog/test/navigation, revise autoSquash, histogram diff, fetch pruning,
+push defaults).
+
+**`claude.enable`** — sets `programs.claude-code.skillsDir`, appends routing
+table to `programs.claude-code.memory.text`, symlinks `references/` to
+`~/.claude/references/`.
+
+**`kiro.enable`** — symlinks skills to `~/.kiro/skills/`, places routing
+steering file at `~/.kiro/steering/stacked-workflow.md`.
+
+**`copilot.enable`** — Copilot CLI only (`gh copilot`). Symlinks skills to
+`~/.copilot/skills/`, places routing instructions at
+`~/.copilot/copilot-instructions.md`. Editor-specific Copilot config (VS Code,
+JetBrains, etc.) is out of scope — use per-project install for those.
+
+## Nix: programs.claude-code (Direct)
+
+If you prefer not to use the module, configure `programs.claude-code` directly:
 
 ```nix
+{
+  inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
+}
+
 programs.claude-code = {
   enable = true;
   skillsDir = "${inputs.stacked-workflow-skills}/skills";
@@ -164,11 +216,15 @@ The flake provides git config presets for stacked workflows:
 
 ```nix
 # Minimal (required + strongly recommended):
-programs.git.extraConfig = inputs.stacked-workflow-skills.lib.gitConfig;
+programs.git.settings = inputs.stacked-workflow-skills.lib.gitConfig;
 
 # Full (all recommended settings):
-programs.git.extraConfig = inputs.stacked-workflow-skills.lib.gitConfigFull;
+programs.git.settings = inputs.stacked-workflow-skills.lib.gitConfigFull;
 ```
+
+**Note:** These set values at normal priority. To use `mkDefault` priority
+(so your other config wins), use the home-manager module's `git` option
+instead, or wrap with `lib.mapAttrsRecursive (_: lib.mkDefault)`.
 
 ## Agentic Installation
 
@@ -188,14 +244,16 @@ If the project has a `flake.nix`, the agent should:
    inputs.stacked-workflow-skills.url = "github:higherorderfunctor/stacked-workflow-skills";
    ```
 2. Choose an integration path:
+   - **Home-manager module** — import and enable (see
+     [Nix: Home-Manager Module](#nix-home-manager-module))
    - **programs.claude-code** — set `skillsDir` and `memory.text` (see
-     [Nix: programs.claude-code](#nix-programsclaude-code-home-manager--2511))
+     [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct))
    - **DevShell** — add shellHook symlinks (see
      [DevShell (Per-Project)](#devshell-per-project))
    - **Raw paths** — use `home.file` (see [Nix: Raw Paths](#nix-raw-paths))
 3. Add the routing table to `CLAUDE.md` using `lib.mkClaudeRouting`
 4. Optionally add git config:
-   `programs.git.extraConfig = inputs.stacked-workflow-skills.lib.gitConfig;`
+   `programs.git.settings = inputs.stacked-workflow-skills.lib.gitConfig;`
 
 ### Claude Code — Non-Nix Project
 

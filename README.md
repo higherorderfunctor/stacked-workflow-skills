@@ -113,8 +113,17 @@ git config --global rerere.autoupdate true
 
 ```nix
 # Merge the preset into your git config:
-programs.git.extraConfig =
+programs.git.settings =
   inputs.stacked-workflow-skills.lib.gitConfig;
+```
+
+Or use the home-manager module which applies settings at `mkDefault` priority:
+
+```nix
+programs.stacked-workflow-skills = {
+  enable = true;
+  git = "full"; # or "minimal"
+};
 ```
 
 ## Installation
@@ -122,7 +131,8 @@ programs.git.extraConfig =
 <!-- dprint-ignore -->
 | Method | Best for | Details |
 |--------|----------|---------|
-| **Nix (programs.claude-code)** | Declarative per-user | `skillsDir` + `memory.text` |
+| **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `programs.stacked-workflow-skills.enable = true` |
+| **Nix (programs.claude-code)** | Direct Claude Code config | `skillsDir` + `memory.text` |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
 | **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
 | **Agentic** | AI tool self-installs | Point the tool at `INSTALL.md` |

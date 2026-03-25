@@ -43,8 +43,9 @@ nix flake check      # Validate flake, formatting, and spelling
 
 ## Flake Structure
 
-- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib
+- **flake.nix** — nixpkgs + nvfetcher inputs, overlays, packages, devShell, lib, homeManagerModules
 - **.generated/** — pre-generated routing files for Claude, Kiro, Copilot (CI-maintained)
+- **home-manager/** — home-manager module for declarative per-user installation
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — canonical reference docs (symlinked into each skill's `references/`)
 - **skills/** — SKILL.md files with per-skill `references/` subdirectories
