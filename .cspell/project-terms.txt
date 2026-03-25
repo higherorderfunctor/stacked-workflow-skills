@@ -34,6 +34,8 @@ tummychow
 
 # Nix ecosystem
 attrset
+attrsets
+devshell
 direnv
 envrc
 nixos
@@ -55,8 +57,10 @@ jsonl
 mktemp
 
 # General terms
+agentskills
 agentic
 dedup
+derefs
 frontloaded
 kiro
 libgit
