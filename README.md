@@ -20,14 +20,17 @@ any tool that supports SKILL.md files.
 
 ### References
 
-Distilled docs for each tool — command reference, recipes, anti-patterns,
-integration notes:
+Each skill bundles the reference docs it needs in a `references/` subdirectory
+(symlinked to the canonical top-level files). Skills load these automatically
+during pre-flight — no separate reference installation needed.
 
-- `references/philosophy.md` — atomic commit principles and ordering conventions
-- `references/git-branchless.md` — smartlog, move, sync, submit, revsets
-- `references/git-absorb.md` — automatic fixup routing
-- `references/git-revise.md` — in-memory commit rewriting
-- `references/recommended-config.md` — git settings for stacked workflows
+Canonical reference docs in `references/`:
+
+- `philosophy.md` — atomic commit principles and ordering conventions
+- `git-branchless.md` — smartlog, move, sync, submit, revsets
+- `git-absorb.md` — automatic fixup routing
+- `git-revise.md` — in-memory commit rewriting
+- `recommended-config.md` — git settings for stacked workflows
 
 ## Prerequisites
 
@@ -98,7 +101,6 @@ git config --global absorb.fixupTargetAlwaysSHA true
 git config --global absorb.maxStack 50
 git config --global absorb.oneFixupPerCommit true
 git config --global merge.conflictStyle zdiff3
-git config --global pull.ff only
 git config --global pull.rebase true
 git config --global rebase.autoSquash true
 git config --global rebase.autoStash true
@@ -120,23 +122,48 @@ programs.git.extraConfig =
 <!-- dprint-ignore -->
 | Method | Best for | Details |
 |--------|----------|---------|
+| **Nix (programs.claude-code)** | Declarative per-user | `skillsDir` + `memory.text` |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
-| **Manual copy** | Non-Nix users | `cp -r skills/* ~/.claude/skills/` |
+| **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
 | **Agentic** | AI tool self-installs | Point the tool at `INSTALL.md` |
 
 See **[INSTALL.md](INSTALL.md)** for detailed instructions, routing table
 setup, and examples for Claude Code, Kiro, and GitHub Copilot.
 
-### Quick Start (Manual)
+### Quick Start
+
+#### Claude Code
 
 ```bash
-mkdir -p ~/.claude/skills ~/.claude/references
-cp -r skills/* ~/.claude/skills/
-cp -r references/* ~/.claude/references/
+git clone https://github.com/higherorderfunctor/stacked-workflow-skills.git
+mkdir -p ~/.claude
+ln -sfn "$(pwd)/stacked-workflow-skills/skills" ~/.claude/skills
 ```
 
-Then add the routing table to your CLAUDE.md — see [INSTALL.md](INSTALL.md)
-§ Routing.
+Then add the routing table to `~/.claude/CLAUDE.md`:
+
+```bash
+cat stacked-workflow-skills/.generated/claude-routing.md >> ~/.claude/CLAUDE.md
+```
+
+#### Kiro
+
+```bash
+mkdir -p .kiro/skills .kiro/steering
+ln -sfn /path/to/stacked-workflow-skills/skills/* .kiro/skills/
+cp /path/to/stacked-workflow-skills/.generated/kiro-routing.md .kiro/steering/stacked-workflow.md
+```
+
+#### GitHub Copilot
+
+```bash
+mkdir -p .github/skills .github/instructions
+ln -sfn /path/to/stacked-workflow-skills/skills/* .github/skills/
+cp /path/to/stacked-workflow-skills/.generated/copilot-routing.md \
+  .github/instructions/stacked-workflow.instructions.md
+```
+
+Add `applyTo: "**"` YAML frontmatter to the instructions file.
 
 ## License
 
