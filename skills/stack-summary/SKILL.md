@@ -131,6 +131,31 @@ Check each commit against `references/philosophy.md` rules:
 - Flag refactoring mixed with feature work
 - Flag features before their dependencies
 
+### Grouping Opportunities
+- Identify adjacent commits with the same type AND scope that could merge
+  without exceeding 200 lines (e.g., two 30-line `docs` commits touching
+  the same file)
+- Identify commits that are logical continuations (commit N adds a feature,
+  commit N+1 adds docs for that same feature — they belong together)
+- Check for "thin wrapper" commits that just wire up something from the
+  previous commit (e.g., a commit that only adds a flake output for a module
+  introduced in the prior commit)
+- Don't suggest merging commits that serve different review purposes even if
+  they're small (e.g., a 20-line refactor and a 20-line feature should stay
+  separate for revertibility)
+
+### Single-Topic Validation
+- For each commit, read the full diff (not just the stat) and verify that
+  every changed line serves the commit message's stated purpose
+- Flag commits where the diff contains unrelated changes: a "fix typo"
+  commit that also reformats imports, an "add feature" commit that also
+  cleans up whitespace in unrelated files
+- Flag commits where the message says one thing but the diff does another
+  (e.g., message says "refactor" but the diff adds new functionality)
+- Use the test: "If I reverted this commit, would only one concern be
+  affected?" If reverting would undo two unrelated things, the commit
+  should be split
+
 ### History Hygiene (§ History Hygiene)
 - Flag "fix", "WIP", "tweaks", "addresses feedback" commits
 
@@ -153,13 +178,15 @@ Stack: <range> (<N> commits, <total lines> lines)
 
 Use these flag labels:
 - `OVERSIZED` — exceeds 200 lines
-- `UNDERSIZED` — under 50 lines, mergeable with adjacent
+- `UNDERSIZED` — single commit under 50 lines that is too small to stand on its own
 - `BUNDLED` — multiple features in one commit
 - `BATCHED-DOCS` — docs that should be distributed to feature commits
 - `FORWARD-REF` — references something from a later commit
 - `MIXED-CONCERNS` — touches unrelated concerns
 - `EARLY-DEP` — dependency added before first use
 - `HYGIENE` — fix/WIP/tweaks commit message
+- `MERGEABLE` — adjacent commits that are individually reasonable but serve the same concern and could combine
+- `OFF-TOPIC` — diff contains changes unrelated to the commit message
 
 ### Violations
 
@@ -177,6 +204,26 @@ Suggested split:
 2. feat(stack-split): add stack-split skill — skills/stack-split/SKILL.md (~113 lines)
 3. feat(stack-test): add stack-test skill — skills/stack-test/SKILL.md (~93 lines)
 ```
+
+### Grouping Opportunities
+
+If mergeable commits are found, list them:
+
+```
+### Grouping Opportunities
+
+1. Commits 4-5 (docs/install-rewrite + docs/readme-ecosystem-neutral):
+   both update user-facing docs for the same restructure, combined ~90 lines.
+   Could merge into one docs commit.
+
+2. Commit 8 (chore: update TODO.md) is 15 lines and only adds checklist
+   items — could absorb into the sentinel commit (a metadata commit like
+   TODO.md or CHANGELOG.md that stays at the stack tip) if one exists.
+```
+
+Only suggest groupings where the merged result would still be a single
+coherent concern under 200 lines. Don't suggest merging across concern
+boundaries just because commits are small.
 
 ### Planner Handoff
 
