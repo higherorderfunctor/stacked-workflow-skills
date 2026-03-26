@@ -1,12 +1,10 @@
 ---
 name: repo-review
 description: >-
-  Run a multi-perspective review of this repo with 6 specialized reviewers
-  (git expert, agentic UX, human UX, nix expert, FP/DRY expert,
-  consistency auditor).
-  Aggregates findings, deduplicates, respects recorded decisions, and
-  proposes changes with human approval. Use this for periodic health checks
-  or before publishing.
+  Use when you need a multi-perspective review of this repo. Spawns 6
+  specialized reviewers (git expert, agentic UX, human UX, nix expert,
+  FP/DRY expert, consistency auditor). Aggregates findings, deduplicates,
+  respects recorded decisions, and proposes changes with human approval.
 argument-hint: "[full | scope:<path> | decisions-only]"
 ---
 

@@ -1,9 +1,10 @@
 ---
 name: stack-split
 description: >-
-  Split a large commit into reviewable atomic commits. Use INSTEAD of manual
-  git rebase -i + edit or git reset HEAD^. Prevents: non-working intermediate
-  commits, wrong split ordering, missed downstream restack.
+  Use when you need to break up, split, or decompose a large commit into
+  smaller atomic commits. Use INSTEAD of manual git rebase -i + edit or
+  git reset HEAD^. Prevents: non-working intermediate commits, wrong split
+  ordering, missed downstream restack.
 argument-hint: "[commit]"
 disable-model-invocation: true
 compatibility: "Requires git-branchless"

@@ -1,9 +1,10 @@
 ---
 name: stack-submit
 description: >-
-  Sync, validate, and push an entire commit stack. Use INSTEAD of manual
-  git sync + git submit + PR/MR creation. Handles branch creation, stacked
-  PR/MR creation with correct base branches, and sentinel commit exclusion.
+  Use when you need to push, submit, or create pull requests for a commit
+  stack. Syncs, validates, and pushes INSTEAD of manual git sync + git submit
+  + PR/MR creation. Handles branch creation, stacked PR/MR creation with
+  correct base branches, and sentinel commit exclusion.
 argument-hint: "[revset]"
 disable-model-invocation: true
 compatibility: "Requires git-branchless"

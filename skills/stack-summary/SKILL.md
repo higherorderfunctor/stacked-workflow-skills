@@ -1,10 +1,10 @@
 ---
 name: stack-summary
 description: >-
-  Analyze a commit stack and produce a structured summary with per-commit
-  classification, philosophy audit, and violation flags. Output is designed
-  to feed directly into /stack-plan restructure mode. Use INSTEAD of manual
-  git log inspection when evaluating stack quality.
+  Use when you need to audit, analyze, or review stack quality before
+  restructuring. Produces a structured summary with per-commit classification,
+  philosophy audit, and violation flags. Output feeds directly into /stack-plan
+  restructure mode. Use INSTEAD of manual git log inspection.
 argument-hint: "<range | --root | (none for stack())>"
 disable-model-invocation: true
 compatibility: "Requires git-branchless"

@@ -1,9 +1,9 @@
 ---
 name: stack-test
 description: >-
-  Run tests or formatters across every commit in a stack. Use INSTEAD of manual
-  git test run or looping git checkout + test. Prevents: untested commits,
-  wrong parallelism settings, cache misunderstandings.
+  Use when you need to run tests or formatters across every commit in a stack.
+  Use INSTEAD of manual git test run or looping git checkout + test. Prevents:
+  untested commits, wrong parallelism settings, cache misunderstandings.
 argument-hint: "<command> [--fix] [--jobs N] [revset]"
 disable-model-invocation: true
 compatibility: "Requires git-branchless"
@@ -23,14 +23,14 @@ Run a test command or formatter across commits in the current stack.
 
 ## Arguments
 
-- First argument: the command to run (required)
+- First argument: the command to run (optional — auto-detected if omitted)
 - `--fix`: use fix mode (apply changes per commit, e.g., formatters)
 - `--jobs N`: parallelism level (0 = auto-detect CPUs)
 - Remaining args: revset to target (default: `stack()`)
 
 ## Steps
 
-1. **Parse arguments**. If no command is provided, detect from the project:
+1. **Parse `$ARGUMENTS`**. If no command is provided, detect from the project:
    - `package.json` → `npm test` or `pnpm test`
    - `Cargo.toml` → `cargo test`
    - `Makefile` → `make test`

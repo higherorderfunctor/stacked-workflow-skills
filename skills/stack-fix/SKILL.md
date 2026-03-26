@@ -1,7 +1,8 @@
 ---
 name: stack-fix
 description: >-
-  Absorb staged changes into correct stack commits. Use INSTEAD of running
+  Use when you need to fix, correct, or update content in an earlier commit.
+  Absorbs staged changes into correct stack commits INSTEAD of running
   git absorb or git commit --fixup via Bash. Prevents: missed dry-run preview,
   leftover staged changes going unnoticed, forgetting to restack. Falls back
   to guided manual amend when absorb cannot route hunks.

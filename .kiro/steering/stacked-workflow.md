@@ -1,4 +1,5 @@
 ---
+name: stacked-workflow
 inclusion: auto
 description: Skill routing for stacked commit workflows
 ---
