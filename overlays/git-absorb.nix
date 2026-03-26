@@ -1,8 +1,21 @@
-_: _: prev: let
-  nv = prev.nv-sources.git-absorb;
-in {
-  git-absorb = prev.git-absorb.overrideAttrs {
-    inherit (nv) version src;
-    cargoHash = nv.cargoHash;
+_: final: prev: let
+  sources = import ./sources.nix {inherit (final) fetchurl fetchgit fetchFromGitHub dockerTools;};
+  nv = sources.git-absorb;
+
+  rustPlatform = final.makeRustPlatform {
+    cargo = final.rust-bin.stable.latest.default;
+    rustc = final.rust-bin.stable.latest.default;
   };
+in {
+  git-absorb = prev.git-absorb.override (_: {
+    rustPlatform.buildRustPackage = args:
+      rustPlatform.buildRustPackage (finalAttrs: let
+        a = (final.lib.toFunction args) finalAttrs;
+      in
+        a
+        // {
+          inherit (nv) version src;
+          cargoHash = nv.cargoHash;
+        });
+  });
 }

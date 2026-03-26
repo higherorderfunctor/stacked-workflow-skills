@@ -1,11 +1,12 @@
 {inputs, ...}: let
   inherit (inputs.nixpkgs) lib;
+  # Apply the unused first arg so local overlays can be composed
   import' = path: import path {};
-  overlays = [
-    ./sources.nix
+  localOverlays = [
     ./git-absorb.nix
     ./git-branchless.nix
     ./git-revise.nix
   ];
 in
-  lib.composeManyExtensions (map import' overlays)
+  lib.composeManyExtensions
+  ([inputs.rust-overlay.overlays.default] ++ map import' localOverlays)

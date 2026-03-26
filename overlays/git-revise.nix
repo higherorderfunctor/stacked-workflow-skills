@@ -1,6 +1,7 @@
 _: final: _: let
+  sources = import ./sources.nix {inherit (final) fetchurl fetchgit fetchFromGitHub dockerTools;};
+  nv = sources.git-revise;
   inherit (final) lib stdenv;
-  nv = final.nv-sources.git-revise;
 in {
   git-revise = final.python3Packages.buildPythonApplication {
     pname = "git-revise";

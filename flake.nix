@@ -7,6 +7,10 @@
       url = "github:berberman/nvfetcher";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -17,9 +21,9 @@
     forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
     inherit (nixpkgs) lib;
     import' = path: import path {};
-    sources = import' ./overlays/sources.nix;
+    rustOverlay = inputs.rust-overlay.overlays.default;
     perPkg = name:
-      lib.composeManyExtensions [sources (import' ./overlays/${name}.nix)];
+      lib.composeManyExtensions [rustOverlay (import' ./overlays/${name}.nix)];
   in {
     lib = {
       gitConfig = import ./lib/git-config.nix;
