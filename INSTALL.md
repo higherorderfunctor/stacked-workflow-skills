@@ -136,7 +136,7 @@ stacked-workflows = {
 |--------|------|---------|-------------|
 | `stacked-workflows.enable` | bool | `false` | Enable the module |
 | `stacked-workflows.gitPreset` | enum | `"none"` | Git config preset (`"full"`, `"minimal"`, `"none"`) — sets `programs.git.settings` at `mkDefault` priority |
-| `stacked-workflows.integrations.claude.enable` | bool | `false` | Claude Code — sets skillsDir, routing, references |
+| `stacked-workflows.integrations.claude.enable` | bool | `false` | Claude Code — sets per-skill entries, routing, references |
 | `stacked-workflows.integrations.copilot.enable` | bool | `false` | Copilot CLI (`gh copilot`) — places skills + instructions in `~/.copilot/` |
 | `stacked-workflows.integrations.kiro.enable` | bool | `false` | Kiro — places skills + steering in `~/.kiro/` |
 
@@ -174,8 +174,9 @@ your overrides win.
 fetch pruning, push defaults).
 
 **`integrations.claude.enable`** — requires `programs.claude-code.enable =
-true`. Sets `programs.claude-code.skillsDir`, appends routing table to
-`programs.claude-code.memory.text`, symlinks `references/` to
+true`. Sets per-skill `programs.claude-code.skills` entries (additive —
+merges with your personal skills), appends routing table to
+`programs.claude-code.memory.text`, places per-file references in
 `~/.claude/references/`. Note: if you already manage `~/.claude/references`
 via `home.file` (e.g., outOfStoreSymlinks), don't enable this — it will
 conflict. Use the [direct](#nix-programsclaude-code-direct) method instead.
@@ -221,12 +222,23 @@ If you prefer not to use the module, configure `programs.claude-code` directly:
 
 programs.claude-code = {
   enable = true;
-  skillsDir = "${inputs.stacked-workflow-skills}/skills";
+  skills = {
+    stack-fix = "${inputs.stacked-workflow-skills}/skills/stack-fix";
+    stack-plan = "${inputs.stacked-workflow-skills}/skills/stack-plan";
+    stack-split = "${inputs.stacked-workflow-skills}/skills/stack-split";
+    stack-submit = "${inputs.stacked-workflow-skills}/skills/stack-submit";
+    stack-summary = "${inputs.stacked-workflow-skills}/skills/stack-summary";
+    stack-test = "${inputs.stacked-workflow-skills}/skills/stack-test";
+  };
   memory.text = lib.mkAfter (import "${inputs.stacked-workflow-skills}/lib/routing-claude.nix");
 };
 
-# Top-level references for global CLAUDE.md reference loading (optional)
-home.file.".claude/references".source = "${inputs.stacked-workflow-skills}/references";
+# Per-file references for global CLAUDE.md reference loading (optional)
+home.file.".claude/references/git-absorb.md".source = "${inputs.stacked-workflow-skills}/references/git-absorb.md";
+home.file.".claude/references/git-branchless.md".source = "${inputs.stacked-workflow-skills}/references/git-branchless.md";
+home.file.".claude/references/git-revise.md".source = "${inputs.stacked-workflow-skills}/references/git-revise.md";
+home.file.".claude/references/philosophy.md".source = "${inputs.stacked-workflow-skills}/references/philosophy.md";
+home.file.".claude/references/recommended-config.md".source = "${inputs.stacked-workflow-skills}/references/recommended-config.md";
 ```
 
 ## Nix: Raw Paths
@@ -328,7 +340,7 @@ Tell the user what you found and what's missing.
 > `home.file.".claude/references"` definitions. You have two options:
 >
 > 1. Skip the claude integration (`integrations.claude.enable` stays
->    `false`) and wire `programs.claude-code.skillsDir` + `memory.text`
+>    `false`) and wire `programs.claude-code.skills` + `memory.text`
 >    manually (see [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct))
 > 2. Remove your existing `~/.claude/references` management and let the
 >    module handle it via `integrations.claude.enable = true`
@@ -357,7 +369,7 @@ Ask the user:
 >
 > 1. **Home-manager module** — `stacked-workflows.enable = true`
 >    (best for personal machine setup, configures git + ecosystems declaratively)
-> 2. **programs.claude-code** — direct skillsDir + memory.text
+> 2. **programs.claude-code** — direct skills + memory.text
 >    (if you already configure Claude Code via HM and want manual control)
 > 3. **DevShell** — per-project shellHook symlinks
 >    (skills available only when `nix develop` is active)
@@ -398,7 +410,7 @@ Ask which git config preset:
 **programs.claude-code (option 2):**
 
 See [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct).
-Wire `skillsDir`, `memory.text`, and optionally `home.file` for references.
+Wire `skills`, `memory.text`, and optionally `home.file` for references.
 
 **DevShell (option 3):**
 

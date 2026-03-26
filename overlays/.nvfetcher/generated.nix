@@ -4,8 +4,7 @@
   fetchurl,
   fetchFromGitHub,
   dockerTools,
-}:
-{
+}: {
   agnix = {
     pname = "agnix";
     version = "v0.16.5";

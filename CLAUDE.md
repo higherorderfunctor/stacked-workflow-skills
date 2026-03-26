@@ -1,9 +1,9 @@
 # CLAUDE.md
 
-Claude Code-specific instructions for this repository. `AGENTS.md` contains
-project conventions, build commands, coding standards, and flake structure.
-This file adds Claude Code-specific routing and skill configuration.
-When instructions conflict, this file takes precedence over `AGENTS.md`.
+@AGENTS.md
+
+Claude Code-specific routing and skill configuration. When instructions
+conflict, this file takes precedence over `AGENTS.md`.
 
 <!-- Generated from lib/routing-data.nix via `nix eval --raw .#lib.mkClaudeRouting` — keep in sync -->
 

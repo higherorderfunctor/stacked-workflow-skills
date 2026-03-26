@@ -3,7 +3,6 @@
   # Apply the unused first arg so local overlays can be composed
   import' = path: import path {};
   localOverlays = [
-    ./agnix.nix
     ./git-absorb.nix
     ./git-branchless.nix
     ./git-revise.nix

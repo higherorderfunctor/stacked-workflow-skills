@@ -135,7 +135,7 @@ stacked-workflows = {
 | Method | Best for | Details |
 |--------|----------|---------|
 | **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `stacked-workflows.enable = true` |
-| **Nix (programs.claude-code)** | Direct Claude Code config | `skillsDir` + `memory.text` |
+| **Nix (programs.claude-code)** | Direct Claude Code config | `skills` + `memory.text` |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
 | **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
 | **Agentic** | AI tool self-installs | Interactive flow in `INSTALL.md` |
