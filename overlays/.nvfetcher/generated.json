@@ -1,4 +1,25 @@
 {
+    "agnix": {
+        "cargoLock": null,
+        "date": null,
+        "extract": null,
+        "name": "agnix",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "agent-sh",
+            "repo": "agnix",
+            "rev": "v0.16.5",
+            "sha256": "sha256-VUd+i1vogfLMkoJ/hzYR6besxlnKWSyH4LBYPfs1h0o=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v0.16.5"
+    },
     "git-absorb": {
         "cargoLock": null,
         "date": null,

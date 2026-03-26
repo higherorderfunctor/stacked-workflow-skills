@@ -4,7 +4,19 @@
   fetchurl,
   fetchFromGitHub,
   dockerTools,
-}: {
+}:
+{
+  agnix = {
+    pname = "agnix";
+    version = "v0.16.5";
+    src = fetchFromGitHub {
+      owner = "agent-sh";
+      repo = "agnix";
+      rev = "v0.16.5";
+      fetchSubmodules = false;
+      sha256 = "sha256-VUd+i1vogfLMkoJ/hzYR6besxlnKWSyH4LBYPfs1h0o=";
+    };
+  };
   git-absorb = {
     pname = "git-absorb";
     version = "0.9.0";
