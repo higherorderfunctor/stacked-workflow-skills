@@ -123,9 +123,9 @@ programs.git.settings =
 Or use the home-manager module which applies settings at `mkDefault` priority:
 
 ```nix
-programs.stacked-workflow-skills = {
+stacked-workflows = {
   enable = true;
-  git = "full"; # or "minimal"
+  gitPreset = "full"; # or "minimal"
 };
 ```
 
@@ -134,7 +134,7 @@ programs.stacked-workflow-skills = {
 <!-- dprint-ignore -->
 | Method | Best for | Details |
 |--------|----------|---------|
-| **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `programs.stacked-workflow-skills.enable = true` |
+| **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `stacked-workflows.enable = true` |
 | **Nix (programs.claude-code)** | Direct Claude Code config | `skillsDir` + `memory.text` |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
 | **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
