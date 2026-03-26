@@ -95,6 +95,17 @@ in {
             stacked-workflows.gitPreset = "none".
           '';
         }
+        {
+          assertion =
+            !(cfg.integrations.claude.enable && !claudeAvailable);
+          message = ''
+            stacked-workflows.integrations.claude.enable requires
+            programs.claude-code to be imported and enabled.
+
+            Either enable programs.claude-code.enable = true or disable
+            the integration: stacked-workflows.integrations.claude.enable = false;
+          '';
+        }
       ];
     }
 

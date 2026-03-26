@@ -55,7 +55,8 @@
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [self.overlays.default];
+        # default overlay for consumer packages + agnix (dev-only, not in default overlay)
+        overlays = [self.overlays.default (import' ./overlays/agnix.nix)];
       };
     in {
       default = pkgs.mkShellNoCC {

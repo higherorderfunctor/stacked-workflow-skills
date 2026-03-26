@@ -69,4 +69,5 @@ libgit
 partialclone
 pasteable
 revertibility
+upvotes
 zdiff
