@@ -99,7 +99,7 @@ YAML frontmatter.
 
 ## Nix: Home-Manager Module
 
-The module provides a single `programs.stacked-workflow-skills` option that
+The module provides a single `stacked-workflows` option that
 configures git settings, Claude Code, Kiro, and Copilot integration. This is
 for global/per-user setup only — per-project install should use a devShell or
 manual symlinks.
@@ -117,12 +117,15 @@ Add the flake input and import the module:
 # In your home-manager config:
 imports = [ inputs.stacked-workflow-skills.homeManagerModules.default ];
 
-programs.stacked-workflow-skills = {
+stacked-workflows = {
   enable = true;
-  git = "full"; # "full" | "minimal" | "none"
-  # claude.enable auto-detected from programs.claude-code.enable
-  # kiro.enable = true;   # places files in ~/.kiro/
-  # copilot.enable = true; # places files in ~/.copilot/
+  gitPreset = "full"; # "full" | "minimal" | "none"
+
+  integrations = {
+    claude.enable = true;  # requires programs.claude-code.enable = true
+    # kiro.enable = true;   # places files in ~/.kiro/
+    # copilot.enable = true; # places files in ~/.copilot/
+  };
 };
 ```
 
@@ -131,33 +134,78 @@ programs.stacked-workflow-skills = {
 <!-- dprint-ignore -->
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `programs.stacked-workflow-skills.enable` | bool | `false` | Enable skill installation |
-| `programs.stacked-workflow-skills.git` | enum | `"none"` | Git config preset (`"full"`, `"minimal"`, `"none"`) — sets `programs.git.settings` at `mkDefault` priority |
-| `programs.stacked-workflow-skills.claude.enable` | bool | auto | Claude Code integration (auto-detected from `programs.claude-code.enable`) |
-| `programs.stacked-workflow-skills.copilot.enable` | bool | `false` | Copilot CLI (`gh copilot`) — places skills + instructions in `~/.copilot/` |
-| `programs.stacked-workflow-skills.kiro.enable` | bool | `false` | Kiro — places skills + steering in `~/.kiro/` |
+| `stacked-workflows.enable` | bool | `false` | Enable the module |
+| `stacked-workflows.gitPreset` | enum | `"none"` | Git config preset (`"full"`, `"minimal"`, `"none"`) — sets `programs.git.settings` at `mkDefault` priority |
+| `stacked-workflows.integrations.claude.enable` | bool | `false` | Claude Code — sets skillsDir, routing, references |
+| `stacked-workflows.integrations.copilot.enable` | bool | `false` | Copilot CLI (`gh copilot`) — places skills + instructions in `~/.copilot/` |
+| `stacked-workflows.integrations.kiro.enable` | bool | `false` | Kiro — places skills + steering in `~/.kiro/` |
+
+### Packages
+
+The module configures git settings and skill routing but does **not** add
+`git-absorb`, `git-branchless`, or `git-revise` to `home.packages`. The
+overlay makes version-tracked builds available in nixpkgs — you still need
+to include them in your packages list:
+
+```nix
+home.packages = with pkgs; [git-absorb git-branchless git-revise];
+```
+
+### Known conflicts
+
+<!-- dprint-ignore -->
+| Your setting | Module setting | Problem | Fix |
+|-------------|---------------|---------|-----|
+| `pull.ff = "only"` | `pull.rebase = true` | `pull.ff` wins since Git 2.34, breaking `git pull` | Remove `pull.ff` from your config |
+| `home.file.".claude/references"` | same path | Conflicting `home.file` definitions | Set `integrations.claude.enable = false` and manage references separately |
+
+The module asserts against `pull.ff` at evaluation time — you'll get a clear
+error message if it's set.
 
 ### What each option does
 
-**`git = "minimal"`** — sets `programs.git.settings` with required + strongly
-recommended settings (branchless main branch, absorb config, merge/pull/rebase
-defaults, rerere). All values at `mkDefault` priority so your overrides win.
+**`gitPreset = "minimal"`** — sets `programs.git.settings` with required +
+strongly recommended settings (branchless main branch, absorb config,
+merge/pull/rebase defaults, rerere). All values at `mkDefault` priority so
+your overrides win.
 
-**`git = "full"`** — adds recommended settings on top of minimal (branchless
-smartlog/test/navigation, revise autoSquash, histogram diff, fetch pruning,
-push defaults).
+**`gitPreset = "full"`** — adds recommended settings on top of minimal
+(branchless smartlog/test/navigation, revise autoSquash, histogram diff,
+fetch pruning, push defaults).
 
-**`claude.enable`** — sets `programs.claude-code.skillsDir`, appends routing
-table to `programs.claude-code.memory.text`, symlinks `references/` to
-`~/.claude/references/`.
+**`integrations.claude.enable`** — requires `programs.claude-code.enable =
+true`. Sets `programs.claude-code.skillsDir`, appends routing table to
+`programs.claude-code.memory.text`, symlinks `references/` to
+`~/.claude/references/`. Note: if you already manage `~/.claude/references`
+via `home.file` (e.g., outOfStoreSymlinks), don't enable this — it will
+conflict. Use the [direct](#nix-programsclaude-code-direct) method instead.
 
-**`kiro.enable`** — symlinks skills to `~/.kiro/skills/`, places routing
-steering file at `~/.kiro/steering/stacked-workflow.md`.
+**`integrations.kiro.enable`** — symlinks skills to `~/.kiro/skills/`,
+places routing steering file at `~/.kiro/steering/stacked-workflow.md`.
 
-**`copilot.enable`** — Copilot CLI only (`gh copilot`). Symlinks skills to
-`~/.copilot/skills/`, places routing instructions at
-`~/.copilot/copilot-instructions.md`. Editor-specific Copilot config (VS Code,
-JetBrains, etc.) is out of scope — use per-project install for those.
+**`integrations.copilot.enable`** — Copilot CLI only (`gh copilot`).
+Symlinks skills to `~/.copilot/skills/`, places routing instructions at
+`~/.copilot/copilot-instructions.md`. Editor-specific Copilot config
+(VS Code, JetBrains, etc.) is out of scope — use per-project install.
+
+### Migrating from manual symlinks
+
+If you previously used `outOfStoreSymlinks` or `ln -sfn` to manage
+`~/.claude/skills` and `~/.claude/references`, you must clean up before
+activating the module:
+
+```bash
+rm -f ~/.claude/skills ~/.claude/references
+```
+
+Home-manager won't remove symlinks it didn't create. Stale symlinks can
+cause the new store paths to write through into the repo directory. After
+removing them, run `home-manager switch` (or `nixos-rebuild switch`) to
+let the module create the correct entries.
+
+The module uses `programs.claude-code.skills` (per-skill attrset) and
+individual `home.file` entries for references, so your personal skills
+and references from other modules coexist without conflicts.
 
 ## Nix: programs.claude-code (Direct)
 
@@ -267,9 +315,23 @@ Check the project and report what you find:
 - [ ] stacked-workflow-skills already in flake inputs
 - [ ] skills already installed (check for stack-fix, stack-plan, etc.)
 - [ ] routing table already in instruction file
+- [ ] ~/.claude/ managed by existing home.file or outOfStoreSymlinks
 ```
 
 Tell the user what you found and what's missing.
+
+**If `~/.claude/` is already managed** (e.g., via `home.file` or
+`outOfStoreSymlinks`), warn the user before Step 4:
+
+> Your `~/.claude/` directory is already managed by your home-manager
+> config. Enabling `integrations.claude` will conflict with existing
+> `home.file.".claude/references"` definitions. You have two options:
+>
+> 1. Skip the claude integration (`integrations.claude.enable` stays
+>    `false`) and wire `programs.claude-code.skillsDir` + `memory.text`
+>    manually (see [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct))
+> 2. Remove your existing `~/.claude/references` management and let the
+>    module handle it via `integrations.claude.enable = true`
 
 #### Step 2: Add flake input (Nix projects only)
 
@@ -293,7 +355,7 @@ Ask the user:
 
 > How would you like to install the skills?
 >
-> 1. **Home-manager module** — `programs.stacked-workflow-skills.enable = true`
+> 1. **Home-manager module** — `stacked-workflows.enable = true`
 >    (best for personal machine setup, configures git + ecosystems declaratively)
 > 2. **programs.claude-code** — direct skillsDir + memory.text
 >    (if you already configure Claude Code via HM and want manual control)
@@ -312,17 +374,16 @@ For non-Nix projects, skip to step 5.
 imports = [ inputs.stacked-workflow-skills.homeManagerModules.default ];
 
 # Configure:
-programs.stacked-workflow-skills = {
+stacked-workflows = {
   enable = true;
-  git = "full"; # "full" | "minimal" | "none" — ask the user
+  gitPreset = "full"; # "full" | "minimal" | "none" — ask the user
 };
 ```
 
-Ask the user which ecosystems to enable. `claude.enable` auto-detects from
-`programs.claude-code.enable`. Kiro and Copilot must be explicitly enabled:
+Ask the user which ecosystems to enable. All must be explicitly enabled:
 
 > Which AI tools do you use?
-> - Claude Code (auto-detected if programs.claude-code.enable is true)
+> - Claude Code (requires programs.claude-code.enable = true)
 > - Kiro (places files in ~/.kiro/)
 > - Copilot CLI (places files in ~/.copilot/)
 
