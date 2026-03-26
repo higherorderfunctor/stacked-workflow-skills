@@ -1,0 +1,15 @@
+# agnix configuration for stacked-workflow-skills
+# See: https://github.com/agent-sh/agnix
+
+[targets]
+claude-code = true
+copilot = true
+kiro = true
+
+[rules]
+# Suppress false positives:
+# - XML-001: angle brackets in git placeholder syntax (<hash>, <commit>, etc.)
+# - AS-014: shell quoting in code blocks mistaken for Windows paths
+# - XP-003: hard-coded paths are intentional in install/reference docs
+# - CC-MEM-008: MANDATORY keyword placement is deliberate
+disabled_rules = ["XML-001", "AS-014", "XP-003", "CC-MEM-008", "PE-001"]

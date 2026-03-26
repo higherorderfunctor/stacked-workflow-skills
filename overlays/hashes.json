@@ -1,4 +1,7 @@
 {
+  "agnix": {
+    "cargoHash": "sha256-amLDxWS4kIMeMsgAlhqECuixXd8xuYLVCzi3K9mEg1M="
+  },
   "git-absorb": {
     "cargoHash": "sha256-8uCXk5bXn/x4QXbGOROGlWYMSqIv+/7dBGZKbYkLfF4="
   },

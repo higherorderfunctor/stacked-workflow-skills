@@ -59,9 +59,11 @@ mktemp
 # General terms
 agentskills
 agentic
+agnix
 dedup
 derefs
 frontloaded
+intellectronica
 kiro
 libgit
 partialclone

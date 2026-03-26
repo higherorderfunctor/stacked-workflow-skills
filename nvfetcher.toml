@@ -1,3 +1,7 @@
+[agnix]
+src.github = "agent-sh/agnix"
+fetch.github = "agent-sh/agnix"
+
 [git-absorb]
 src.github = "tummychow/git-absorb"
 fetch.github = "tummychow/git-absorb"

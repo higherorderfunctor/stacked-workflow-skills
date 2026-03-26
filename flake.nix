@@ -62,6 +62,9 @@
         packages =
           builtins.attrValues self.packages.${system}
           ++ [
+            # Agent config linting
+            pkgs.agnix
+
             # Formatting
             pkgs.alejandra
             pkgs.dprint
