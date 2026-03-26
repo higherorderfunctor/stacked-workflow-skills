@@ -1,6 +1,8 @@
 ---
 name: index-repo-docs
-description: Fetch and distill a repo's wiki, docs, and issues into a focused reference doc
+description: >-
+  Use when you need to create or update a reference doc from a repo's wiki,
+  docs, and issues. Fetches and distills into a focused reference.
 argument-hint: "<name-or-url|all> (e.g. git-branchless, git-absorb, all)"
 disable-model-invocation: true
 ---
