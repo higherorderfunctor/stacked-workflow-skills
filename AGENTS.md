@@ -45,13 +45,16 @@ agnix .              # Lint AI agent config files
 
 ## Flake Structure
 
-- **.generated/** — pre-generated routing files for Claude, Kiro, Copilot (CI-maintained)
+- **.generated/** — pre-generated routing files for Claude, Kiro, Copilot
+- **.ruler/** — source of truth for routing rules (modular markdown files)
+- **CONTRIBUTING.md** — development setup and workflow
 - **dev/** — dev-only skills (repo-review, index-repo-docs)
 - **docs/decisions/** — MADR-style architecture decision records with confidence scoring
 - **flake.nix** — nixpkgs + nvfetcher + rust-overlay inputs, overlays, packages, devShell, lib, homeManagerModules
 - **home-manager/** — home-manager module for declarative per-user installation
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — canonical reference docs (symlinked into each skill's `references/`)
+- **scripts/** — `generate.sh` produces routing files from `.ruler/` source
 - **skills/** — SKILL.md files with per-skill `references/` subdirectories
 
 ## Coding Standards
@@ -76,6 +79,30 @@ headers for readability, sort entries within each group.
 Never duplicate logic, configuration, or patterns. When the same thing appears
 twice, extract it. Skills reference shared docs in `references/` rather than
 duplicating content.
+
+## Development
+
+See `CONTRIBUTING.md` for devShell setup, global package alternatives, and
+the routing file generation pipeline.
+
+### Tool Reference Maintenance
+
+Reference docs for dev tools live in `references/`. When tools are upgraded
+(via nvfetcher) or their configuration changes, update the corresponding
+reference doc. Use `/index-repo-docs <tool>` to refresh from upstream, then
+curate the output.
+
+| Doc | Covers |
+|-----|--------|
+| `references/agnix.md` | agnix CLI, `.agnix.toml` config, rule categories |
+| `references/nix-workflow.md` | Nix conventions, devShell, packaging patterns |
+| `references/ruler.md` | Ruler CLI, `.ruler/` source format, profiles |
+
+### Nix Workflow
+
+Nix flakes only see tracked files. Always `git add` new files before running
+`nix build`, `nix develop`, `nix flake check`, or `nix eval`. See
+`references/nix-workflow.md` for full conventions.
 
 ## Continuous Improvement
 
