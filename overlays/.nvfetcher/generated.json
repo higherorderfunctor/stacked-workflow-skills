@@ -82,5 +82,26 @@
             "type": "github"
         },
         "version": "v0.8.0"
+    },
+    "ruler": {
+        "cargoLock": null,
+        "date": "2026-03-11",
+        "extract": null,
+        "name": "ruler",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "intellectronica",
+            "repo": "ruler",
+            "rev": "49985d8eda2a5b50466df641d2ff3a556d6a2349",
+            "sha256": "sha256-aiCxeL6/k72G5lahxQ+AmQbW4eAJOS7URcA1u5c0QTQ=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "49985d8eda2a5b50466df641d2ff3a556d6a2349"
     }
 }

@@ -10,9 +10,14 @@ fetch.github = "tummychow/git-absorb"
 src.github = "arxanas/git-branchless"
 fetch.github = "arxanas/git-branchless"
 
+[ruler]
+src.git = "https://github.com/intellectronica/ruler.git"
+src.branch = "main"
+fetch.github = "intellectronica/ruler"
+
+[git-revise]
 # Track version from PyPI, fetch source from GitHub (includes tests).
 # from_pattern/to_pattern adds "v" prefix: PyPI "0.8.0" → GitHub tag "v0.8.0"
-[git-revise]
 src.pypi = "git-revise"
 src.from_pattern = "^(.*)$"
 src.to_pattern = "v\\1"
