@@ -6,7 +6,7 @@ description: >-
   philosophy audit, and violation flags. Output feeds directly into /stack-plan
   restructure mode. Use INSTEAD of manual git log inspection.
 argument-hint: "<range | --root | (none for stack())>"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 

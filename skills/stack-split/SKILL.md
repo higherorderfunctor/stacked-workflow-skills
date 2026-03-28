@@ -6,7 +6,7 @@ description: >-
   git reset HEAD^. Prevents: non-working intermediate commits, wrong split
   ordering, missed downstream restack.
 argument-hint: "[commit]"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 
