@@ -27,33 +27,42 @@ All claims verified against upstream repos on 2026-03-28.
 - LSP is deferred entirely — no consumer in vibe-coding workflow (no human
   editor to show squiggly lines). MCP bridge is the path when needed.
 
-### Phase 1: pre-commit hook (start here)
+### Phase 1: pre-commit hook — DONE
 
-agnix ships `.pre-commit-hooks.yaml` with ready-made hooks:
-- `agnix` — runs `agnix --strict .`
-- `agnix-fix` — runs `agnix --fix .`
+Implemented as `scripts/pre-commit` (standalone shell script, no Python
+`pre-commit` framework). Two checks:
+1. agnix `--strict .` when agent config files are staged
+2. Generated file freshness when `.ruler/` files are staged (also solves
+   generation trigger automation)
 
-Both match on SKILL.md, CLAUDE.md, AGENTS.md, `.claude/` settings,
-`.mcp.json`, copilot-instructions.md, Cursor rules.
+Install: `ln -sfn ../../scripts/pre-commit .git/hooks/pre-commit`
 
-- [ ] Add `.pre-commit-config.yaml` using agnix's shipped hooks. Needs
-  `pre-commit` in devShell (or use Nix-native git hooks via
-  `git config core.hooksPath`).
-- [ ] Decide: use `pre-commit` framework (Python, extra dep) or write
-  a standalone `.git/hooks/pre-commit` shell script that runs
-  `agnix --strict .` directly. The shell script is simpler and avoids
-  the Python dependency. agnix is already in the devShell.
-- [ ] Consider: should the hook also run `scripts/generate.sh` freshness
-  check? This would solve the generation trigger automation TODO too.
-  Could diff `.generated/` before/after running generate.sh and fail if
-  stale.
+### Phase 2: nix flake check — DONE
 
-### Phase 2: nix flake check
+Added `checks.agent-configs` to flake.nix. Uses `pkgsWithAgnix` (imports
+nixpkgs with rust-overlay + agnix overlay) since agnix isn't in nixpkgs.
 
-- [ ] Add `agnix --strict .` as a `nix flake check` derivation. Requires
-  agnix in the check's `nativeBuildInputs` — use the existing overlay
-  (`import' ./overlays/agnix.nix`) in the checks `pkgs`.
 - [ ] Evaluate adding agnix to CI workflow alongside structural check.
+
+### Phase 3: AGENTS.md instruction — TODO
+
+- [ ] Add instruction to AGENTS.md: "After creating or modifying any
+  SKILL.md, AGENTS.md, CLAUDE.md, or MCP config, validate with agnix."
+
+### Phase 4: agnix MCP server — DONE
+
+agnix overlay now builds all binary crates (agnix, agnix-lsp, agnix-mcp)
+as a single derivation. `getExe` returns `agnix`, `getExe'` can pick
+`agnix-mcp` or `agnix-lsp`.
+
+MCP server configured in `.mcp.json` for Claude Code. Exposes 4 tools:
+- `validate_file` — validate a single agent config file
+- `validate_project` — validate all agent configs in a directory
+- `get_rules` — list all 385 validation rules
+- `get_rule_docs` — look up docs for a specific rule by ID
+
+Requires devShell (`agnix-mcp` must be on PATH). Kiro/Copilot MCP
+configs deferred.
 
 ### Phase 3: CLAUDE.md / AGENTS.md instruction
 
