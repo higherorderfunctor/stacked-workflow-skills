@@ -2,10 +2,10 @@
 applyTo: "**"
 ---
 
-# Stacked Workflow Skill Routing
+## Skill Routing — MANDATORY
 
-When working with stacked commits, invoke the appropriate skill instead of
-running git commands directly.
+When the user is working with stacked commits, use the appropriate skill
+instead of running commands manually via Bash.
 
 | Operation | Skill | Use INSTEAD of |
 |-----------|-------|----------------|
@@ -19,5 +19,7 @@ running git commands directly.
 | Split a large commit | `/stack-split` | `git rebase -i` + edit, `git reset HEAD^` |
 | Test across stack | `/stack-test` | Manual `git test run` or looping `git checkout` + test |
 
-**Always check if a skill covers the operation before running raw
-git-branchless, git-absorb, or git-revise commands.**
+**RULE: Before running any git-branchless, git-absorb, or git-revise command
+via Bash, check if a skill covers the operation.** Skills include pre-flight
+checks, dry-run previews, conflict guidance, and post-operation verification
+that manual commands miss.
