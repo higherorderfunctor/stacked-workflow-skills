@@ -12,14 +12,13 @@ Every method installs the **`skills/`** directory, which contains:
 - **`references/`** subdirectories with symlinks to the relevant reference
   docs for each skill's dependencies
 
-Plus a **routing table** in your AI tool's instruction file. Skills use
-`disable-model-invocation: true` — without routing rules, the model won't
-invoke them.
+Plus a **routing table** in your AI tool's instruction file. The routing
+table reinforces when to invoke each skill.
 
 ## Routing
 
-The routing table is generated from a single source of truth
-(`lib/routing-data.nix`) and available in three formats:
+The routing table is maintained in `.ruler/routing.md` and generated into
+per-ecosystem formats by `scripts/generate.sh`:
 
 <!-- dprint-ignore -->
 | Platform | Pre-generated file | Instruction file |
@@ -31,12 +30,13 @@ The routing table is generated from a single source of truth
 ### Using pre-generated files (no Nix required)
 
 Append the contents of the appropriate file from `.generated/` into your
-project's instruction file. These are checked into the repo and kept up to
-date by CI.
+project's instruction file. These are checked into the repo and kept in
+sync by CI.
 
-### Using Nix generators
+### Using Nix lib (pass-through)
 
-All generators return strings. Evaluate directly:
+The Nix lib functions read from `.generated/` and return strings. Useful
+for wiring into home-manager or other Nix expressions:
 
 ```bash
 nix eval --raw github:higherorderfunctor/stacked-workflow-skills#lib.mkClaudeRouting
