@@ -99,6 +99,14 @@
             -exec cspell lint --no-progress --no-color --root ${self} {} +
           touch $out
         '';
+
+      structural =
+        pkgs.runCommand "check-structural" {
+          nativeBuildInputs = [pkgs.bash pkgs.diffutils pkgs.gnugrep pkgs.gnused pkgs.coreutils];
+        } ''
+          bash ${self}/scripts/test-structural.sh
+          touch $out
+        '';
     });
 
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
