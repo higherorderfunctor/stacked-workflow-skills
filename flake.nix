@@ -81,7 +81,20 @@
 
     checks = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
+      pkgsWithAgnix = import nixpkgs {
+        inherit system;
+        overlays = [rustOverlay (import' ./overlays/agnix.nix)];
+      };
     in {
+      agent-configs =
+        pkgs.runCommand "check-agent-configs" {
+          nativeBuildInputs = [pkgsWithAgnix.agnix];
+        } ''
+          cd ${self}
+          agnix --strict .
+          touch $out
+        '';
+
       formatting =
         pkgs.runCommand "check-formatting" {
           nativeBuildInputs = [pkgs.alejandra];

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euETo pipefail
+shopt -s inherit_errexit 2>/dev/null || :
+
+# Pre-commit hook: validates agent configs and generated file freshness.
+#
+# Install: ln -sfn ../../scripts/pre-commit .git/hooks/pre-commit
+# Or:      git config core.hooksPath scripts
+
+# -- agnix lint ---------------------------------------------------------------
+
+# Only run if agent config files are staged
+AGENT_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|json|toml)$' | grep -E '(SKILL|CLAUDE|AGENTS|settings|\.agnix|copilot-instructions|\.mcp)' || true)
+
+if [[ -n "${AGENT_FILES}" ]]; then
+  if command -v agnix &>/dev/null; then
+    echo "pre-commit: running agnix..."
+    agnix --strict . || {
+      echo "pre-commit: agnix validation failed. Fix errors before committing."
+      exit 1
+    }
+  else
+    echo "pre-commit: agnix not found (run 'nix develop' to get it). Skipping lint."
+  fi
+fi
+
+# -- generated file freshness ------------------------------------------------
+
+# Only check if .ruler/ files are staged
+RULER_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^\.ruler/' || true)
+
+if [[ -n "${RULER_FILES}" ]]; then
+  echo "pre-commit: checking generated file freshness..."
+
+  tmpdir=$(mktemp -d)
+  trap 'rm -rf "${tmpdir}"' EXIT
+
+  # Save current generated files
+  for f in .generated/claude-routing.md .generated/kiro-routing.md .generated/copilot-routing.md \
+           .kiro/steering/stacked-workflow.md .github/instructions/stacked-workflow.instructions.md; do
+    if [[ -f "${f}" ]]; then
+      mkdir -p "${tmpdir}/$(dirname "${f}")"
+      cp "${f}" "${tmpdir}/${f}"
+    fi
+  done
+
+  # Regenerate
+  bash scripts/generate.sh >/dev/null 2>&1
+
+  # Compare
+  stale=0
+  for f in .generated/claude-routing.md .generated/kiro-routing.md .generated/copilot-routing.md \
+           .kiro/steering/stacked-workflow.md .github/instructions/stacked-workflow.instructions.md; do
+    if [[ -f "${f}" ]] && ! diff -q "${tmpdir}/${f}" "${f}" &>/dev/null; then
+      echo "pre-commit: ${f} is stale — stage the regenerated version."
+      stale=1
+    fi
+  done
+
+  if [[ ${stale} -eq 1 ]]; then
+    echo "pre-commit: run 'scripts/generate.sh' and stage the updated files."
+    exit 1
+  fi
+fi
