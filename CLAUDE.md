@@ -7,6 +7,13 @@ conflict, this file takes precedence over `AGENTS.md`.
 
 <!-- Generated from lib/routing-data.nix via `nix eval --raw .#lib.mkClaudeRouting` — keep in sync -->
 
+## Local Skill Priority
+
+This repo's `.claude/skills/` contains `sws-*` prefixed skills that point to
+the local working copies. When both a global skill (e.g., `/stack-fix`) and a
+local variant (e.g., `/sws-stack-fix`) are available, **always use the `sws-*`
+variant** so that edits to skills in this repo take effect immediately.
+
 ## Skill Routing — MANDATORY
 
 When the user is working with stacked commits, use the appropriate skill
