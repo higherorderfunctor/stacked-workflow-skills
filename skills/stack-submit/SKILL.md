@@ -6,7 +6,7 @@ description: >-
   + PR/MR creation. Handles branch creation, stacked PR/MR creation with
   correct base branches, and sentinel commit exclusion.
 argument-hint: "[revset]"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 

@@ -4,7 +4,7 @@ description: >-
   Use when you need to create or update a reference doc from a repo's wiki,
   docs, and issues. Fetches and distills into a focused reference.
 argument-hint: "<name-or-url|all> (e.g. git-branchless, git-absorb, all)"
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 Fetch documentation from a repository and distill it into a practical reference

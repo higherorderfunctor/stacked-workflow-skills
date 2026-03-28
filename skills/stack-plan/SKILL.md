@@ -7,7 +7,7 @@ description: >-
   git reset --soft, or ad-hoc git move sequences. Prevents: wrong commit
   ordering, forward references, git move -F panics, untested intermediates.
 argument-hint: "<plan | range | (none for working tree)>"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 

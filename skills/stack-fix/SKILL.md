@@ -7,7 +7,7 @@ description: >-
   leftover staged changes going unnoticed, forgetting to restack. Falls back
   to guided manual amend when absorb cannot route hunks.
 argument-hint: "[--dry-run]"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless and git-absorb"
 ---
 
