@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "lib/routing-*.nix"
+      - ".ruler/**"
   workflow_dispatch:
 
 concurrency:
@@ -27,11 +27,7 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
 
       - name: Generate routing files
-        run: |
-          mkdir -p .generated
-          nix eval --raw .#lib.mkClaudeRouting > .generated/claude-routing.md
-          nix eval --raw .#lib.mkKiroSteering > .generated/kiro-routing.md
-          nix eval --raw .#lib.mkCopilotInstructions > .generated/copilot-routing.md
+        run: nix develop --command bash scripts/generate.sh
 
       - name: Check for changes
         id: changes
@@ -50,8 +46,8 @@ jobs:
           commit-message: "chore(ci): regenerate routing files"
           title: "chore(ci): regenerate routing files"
           body: |
-            Automated regeneration of `.generated/` routing files from
-            `lib/routing-data.nix`.
+            Automated regeneration of routing files from `.ruler/` source
+            via `scripts/generate.sh`.
 
             Review the diffs to verify routing table accuracy.
           labels: automated
