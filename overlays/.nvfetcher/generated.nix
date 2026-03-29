@@ -49,4 +49,16 @@
       sha256 = "sha256-OdkhYEq30RtDOeCQWl/L9FMgCttznzihbYgT8B6KYuY=";
     };
   };
+  ruler = {
+    pname = "ruler";
+    version = "49985d8eda2a5b50466df641d2ff3a556d6a2349";
+    src = fetchFromGitHub {
+      owner = "intellectronica";
+      repo = "ruler";
+      rev = "49985d8eda2a5b50466df641d2ff3a556d6a2349";
+      fetchSubmodules = false;
+      sha256 = "sha256-aiCxeL6/k72G5lahxQ+AmQbW4eAJOS7URcA1u5c0QTQ=";
+    };
+    date = "2026-03-11";
+  };
 }
