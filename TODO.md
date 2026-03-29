@@ -326,6 +326,78 @@ Things to explore:
       to handle large stacks? (submit first batch, keep working, submit
       next batch after merges)
 
+## Copilot review feedback (PRs #69–#87)
+
+37 inline comments triaged. Full triage in memory file
+`project_copilot_review_triage.md`. Summary:
+
+- **~10 stacked-PR artifacts** — Copilot flagging inconsistencies that are
+  resolved by later PRs in the stack. Dismiss by resolving threads.
+- **~18 real bugs** — actual issues to fix via `/sws-stack-fix`
+- **~5 low-priority suggestions** — consider later
+
+### Real bugs to absorb into stack (grouped by target commit)
+
+PR #72 (feat/ruler-source):
+
+- [ ] Add `<!-- dprint-ignore -->` before routing table in `.ruler/routing.md`
+- [ ] Add `<!-- dprint-ignore -->` before table in `.ruler/dev-skills.md`
+
+PR #73 (build/generate-sh):
+
+- [ ] Fix generate.sh:54 comment — says "sorted" but files are hardcoded
+
+PR #76 (feat/copilot-skills-ci):
+
+- [ ] Add `scripts/generate.sh` to CI workflow trigger paths
+
+PR #79 (docs/ref-agnix):
+
+- [ ] Fix double `||` pipe in table syntax (lines 53, 68)
+- [ ] Add PE-001 suppression comment to `.agnix.toml` documentation
+
+PR #80 (docs/ref-nix-workflow):
+
+- [ ] Fix "stage modified files" → only untracked need staging
+- [ ] Fix alejandra check to note .nvfetcher exclusion
+- [ ] Fix `.nvfetcher/` → `overlays/.nvfetcher/` path
+
+PR #81 (docs/ref-ruler):
+
+- [ ] Remove .ruler/AGENTS.md from directory tree (doesn't exist)
+
+PR #83 (docs/adr-0003):
+
+- [ ] Consider creating ADR 0004 for superseding decision per review-policy
+
+PR #84 (docs/install-stale-fixes):
+
+- [ ] Clarify "append contents" wording for Copilot (file includes frontmatter)
+
+PR #85 (docs/migration-assessment):
+
+- [ ] Add "kirodotdev" to .cspell/project-terms.txt
+
+PR #86 (test/structural-validation):
+
+- [ ] Remove unused `routing_body` variable in test-structural.sh
+- [ ] Remove unused `diffutils` from flake.nix structural check
+
+PR #87 (test/smoke-discovery):
+
+- [ ] Treat empty tool output as failure
+- [ ] Use `grep -F` instead of `grep -q` for literal matching
+- [ ] Capture stderr for debugging (don't discard with 2>/dev/null)
+
+### Stacked-PR artifact threads to dismiss
+
+- PR #69: 1 thread (rename confusion)
+- PR #70: 7 threads (ADR 0003 — updated in PR #83)
+- PR #73: 2 threads (lib/routing still used — retired in PR #74)
+- PR #74: 2 threads (docs still reference old pipeline — fixed in #82/#84)
+- PR #78: 1 thread (reference files — added in #79-#81)
+- PR #82: 1 thread (agnix.md CDX-AG-005 — stale cross-ref)
+
 ## Deferred: generation trigger automation
 
 The ruler migration replaced Nix-computed routing (on-demand via `nix eval`)
