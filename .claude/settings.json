@@ -1,4 +1,19 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; case \"${f##*/}\" in CLAUDE.md|AGENTS.md|SKILL.md|.agnix.toml) ;; *) exit 0;; esac; output=$(nix develop --command agnix --strict . 2>&1); rc=$?; if [ $rc -ne 0 ]; then jq -n --arg ctx \"agnix --strict found issues after editing $f:\\n$output\" '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":$ctx}}'; fi; }",
+            "timeout": 120,
+            "statusMessage": "Linting agent configs..."
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(git absorb*)",
