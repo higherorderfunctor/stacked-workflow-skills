@@ -37,11 +37,21 @@ Keep descriptions lowercase, imperative mood, no trailing period.
 nix develop          # Enter devShell (git-branchless, git-absorb, git-revise)
 nix fmt              # Format all Nix files with alejandra
 nix flake check      # Validate flake, formatting, and spelling
-agnix .              # Lint AI agent config files
+agnix --strict .     # Lint AI agent config files
 ```
 
 **Note:** `nix flake check` only includes tracked files; add new files with
 `git add` before running it in a dirty git tree.
+
+### Validation
+
+After creating or modifying any SKILL.md, AGENTS.md, CLAUDE.md, `.mcp.json`,
+or `.agnix.toml`, validate with agnix before committing. The pre-commit hook
+runs `agnix --strict .` automatically on staged config files, but proactive
+validation catches issues earlier.
+
+Do not install packages globally — use tools available in the devShell. If
+something is missing, ask the user or use `npx`/`uvx`/`nix run` instead.
 
 ## Flake Structure
 
