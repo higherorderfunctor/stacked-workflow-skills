@@ -7,6 +7,7 @@ current best practices and idiomatic patterns.
 ## Focus Areas
 
 ### Flake Structure
+
 - Is the flake.nix well-organized?
 - Are inputs pinned appropriately?
 - Is `forAllSystems` usage correct?
@@ -15,6 +16,7 @@ current best practices and idiomatic patterns.
 - Does `nix flake check` pass cleanly? (warnings are findings too)
 
 ### Home-Manager Module
+
 - Is the module under `programs.*` (not `services.*`)?
 - Are option types correct? (`mkEnableOption`, `mkOption` with proper types)
 - Is `mkDefault` applied correctly via `mapAttrsRecursive`? Does it actually
@@ -26,21 +28,25 @@ current best practices and idiomatic patterns.
 - Are `home.file` paths correct and won't conflict with other modules?
 
 ### Overlay Patterns
+
 - Are overlays composable? (per-package overlays vs default)
 - Is nvfetcher integration correct?
 - Are package derivations pinned to specific versions?
 
 ### DevShell
+
 - Does the devShell include all necessary tools?
 - Are packages from the overlay used correctly?
 
 ### Nix Expression Quality
+
 - Are there unnecessary `rec` sets, `with` abuse, or other anti-patterns?
 - Is `let/in` scope minimized?
 - Are string interpolations used correctly (no unnecessary `"${toString x}"`)?
 - Is alejandra formatting applied consistently?
 
 ### Documentation Accuracy
+
 - Do Nix examples in INSTALL.md and README actually work?
 - Is `programs.git.settings` (not `extraConfig`) used consistently in docs?
 - Are flake input URLs correct?
@@ -57,6 +63,7 @@ current best practices and idiomatic patterns.
 ## Output
 
 For each finding, return:
+
 ```json
 {
   "file": "path/to/file.nix or .md",

@@ -7,12 +7,14 @@ Your job is to evaluate whether a human can go from "never heard of this" to
 ## Focus Areas
 
 ### README First Impression
+
 - Can someone understand what this project does in 30 seconds?
 - Is the value proposition clear? Why would someone use skills instead of
   just learning git-branchless directly?
 - Are prerequisites obvious before they hit errors?
 
 ### Installation Friction
+
 - Count the steps from "I want this" to "it works"
 - Are there decision points that could paralyze a new user? (too many install
   methods without clear guidance on which to pick)
@@ -20,17 +22,20 @@ Your job is to evaluate whether a human can go from "never heard of this" to
 - Are error paths documented? What happens if a prerequisite is missing?
 
 ### Routing Table Clarity
+
 - Does a human reading the routing table understand when to use each skill?
 - Is there overlap or ambiguity between skills? (e.g., when to use
   `/stack-fix` vs `/stack-plan` for restructuring)
 - Are the "Use INSTEAD of" examples helpful or confusing?
 
 ### Documentation Flow
+
 - Is there a logical reading order? README → INSTALL → ???
 - Are cross-references between docs accurate and helpful?
 - Is content duplicated unnecessarily across README, INSTALL, and CLAUDE.md?
 
 ### Naming and Terminology
+
 - Are skill names intuitive? Would someone guess `/stack-fix` for absorbing
   changes into earlier commits?
 - Is terminology consistent across all docs?
@@ -46,6 +51,7 @@ Your job is to evaluate whether a human can go from "never heard of this" to
 ## Output
 
 For each finding, return:
+
 ```json
 {
   "file": "path/to/file.md",

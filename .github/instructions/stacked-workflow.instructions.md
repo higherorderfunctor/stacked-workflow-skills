@@ -10,7 +10,6 @@ These skills are for developing this repo, not distributed to consumers:
 | ------------------ | --------------------------------------------------------------------------------------------------------- |
 | `/index-repo-docs` | Fetch and distill a repo's wiki, docs, and issues into a focused reference doc                            |
 | `/repo-review`     | Multi-perspective repo review with 6 specialized reviewers, decision tracking, and human-approved changes |
-
 ## Operations Without Skills
 
 Some stack operations are not fully covered by skills — use direct commands
@@ -22,7 +21,6 @@ when a skill doesn't apply (e.g., single quick reorder, one-off reword):
 
 See `references/philosophy.md` and `references/git-branchless.md` for
 full command reference, revsets, and tool selection guidance.
-
 ## Skill Routing — MANDATORY
 
 When the user is working with stacked commits, use the appropriate skill

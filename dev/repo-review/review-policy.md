@@ -16,6 +16,7 @@ confidence model.
 ## Change Threshold
 
 A finding becomes a **recommended change** when:
+
 - Severity is `high`, OR
 - 3+ reviewers independently flag the same issue (any severity), OR
 - A finding contradicts an accepted decision with confidence < 0.5
@@ -31,6 +32,7 @@ reflects how well-supported they are by current evidence.
 ### Initial Confidence
 
 Set by reviewer consensus at the time of the decision:
+
 - 0.9–0.95: Strong evidence, multiple sources, no viable alternatives
 - 0.7–0.85: Good evidence, clear reasoning, but alternatives exist
 - 0.5–0.65: Reasonable choice, limited evidence, could go either way
@@ -42,6 +44,7 @@ Maximum initial confidence is 0.95. Nothing is certain.
 
 Each review run, reviewers search for new evidence supporting existing
 decisions. When found:
+
 - Increment `reinforcement-count`
 - Update `last-reinforced` date
 - Adjust confidence: `min(0.95, confidence + 0.03 * (1 - confidence))`
@@ -64,6 +67,7 @@ time-based:
 ### Challenge Threshold
 
 When confidence drops below 0.5:
+
 - The decision is flagged as **weakening** in the review report
 - All reviewers are asked to re-evaluate with fresh research
 - Consensus must be reached to either:
@@ -73,6 +77,7 @@ When confidence drops below 0.5:
 ### Superseding a Decision
 
 To supersede an accepted decision:
+
 - All 6 reviewers must be consulted (even if not all have an opinion)
 - At least 4 must agree on the replacement
 - The old decision's status changes to `superseded-by: NNNN`
@@ -81,6 +86,7 @@ To supersede an accepted decision:
 ### Creating New Decisions
 
 To create a new decision:
+
 - All 6 reviewers must be consulted (even if not all have an opinion)
 - At least 4 must agree the topic warrants a decision record
 - Initial confidence is set by reviewer consensus (see § Initial Confidence)

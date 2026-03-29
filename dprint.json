@@ -2,7 +2,26 @@
   "markdown": {
     "lineWidth": 80
   },
+  "biome": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "json.indentStyle": "space",
+    "json.indentWidth": 2
+  },
+  "exec": {
+    "commands": [
+      {
+        "command": "alejandra --quiet",
+        "exts": ["nix"],
+        "stdin": true
+      }
+    ]
+  },
+  "includes": ["**/*.md", "**/*.json", "**/*.nix"],
+  "excludes": ["overlays/.nvfetcher/**", "**/*.local.json"],
   "plugins": [
-    "https://plugins.dprint.dev/markdown-0.21.1.wasm"
+    "https://plugins.dprint.dev/markdown-0.21.1.wasm",
+    "https://plugins.dprint.dev/biome-0.12.5.wasm",
+    "https://plugins.dprint.dev/exec-0.6.2.json@df98f54ffd3092b8a841aedd6d098a2651f16d0a796a40535774f1a8b4b9d463"
   ]
 }

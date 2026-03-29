@@ -104,6 +104,7 @@ Trade-off: no rename detection (use `git rebase` when renames matter).
 
 git-revise never changes the working directory or index. After any operation,
 your files are exactly as they were. This means:
+
 - Builds are never invalidated
 - Uncommitted changes are preserved
 - The operation is faster (no checkout)
@@ -136,38 +137,38 @@ git revise [<options>] [<target>]
 
 ### Modes
 
-| Mode | Description |
-|------|-------------|
-| *(default)* | Apply staged changes to `<target>` commit |
-| `-i, --interactive` | Edit todo list for commits after `<target>` |
-| `--autosquash` | Auto-fold `fixup!`/`squash!` commits |
-| `-c, --cut` | Split `<target>` by interactively selecting hunks |
-| `-e, --edit` | Edit `<target>`'s commit message |
-| `-m <msg>, --message <msg>` | Set commit message directly |
+| Mode                        | Description                                       |
+| --------------------------- | ------------------------------------------------- |
+| _(default)_                 | Apply staged changes to `<target>` commit         |
+| `-i, --interactive`         | Edit todo list for commits after `<target>`       |
+| `--autosquash`              | Auto-fold `fixup!`/`squash!` commits              |
+| `-c, --cut`                 | Split `<target>` by interactively selecting hunks |
+| `-e, --edit`                | Edit `<target>`'s commit message                  |
+| `-m <msg>, --message <msg>` | Set commit message directly                       |
 
 ### Options
 
-| Option | Description |
-|--------|-------------|
-| `-a, --all` | Stage tracked file changes before revising |
-| `-p, --patch` | Interactively stage hunks before revising |
-| `--no-index` | Ignore staged changes |
-| `--reauthor` | Reset author to current user |
-| `--ref <gitref>` | Branch to update (default: HEAD) |
-| `-S, --gpg-sign` | GPG/SSH sign commits |
-| `--no-gpg-sign` | Don't sign commits |
-| `--root` | Include root commit (with `-i` or `--autosquash`) |
+| Option           | Description                                       |
+| ---------------- | ------------------------------------------------- |
+| `-a, --all`      | Stage tracked file changes before revising        |
+| `-p, --patch`    | Interactively stage hunks before revising         |
+| `--no-index`     | Ignore staged changes                             |
+| `--reauthor`     | Reset author to current user                      |
+| `--ref <gitref>` | Branch to update (default: HEAD)                  |
+| `-S, --gpg-sign` | GPG/SSH sign commits                              |
+| `--no-gpg-sign`  | Don't sign commits                                |
+| `--root`         | Include root commit (with `-i` or `--autosquash`) |
 
 ### Interactive Commands
 
-| Command | Description |
-|---------|-------------|
-| `pick` | Use commit as-is |
+| Command  | Description                                |
+| -------- | ------------------------------------------ |
+| `pick`   | Use commit as-is                           |
 | `squash` | Merge into previous, edit combined message |
-| `fixup` | Merge into previous, discard this message |
-| `reword` | Edit commit message |
-| `cut` | Interactively split into two commits |
-| `index` | Leave changes staged (must be last) |
+| `fixup`  | Merge into previous, discard this message  |
+| `reword` | Edit commit message                        |
+| `cut`    | Interactively split into two commits       |
+| `index`  | Leave changes staged (must be last)        |
 
 **Not available:** `drop` (see Anti-Patterns), `exec` (mystor/git-revise#28, won't fix).
 Editing summary lines directly in `-i` view is ignored; use `-ie` or
@@ -277,9 +278,9 @@ entire range without modifying content (mystor/git-revise#73).
 
 Benchmarked on mozilla-central (large repo):
 
-| Operation | git rebase | git revise |
-|-----------|-----------|------------|
-| autosquash | 16.9s | 0.5s |
+| Operation  | git rebase | git revise |
+| ---------- | ---------- | ---------- |
+| autosquash | 16.9s      | 0.5s       |
 
 Speed comes from: in-memory tree cache, custom merge algorithm operating on
 tree objects directly, no working directory or index operations.
@@ -348,6 +349,7 @@ git-branchless cannot track the rewrite. After using git-revise, both old
 and new commits appear in `git sl`. Run `git restack` to clean up.
 
 For operations where git-branchless has native equivalents, prefer those:
+
 - `git revise -e` → `git reword` (branchless tracks the rewrite)
 - `git revise -c` → `git split` (branchless tracks the rewrite)
 - `git revise -i` → `git move` (branchless tracks the rewrite)
@@ -358,6 +360,7 @@ bulk operations where speed matters and you can `git restack` afterward.
 ### With git-absorb
 
 Complementary workflow:
+
 ```bash
 git add -p                         # stage fixes
 git absorb                         # create fixup! commits (no rebase)
@@ -393,4 +396,3 @@ todo list editor, falling back to `GIT_EDITOR` / `core.editor` for commit
 messages (mystor/git-revise#60, #70). This matches `git rebase -i` behavior. The tool also
 respects `core.commentChar` (mystor/git-revise#38) and `commit.cleanup` / `commit.verbose`
 (mystor/git-revise#126).
-
