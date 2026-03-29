@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -euETo pipefail
+shopt -s inherit_errexit 2>/dev/null || :
+
+# Pre-commit hook: regenerates, auto-fixes, formats, then validates.
+#
+# Order matters — each step can modify files, so formatting runs last:
+#   1. freshness check (regenerate .ruler/ → .generated/ if stale)
+#   2. agnix --fix (auto-fix agent config issues)
+#   3. dprint fmt (format everything last, catches all modifications)
+#   4. agnix --strict (final lint on formatted output)
+#
+# Install: ln -sfn ../../scripts/pre-commit .git/hooks/pre-commit
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM || true)
+[[ -z "${STAGED}" ]] && exit 0
+
+# -- generated file freshness ------------------------------------------------
+
+RULER_FILES=$(echo "${STAGED}" | grep -E '^\.ruler/' || true)
+
+if [[ -n "${RULER_FILES}" ]]; then
+  echo "pre-commit: checking generated file freshness..."
+
+  tmpdir=$(mktemp -d)
+  trap 'rm -rf "${tmpdir}"' EXIT
+
+  GEN_FILES=(
+    .generated/claude-routing.md .generated/kiro-routing.md .generated/copilot-routing.md
+    .kiro/steering/stacked-workflow.md .github/instructions/stacked-workflow.instructions.md
+  )
+  for f in "${GEN_FILES[@]}"; do
+    if [[ -f "${f}" ]]; then
+      mkdir -p "${tmpdir}/before/$(dirname "${f}")"
+      cp "${f}" "${tmpdir}/before/${f}"
+    fi
+  done
+
+  bash scripts/generate.sh >/dev/null 2>&1
+
+  for f in "${GEN_FILES[@]}"; do
+    if [[ -f "${f}" ]] && ! diff -q "${tmpdir}/before/${f}" "${f}" &>/dev/null; then
+      echo "pre-commit: ${f} is stale — regenerated and staged."
+      git add "${f}"
+    fi
+  done
+fi
+
+# -- agnix fix ----------------------------------------------------------------
+
+AGENT_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|json|toml)$' | grep -E '(SKILL|CLAUDE|AGENTS|settings|\.agnix|copilot-instructions|\.mcp)' || true)
+
+if [[ -n "${AGENT_FILES}" ]]; then
+  if command -v agnix &>/dev/null; then
+    echo "pre-commit: running agnix --fix..."
+    agnix --fix . 2>/dev/null || true
+    git diff --cached --name-only --diff-filter=ACM | xargs git add 2>/dev/null || true
+  fi
+fi
+
+# -- dprint formatting -------------------------------------------------------
+
+if command -v dprint &>/dev/null; then
+  echo "pre-commit: running dprint..."
+  RESTAGED=$(git diff --cached --name-only --diff-filter=ACM || true)
+  if [[ -n "${RESTAGED}" ]]; then
+    echo "${RESTAGED}" | xargs dprint fmt --allow-no-files 2>/dev/null || true
+    echo "${RESTAGED}" | xargs git add 2>/dev/null || true
+  fi
+else
+  echo "pre-commit: dprint not found (run 'nix develop'). Skipping format."
+fi
+
+# -- agnix strict (final validation on formatted output) ----------------------
+
+if [[ -n "${AGENT_FILES}" ]]; then
+  if command -v agnix &>/dev/null; then
+    echo "pre-commit: running agnix --strict..."
+    agnix --strict . || {
+      echo "pre-commit: agnix validation failed. Fix errors before committing."
+      exit 1
+    }
+  fi
+fi

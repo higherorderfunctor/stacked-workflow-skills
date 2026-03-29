@@ -20,15 +20,15 @@ in {
       final.darwin.apple_sdk.frameworks.SystemConfiguration
     ];
 
-    # Build only the CLI crate
-    cargoBuildFlags = ["-p" "agnix-cli"];
-    cargoTestFlags = ["-p" "agnix-cli"];
+    # Build all binary crates: agnix (CLI), agnix-lsp, agnix-mcp
+    cargoBuildFlags = ["-p" "agnix-cli" "-p" "agnix-lsp" "-p" "agnix-mcp"];
+    cargoTestFlags = ["-p" "agnix-cli" "-p" "agnix-lsp" "-p" "agnix-mcp"];
 
     # Telemetry test fails in Nix sandbox (no $HOME / no network)
     checkFlags = ["--skip" "test_telemetry_enable_disable_roundtrip"];
 
     meta = {
-      description = "Linter and LSP for AI coding assistant config files";
+      description = "Linter, LSP, and MCP server for AI coding assistant config files";
       homepage = "https://github.com/agent-sh/agnix";
       license = final.lib.licenses.mit;
       mainProgram = "agnix";
