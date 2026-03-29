@@ -28,6 +28,7 @@ bitemporality
 
 # GitHub usernames and repos
 arxanas
+avifenesh
 higherorderfunctor
 mystor
 tummychow
@@ -42,6 +43,7 @@ nixos
 nixpkgs
 nvfetcher
 pkgs
+pyproject
 
 # Shell
 bashisms
@@ -55,6 +57,7 @@ frontmatter
 gitbook
 jsonl
 mktemp
+sarif
 
 # General terms
 agentskills
