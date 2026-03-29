@@ -31,7 +31,6 @@
       mkClaudeRouting = import ./lib/routing-claude.nix;
       mkCopilotInstructions = import ./lib/routing-copilot.nix;
       mkKiroSteering = import ./lib/routing-kiro.nix;
-      routing = import ./lib/routing-data.nix;
     };
 
     homeManagerModules.default = import ./home-manager;
@@ -56,15 +55,16 @@
       pkgs = import nixpkgs {
         inherit system;
         # default overlay for consumer packages + agnix (dev-only, not in default overlay)
-        overlays = [self.overlays.default (import' ./overlays/agnix.nix)];
+        overlays = [self.overlays.default (import' ./overlays/agnix.nix) (import' ./overlays/ruler.nix)];
       };
     in {
       default = pkgs.mkShellNoCC {
         packages =
           builtins.attrValues self.packages.${system}
           ++ [
-            # Agent config linting
+            # Agent config linting and routing
             pkgs.agnix
+            pkgs.ruler
 
             # Formatting
             pkgs.alejandra
