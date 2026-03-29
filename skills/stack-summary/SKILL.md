@@ -6,7 +6,7 @@ description: >-
   philosophy audit, and violation flags. Output feeds directly into /stack-plan
   restructure mode. Use INSTEAD of manual git log inspection.
 argument-hint: "<range | --root | (none for stack())>"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 
@@ -42,6 +42,7 @@ Examine `$ARGUMENTS` to select the commit range:
 - If on main with no stack → use full history (`--root`)
 
 Resolve to `BASE` and `TIP`:
+
 ```bash
 # Range:
 BASE=<resolved>; TIP=<resolved>
@@ -77,6 +78,7 @@ git diff --stat $(git hash-object -t tree /dev/null) HEAD
 
 For commits flagged during audit (oversized, potentially bundled), read the
 full diff to understand the content:
+
 ```bash
 git show <hash> --stat
 git show <hash>   # full diff when needed
@@ -109,29 +111,35 @@ For every commit, determine:
 Check each commit against `references/philosophy.md` rules:
 
 ### Sizing (§ Sizing Heuristic)
+
 - Flag commits exceeding 200 lines changed
 - Flag commits under 50 lines that could merge with adjacent same-concern
 
 ### Atomic (§ Atomic Commits)
+
 - Flag commits with "and" in the description (may need splitting)
 - Flag commits touching unrelated concerns (e.g. build + docs + skill)
 - Flag commits that bundle multiple features (e.g. 3 skills in one commit)
 
 ### Incremental Content (§ Incremental Content)
+
 - Flag README/CLAUDE.md content that appears in a late batch commit instead
   of with the feature it documents
 - Flag doc-only commits whose content belongs with earlier feature commits
 - Flag monolithic doc commits (>100 lines of docs added at once)
 
 ### Dependency Timing (§ Dependency Timing)
+
 - Flag dependencies/config added before they're used
 - Flag forward references (commit references something from a later commit)
 
 ### Ordering (§ Commit Ordering)
+
 - Flag refactoring mixed with feature work
 - Flag features before their dependencies
 
 ### Grouping Opportunities
+
 - Identify adjacent commits with the same type AND scope that could merge
   without exceeding 200 lines (e.g., two 30-line `docs` commits touching
   the same file)
@@ -145,6 +153,7 @@ Check each commit against `references/philosophy.md` rules:
   separate for revertibility)
 
 ### Single-Topic Validation
+
 - For each commit, read the full diff (not just the stat) and verify that
   every changed line serves the commit message's stated purpose
 - Flag commits where the diff contains unrelated changes: a "fix typo"
@@ -157,6 +166,7 @@ Check each commit against `references/philosophy.md` rules:
   should be split
 
 ### History Hygiene (§ History Hygiene)
+
 - Flag "fix", "WIP", "tweaks", "addresses feedback" commits
 
 ## Produce Output
@@ -177,6 +187,7 @@ Stack: <range> (<N> commits, <total lines> lines)
 ```
 
 Use these flag labels:
+
 - `OVERSIZED` — exceeds 200 lines
 - `UNDERSIZED` — single commit under 50 lines that is too small to stand on its own
 - `BUNDLED` — multiple features in one commit

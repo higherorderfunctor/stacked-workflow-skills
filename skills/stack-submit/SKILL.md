@@ -6,7 +6,7 @@ description: >-
   + PR/MR creation. Handles branch creation, stacked PR/MR creation with
   correct base branches, and sentinel commit exclusion.
 argument-hint: "[revset]"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 
@@ -177,12 +177,14 @@ as a revset to select which commits to submit. Default is the current stack.
 ## Subsequent Updates
 
 After amending or restacking commits, re-submit with:
+
 ```bash
 git submit    # force-push all existing remote branches (no -c needed)
 ```
 
 If `git submit` produces no output (public commits on main), force-push all
 branches manually:
+
 ```bash
 git push --force-with-lease origin <branch-1> <branch-2> ... <branch-N>
 ```
@@ -232,6 +234,7 @@ git sync --pull     # may only skip one of the two commits
 
 If `git sync` doesn't skip the already-merged commit, move the remaining
 stack past it:
+
 ```bash
 git move -s <first-unskipped-hash> -d main
 ```

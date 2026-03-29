@@ -5,7 +5,7 @@ description: >-
   Use INSTEAD of manual git test run or looping git checkout + test. Prevents:
   untested commits, wrong parallelism settings, cache misunderstandings.
 argument-hint: "<command> [--fix] [--jobs N] [revset]"
-disable-model-invocation: true
+disable-model-invocation: false
 compatibility: "Requires git-branchless"
 ---
 

@@ -4,7 +4,7 @@ description: >-
   Use when you need to create or update a reference doc from a repo's wiki,
   docs, and issues. Fetches and distills into a focused reference.
 argument-hint: "<name-or-url|all> (e.g. git-branchless, git-absorb, all)"
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 Fetch documentation from a repository and distill it into a practical reference
@@ -16,11 +16,11 @@ repo root.
 Use this lookup table to resolve short names to repos. If `$ARGUMENTS` doesn't
 match a known name, treat it as a GitHub URL or `owner/repo`.
 
-| Name | Repo | Focus |
-|------|------|-------|
+| Name             | Repo                     | Focus                                 |
+| ---------------- | ------------------------ | ------------------------------------- |
 | `git-branchless` | `arxanas/git-branchless` | Wiki, README, key issues on workflows |
-| `git-absorb` | `tummychow/git-absorb` | README, man page, usage patterns |
-| `git-revise` | `mystor/git-revise` | README, docs, interactive usage |
+| `git-absorb`     | `tummychow/git-absorb`   | README, man page, usage patterns      |
+| `git-revise`     | `mystor/git-revise`      | README, docs, interactive usage       |
 
 If `$ARGUMENTS` is `all` or empty (no arguments), iterate through every entry
 in the table above and run the full indexing process for each one, skipping
@@ -126,18 +126,21 @@ Every repo has different labels. Instead of hardcoding which labels matter,
 discover and assess them dynamically.
 
 **Fetch all labels** (runs every time, even on incremental updates):
+
 ```bash
 gh api "repos/${owner}/${repo}/labels" --paginate \
   --jq '.[] | "\(.name)\t\(.description // "")\t\(.color)"'
 ```
 
 **Compute `label-head`** — a hash of sorted label names to detect changes:
+
 ```bash
 label_head=$(gh api "repos/${owner}/${repo}/labels" --paginate \
   --jq '[.[].name] | sort | join("\n")' | sha256sum | cut -d' ' -f1)
 ```
 
 **Assess which labels have value** by classifying each into one of:
+
 - **High value** — labels indicating resolved questions, workarounds, recipes,
   or confirmed patterns (e.g., "answered", "has workaround", "good first issue",
   "question", "howto", "cookbook", "workflow", "solved")
@@ -382,32 +385,41 @@ changed, re-assess and update the cache.
    Distilled from <repo URL>, updated <date>.
 
    ## Overview
+
    <1-2 paragraph summary of what the tool does and why>
 
    ## Installation & Setup
+
    <How to install, configure, prerequisites>
 
    ## Core Concepts
+
    <Key mental models needed to use the tool effectively>
 
    ## Command Reference
+
    <Commands with practical examples, grouped by workflow>
 
    ## Recipes
+
    <Concrete step-by-step patterns for common tasks, written as numbered
    procedures. These should be copy-pasteable workflows, not abstract
    descriptions. Focus on:
+
    - The happy path for each common operation
    - How to recover from mistakes
    - Integration with other tools (git-branchless + git-absorb, etc.)>
 
    ## Anti-Patterns
+
    <Common mistakes and what to do instead>
 
    ## Integration
+
    <How this tool works with the other stacked workflow tools>
 
    <!-- BEGIN LOCAL NOTES — preserved across regeneration -->
+
    ## Local Notes
 
    Hard-won lessons, workarounds, and patterns discovered through actual usage.
