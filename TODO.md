@@ -44,10 +44,12 @@ nixpkgs with rust-overlay + agnix overlay) since agnix isn't in nixpkgs.
 
 - [ ] Evaluate adding agnix to CI workflow alongside structural check.
 
-### Phase 3: AGENTS.md instruction — TODO
+### Phase 3: instruction files — DONE
 
-- [ ] Add instruction to AGENTS.md: "After creating or modifying any
-  SKILL.md, AGENTS.md, CLAUDE.md, or MCP config, validate with agnix."
+- AGENTS.md: added Validation section with `agnix --strict`, pre-commit
+  hook note, and no-global-installs rule. Fixed `agnix .` → `agnix --strict .`.
+- CLAUDE.md: added MCP Integration section telling Claude to use
+  `validate_project` proactively and `get_rule_docs` for violations.
 
 ### Phase 4: agnix MCP server — DONE
 
@@ -63,29 +65,6 @@ MCP server configured in `.mcp.json` for Claude Code. Exposes 4 tools:
 
 Requires devShell (`agnix-mcp` must be on PATH). Kiro/Copilot MCP
 configs deferred.
-
-### Phase 3: CLAUDE.md / AGENTS.md instruction
-
-- [ ] Add instruction: "After creating or modifying any SKILL.md,
-  AGENTS.md, CLAUDE.md, or MCP config, validate with agnix before
-  committing." This goes in AGENTS.md so all tools see it.
-- [ ] Evaluate if this is redundant once pre-commit hook is in place.
-  The instruction makes agents proactive (validate before attempting
-  commit) vs reactive (commit fails, self-correct). Both is ideal.
-
-### Phase 4: agnix MCP server (deferred)
-
-agnix-mcp is a real crate in the agnix workspace (v0.17.0). When its
-API stabilizes:
-
-- [ ] Configure agnix-mcp in `.mcp.json` (Claude Code), `.kiro/settings/mcp.json`
-  (Kiro), and Copilot MCP config. All three CLIs support MCP servers —
-  verified 2026-03-28.
-- [ ] Would let agents call agnix proactively (validate before writing)
-  not just reactively (commit fails). Structured output (file, line,
-  rule, message) that agents can act on directly.
-- [ ] Replaces the PostToolUse hook entirely — MCP works regardless of
-  how files are modified (Write, Edit, Bash, sed, cat, tee).
 
 ### Phase 5: nixd via MCP bridge (deferred)
 
