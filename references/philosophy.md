@@ -92,6 +92,7 @@ This reduces N restacks to one rebase, with one set of conflicts (often zero)
 instead of compounding intermediate conflicts.
 
 When to use this over individual operations:
+
 - 3+ insertions at different stack positions → batch-at-tip
 - Single insertion → `git record -I` or `git move`
 - Single fix to existing commit → `git absorb --and-rebase` or `/stack-fix`
@@ -179,8 +180,8 @@ preference):
 
 ## History Hygiene
 
-The commit history should read as a clean narrative — what *should* happen, not
-a diary of what *did* happen during development.
+The commit history should read as a clean narrative — what _should_ happen, not
+a diary of what _did_ happen during development.
 
 - Never create "addresses feedback", "fix", "WIP", or "tweaks" commits
 - Use `git absorb --and-rebase` to route fixes to the correct stack commit
@@ -218,4 +219,4 @@ natural split point. If it's under 50 lines and could logically combine with
 an adjacent commit touching the same concern, consider merging them.
 
 Three similar lines of code is better than a premature abstraction, but three
-similar *blocks* means it's time to extract.
+similar _blocks_ means it's time to extract.

@@ -145,40 +145,40 @@ Convenience settings that some users prefer.
 
 ### git-branchless (all config keys)
 
-| Key | Type | Default | What it does |
-|-----|------|---------|--------------|
-| `branchless.core.mainBranch` | string | `master` | Primary branch name |
-| `branchless.commitMetadata.branches` | bool | `true` | Show branch names in smartlog |
-| `branchless.commitMetadata.differentialRevision` | bool | `true` | Show Phabricator revision IDs |
-| `branchless.commitMetadata.relativeTime` | bool | `true` | Show relative timestamps in smartlog |
-| `branchless.navigation.autoSwitchBranches` | bool | `true` | Auto-switch branch on navigate |
-| `branchless.next.interactive` | bool | `false` | Interactive prompt on ambiguous next |
-| `branchless.restack.preserveTimestamps` | bool | `false` | Keep author timestamps during restack |
-| `branchless.restack.warnAbandoned` | bool | `true` | Warn when commits become abandoned |
-| `branchless.revsets.alias.<name>` | string | — | Custom revset aliases |
-| `branchless.smartlog.defaultRevset` | revset | `((draft()\|branches()\|@) % main()) \| branches() \| @` | Default smartlog display |
-| `branchless.test.alias.<name>` | string | — | Named test command aliases |
-| `branchless.test.jobs` | int | 1 | Parallel test jobs (0 = auto) |
-| `branchless.test.strategy` | enum | `working-copy` | Test execution strategy (`working-copy` or `worktree`) |
-| `branchless.undo.createSnapshots` | bool | `true` | Working copy snapshots before destructive ops |
-| `remote.pushDefault` | string | — | Default remote for `git submit --create` |
+| Key                                              | Type   | Default                                                  | What it does                                           |
+| ------------------------------------------------ | ------ | -------------------------------------------------------- | ------------------------------------------------------ |
+| `branchless.core.mainBranch`                     | string | `master`                                                 | Primary branch name                                    |
+| `branchless.commitMetadata.branches`             | bool   | `true`                                                   | Show branch names in smartlog                          |
+| `branchless.commitMetadata.differentialRevision` | bool   | `true`                                                   | Show Phabricator revision IDs                          |
+| `branchless.commitMetadata.relativeTime`         | bool   | `true`                                                   | Show relative timestamps in smartlog                   |
+| `branchless.navigation.autoSwitchBranches`       | bool   | `true`                                                   | Auto-switch branch on navigate                         |
+| `branchless.next.interactive`                    | bool   | `false`                                                  | Interactive prompt on ambiguous next                   |
+| `branchless.restack.preserveTimestamps`          | bool   | `false`                                                  | Keep author timestamps during restack                  |
+| `branchless.restack.warnAbandoned`               | bool   | `true`                                                   | Warn when commits become abandoned                     |
+| `branchless.revsets.alias.<name>`                | string | —                                                        | Custom revset aliases                                  |
+| `branchless.smartlog.defaultRevset`              | revset | `((draft()\|branches()\|@) % main()) \| branches() \| @` | Default smartlog display                               |
+| `branchless.test.alias.<name>`                   | string | —                                                        | Named test command aliases                             |
+| `branchless.test.jobs`                           | int    | 1                                                        | Parallel test jobs (0 = auto)                          |
+| `branchless.test.strategy`                       | enum   | `working-copy`                                           | Test execution strategy (`working-copy` or `worktree`) |
+| `branchless.undo.createSnapshots`                | bool   | `true`                                                   | Working copy snapshots before destructive ops          |
+| `remote.pushDefault`                             | string | —                                                        | Default remote for `git submit --create`               |
 
 ### git-absorb (all config keys)
 
-| Key | Type | Default | What it does |
-|-----|------|---------|--------------|
-| `absorb.autoStageIfNothingStaged` | bool | `false` | Auto-stage tracked changes when index is empty |
-| `absorb.createSquashCommits` | bool | `false` | Generate squash commits instead of fixup |
-| `absorb.fixupTargetAlwaysSHA` | bool | `false` | Use SHA in fixup messages (stable across reword) |
-| `absorb.forceAuthor` | bool | `false` | Target commits by any author |
-| `absorb.forceDetach` | bool | `false` | Allow on detached HEAD |
-| `absorb.maxStack` | int | `10` | Max commits to search for fixup targets |
-| `absorb.oneFixupPerCommit` | bool | `false` | One fixup per target commit (not per hunk) |
+| Key                               | Type | Default | What it does                                     |
+| --------------------------------- | ---- | ------- | ------------------------------------------------ |
+| `absorb.autoStageIfNothingStaged` | bool | `false` | Auto-stage tracked changes when index is empty   |
+| `absorb.createSquashCommits`      | bool | `false` | Generate squash commits instead of fixup         |
+| `absorb.fixupTargetAlwaysSHA`     | bool | `false` | Use SHA in fixup messages (stable across reword) |
+| `absorb.forceAuthor`              | bool | `false` | Target commits by any author                     |
+| `absorb.forceDetach`              | bool | `false` | Allow on detached HEAD                           |
+| `absorb.maxStack`                 | int  | `10`    | Max commits to search for fixup targets          |
+| `absorb.oneFixupPerCommit`        | bool | `false` | One fixup per target commit (not per hunk)       |
 
 ### git-revise (all config keys)
 
-| Key | Type | Default | What it does |
-|-----|------|---------|--------------|
+| Key                 | Type | Default | What it does                                  |
+| ------------------- | ---- | ------- | --------------------------------------------- |
 | `revise.autoSquash` | bool | `false` | Auto-apply fixup!/squash! in interactive mode |
 
 ## Nix Integration

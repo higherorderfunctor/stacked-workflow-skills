@@ -44,28 +44,28 @@ disabled_rules = ["XML-001", "AS-014", "XP-003", "CC-MEM-008", "PE-001"]
 
 ### Suppressed rules in this repo
 
-| Rule | Why suppressed |
-|------|---------------|
-| XML-001 | Angle brackets in git placeholder syntax (`<hash>`, `<commit>`) |
-| AS-014 | Shell quoting in code blocks mistaken for Windows paths |
-| XP-003 | Hard-coded paths are intentional in install/reference docs |
-| CC-MEM-008 | MANDATORY keyword placement is deliberate |
-| PE-001 | False positive on frontmatter fields |
+| Rule       | Why suppressed                                                  |
+| ---------- | --------------------------------------------------------------- |
+| XML-001    | Angle brackets in git placeholder syntax (`<hash>`, `<commit>`) |
+| AS-014     | Shell quoting in code blocks mistaken for Windows paths         |
+| XP-003     | Hard-coded paths are intentional in install/reference docs      |
+| CC-MEM-008 | MANDATORY keyword placement is deliberate                       |
+| PE-001     | False positive on frontmatter fields                            |
 
 ## Rule Categories
 
 Rules are prefixed by category:
 
-| Prefix | Scope |
-|--------|-------|
-| AS-* | Agent Skills spec (SKILL.md) |
-| CC-* | Claude Code (CLAUDE.md, hooks, settings) |
-| GH-* | GitHub Copilot (instructions, skills) |
-| KR-* | Kiro (steering, agents, powers) |
-| MCP-* | MCP configuration |
-| PE-* | General prose/encoding |
-| XP-* | Cross-platform consistency |
-| XML-* | XML/markup detection |
+| Prefix | Scope                                    |
+| ------ | ---------------------------------------- |
+| AS-*   | Agent Skills spec (SKILL.md)             |
+| CC-*   | Claude Code (CLAUDE.md, hooks, settings) |
+| GH-*   | GitHub Copilot (instructions, skills)    |
+| KR-*   | Kiro (steering, agents, powers)          |
+| MCP-*  | MCP configuration                        |
+| PE-*   | General prose/encoding                   |
+| XP-*   | Cross-platform consistency               |
+| XML-*  | XML/markup detection                     |
 
 ## Severity Levels
 
@@ -78,6 +78,7 @@ In `--strict` mode, warnings are promoted to errors.
 ## IDE Integration
 
 agnix ships an LSP server (`agnix-lsp`) with extensions for:
+
 - VS Code (marketplace: `avifenesh.agnix`)
 - JetBrains
 - Neovim

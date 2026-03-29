@@ -9,6 +9,7 @@ exceeds the cost of repetition.
 ## Focus Areas
 
 ### Single Source of Truth
+
 - Is `lib/routing-data.nix` truly the single source for routing? Or has
   content drifted into CLAUDE.md, INSTALL.md, or README.md that isn't
   generated from it?
@@ -19,6 +20,7 @@ exceeds the cost of repetition.
   extracted?
 
 ### Nix Expression Quality (FP Lens)
+
 - Are Nix expressions composed functionally? (map, filter, fold over lists
   and attrsets rather than imperative patterns)
 - Is `lib.mapAttrsRecursive` used correctly for `mkDefault` application?
@@ -27,6 +29,7 @@ exceeds the cost of repetition.
 - Is the overlay composition (`composeManyExtensions`) idiomatic?
 
 ### Skill DRYness
+
 - Do skills duplicate instructions that should be in a shared reference?
 - Are pre-flight checks copy-pasted across skills or referencing a shared
   checklist?
@@ -34,12 +37,14 @@ exceeds the cost of repetition.
   extracted into a shared pre-flight reference?
 
 ### Documentation DRYness
+
 - Is the same installation example written in 3 places?
 - Are there tables that repeat information available elsewhere?
 - When duplication exists, is it justified? (e.g., README quick start
   intentionally duplicates INSTALL.md for discoverability — that's OK)
 
 ### Agentic Awareness
+
 - Is the repo structured so AI tools can find what they need without
   loading everything? (progressive disclosure, not monolithic docs)
 - Are abstractions helpful to AI consumers or do they obscure meaning?
@@ -49,6 +54,7 @@ exceeds the cost of repetition.
   and evidence programmatically?
 
 ### Instruction Bloat
+
 - Are CLAUDE.md, SKILL.md, or reference docs over-explaining things the AI
   already knows? Every line in an instruction file costs context tokens.
 - Flag redundant instructions that appear in both CLAUDE.md and skill
@@ -59,6 +65,7 @@ exceeds the cost of repetition.
   are loaded on demand; instruction files are loaded every session)
 
 ### The DRY Boundary
+
 - Three similar lines is better than a premature abstraction
 - Three similar blocks means it's time to extract
 - Duplication across independent consumers (skills that might be installed
@@ -76,6 +83,7 @@ exceeds the cost of repetition.
 ## Output
 
 For each finding, return:
+
 ```json
 {
   "file": "path/to/file",

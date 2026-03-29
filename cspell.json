@@ -9,10 +9,5 @@
       "addWords": true
     }
   ],
-  "ignorePaths": [
-    ".direnv",
-    ".git",
-    "overlays/.nvfetcher",
-    "result"
-  ]
+  "ignorePaths": [".direnv", ".git", "overlays/.nvfetcher", "result"]
 }

@@ -15,13 +15,13 @@ alejandra, dprint, cspell, nvfetcher.
 
 Install these globally:
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| [agnix](https://github.com/agent-sh/agnix) | Agent config linting | `npm install -g agnix` or `cargo install agnix-cli` |
-| [ruler](https://github.com/intellectronica/ruler) | Rule distribution | `npm install -g @intellectronica/ruler` |
-| [git-branchless](https://github.com/arxanas/git-branchless) | Stacked commits | `cargo install --locked git-branchless` |
-| [git-absorb](https://github.com/tummychow/git-absorb) | Fixup absorption | `cargo install git-absorb` |
-| [git-revise](https://github.com/mystor/git-revise) | Commit editing | `pip install git-revise` |
+| Tool                                                        | Purpose              | Install                                             |
+| ----------------------------------------------------------- | -------------------- | --------------------------------------------------- |
+| [agnix](https://github.com/agent-sh/agnix)                  | Agent config linting | `npm install -g agnix` or `cargo install agnix-cli` |
+| [ruler](https://github.com/intellectronica/ruler)           | Rule distribution    | `npm install -g @intellectronica/ruler`             |
+| [git-branchless](https://github.com/arxanas/git-branchless) | Stacked commits      | `cargo install --locked git-branchless`             |
+| [git-absorb](https://github.com/tummychow/git-absorb)       | Fixup absorption     | `cargo install git-absorb`                          |
+| [git-revise](https://github.com/mystor/git-revise)          | Commit editing       | `pip install git-revise`                            |
 
 <!-- TODO: explore npx/uvx for dev tool execution without global installs -->
 
@@ -46,6 +46,7 @@ scripts/generate.sh
 ```
 
 This produces:
+
 - **In-repo files** — `.kiro/steering/stacked-workflow.md`,
   `.github/instructions/stacked-workflow.instructions.md`
 - **Published files** — `.generated/claude-routing.md`,
@@ -57,15 +58,15 @@ Run after modifying `.ruler/` source files.
 
 Tool-specific reference docs live in `references/`:
 
-| Doc | Covers |
-|-----|--------|
-| `references/agnix.md` | agnix CLI, config, rule categories |
-| `references/ruler.md` | Ruler CLI, config, source format |
-| `references/nix-workflow.md` | Nix conventions, devShell, packaging |
-| `references/git-branchless.md` | git-branchless commands, revsets |
-| `references/git-absorb.md` | git-absorb usage and patterns |
-| `references/git-revise.md` | git-revise usage |
-| `references/philosophy.md` | Stacked workflow principles |
+| Doc                            | Covers                               |
+| ------------------------------ | ------------------------------------ |
+| `references/agnix.md`          | agnix CLI, config, rule categories   |
+| `references/ruler.md`          | Ruler CLI, config, source format     |
+| `references/nix-workflow.md`   | Nix conventions, devShell, packaging |
+| `references/git-branchless.md` | git-branchless commands, revsets     |
+| `references/git-absorb.md`     | git-absorb usage and patterns        |
+| `references/git-revise.md`     | git-revise usage                     |
+| `references/philosophy.md`     | Stacked workflow principles          |
 
 **Maintenance**: when dev tools are upgraded (via nvfetcher) or config
 changes, update the corresponding `references/<tool>.md`. Use

@@ -37,6 +37,7 @@ ruler init               # scaffold .ruler/ directory
 ```
 
 **File precedence** (highest to lowest):
+
 1. Root `AGENTS.md` (outside `.ruler/`)
 2. `.ruler/AGENTS.md`
 3. Legacy `instructions.md`
@@ -86,6 +87,7 @@ ruler apply --nested
 ```
 
 Or in `ruler.toml`:
+
 ```toml
 nested = true
 ```

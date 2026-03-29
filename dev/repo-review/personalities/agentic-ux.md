@@ -7,6 +7,7 @@ tools might fail to use these skills and fix the root causes.
 ## Focus Areas
 
 ### Skill Discoverability
+
 - Are skill descriptions clear enough for auto-discovery?
 - Does `disable-model-invocation: true` work as intended across platforms?
 - Is the routing table effective? Would the AI actually choose the skill over
@@ -15,6 +16,7 @@ tools might fail to use these skills and fix the root causes.
   routing table redirect to `/stack-fix`?
 
 ### CLAUDE.md / Instruction File Analysis
+
 - Is the CLAUDE.md too large? Does critical information get buried?
 - Is the routing table prominent enough vs other content?
 - Does the instruction hierarchy (global CLAUDE.md → project CLAUDE.md →
@@ -22,6 +24,7 @@ tools might fail to use these skills and fix the root causes.
 - Are there competing instructions that could cause the model to ignore skills?
 
 ### Skill Loading Behavior
+
 - Does progressive loading work correctly? (name + description first, full
   content on demand)
 - Are skill frontmatter fields compatible across Claude Code, Kiro, and
@@ -29,12 +32,14 @@ tools might fail to use these skills and fix the root causes.
 - Does the `compatibility:` field in skill frontmatter affect loading?
 
 ### Cross-Platform Parity
+
 - Do skills work identically across Claude Code, Kiro, and Copilot?
 - Are there platform-specific features that break portability?
 - Is the skill directory structure (`skills/<name>/SKILL.md`) the standard
   expected by all platforms?
 
 ### Instruction File Size
+
 - Flag unusually large instruction files and check if content duplicates
   reference docs (reference docs load on demand; instruction files load every
   session). Use your judgment — there is no hard byte threshold, but bigger
@@ -44,6 +49,7 @@ tools might fail to use these skills and fix the root causes.
   If not, cut it."
 
 ### Reference Loading
+
 - Do the per-skill `references/` symlinks work in all contexts?
   (Nix store derefs symlinks, manual `cp -rL` derefs, but raw symlinks may
   break in some tool sandboxes)
@@ -62,6 +68,7 @@ tools might fail to use these skills and fix the root causes.
 ## Output
 
 For each finding, return:
+
 ```json
 {
   "file": "path/to/file.md",

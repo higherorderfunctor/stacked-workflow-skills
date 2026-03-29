@@ -35,13 +35,21 @@ Keep descriptions lowercase, imperative mood, no trailing period.
 
 ```bash
 nix develop          # Enter devShell (git-branchless, git-absorb, git-revise)
-nix fmt              # Format all Nix files with alejandra
-nix flake check      # Validate flake, formatting, and spelling
+dprint fmt           # Format all files (markdown, JSON, Nix via alejandra)
+nix flake check      # Validate flake, formatting, spelling, and agent configs
 agnix --strict .     # Lint AI agent config files
 ```
 
 **Note:** `nix flake check` only includes tracked files; add new files with
 `git add` before running it in a dirty git tree.
+
+### Formatting
+
+After editing any file — regardless of how it was modified (Edit, Write,
+Bash, sed, etc.) — run `dprint fmt <file>` on the changed file. dprint
+handles markdown, JSON, and Nix (via alejandra). The PostToolUse hook
+auto-formats after Edit/Write, but Bash edits bypass hooks. Always format
+explicitly after Bash-based file modifications.
 
 ### Validation
 
@@ -102,11 +110,11 @@ Reference docs for dev tools live in `references/`. When tools are upgraded
 reference doc. Use `/index-repo-docs <tool>` to refresh from upstream, then
 curate the output.
 
-| Doc | Covers |
-|-----|--------|
-| `references/agnix.md` | agnix CLI, `.agnix.toml` config, rule categories |
-| `references/nix-workflow.md` | Nix conventions, devShell, packaging patterns |
-| `references/ruler.md` | Ruler CLI, `.ruler/` source format, profiles |
+| Doc                          | Covers                                           |
+| ---------------------------- | ------------------------------------------------ |
+| `references/agnix.md`        | agnix CLI, `.agnix.toml` config, rule categories |
+| `references/nix-workflow.md` | Nix conventions, devShell, packaging patterns    |
+| `references/ruler.md`        | Ruler CLI, `.ruler/` source format, profiles     |
 
 ### Nix Workflow
 

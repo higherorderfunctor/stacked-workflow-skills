@@ -395,6 +395,7 @@ stacked-workflows = {
 Ask the user which ecosystems to enable. All must be explicitly enabled:
 
 > Which AI tools do you use?
+>
 > - Claude Code (requires programs.claude-code.enable = true)
 > - Kiro (places files in ~/.kiro/)
 > - Copilot CLI (places files in ~/.copilot/)
@@ -403,6 +404,7 @@ Ask which git config preset:
 
 > Git config preset? This sets `programs.git.settings` at `mkDefault`
 > priority — your existing overrides win.
+>
 > - **full** — all recommended settings (branchless, absorb, revise, diff, fetch, push)
 > - **minimal** — required + strongly recommended only
 > - **none** — no git config changes
@@ -429,6 +431,7 @@ automatically via `programs.claude-code.memory.text`).
 **Guard:** skip if the routing table is already in the instruction file.
 
 For Claude Code, append to `CLAUDE.md`:
+
 ```bash
 cat .generated/claude-routing.md >> CLAUDE.md
 # or for global:
@@ -451,6 +454,7 @@ Run a quick check to confirm skills are working:
 ```
 
 If using the HM module, remind the user to rebuild:
+
 ```bash
 # NixOS:
 sudo nixos-rebuild switch

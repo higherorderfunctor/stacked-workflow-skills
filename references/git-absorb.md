@@ -114,38 +114,38 @@ git absorb [FLAGS] [OPTIONS]
 
 ### Flags
 
-| Flag | Description |
-|------|-------------|
-| `-f, --force` | Skip all safety checks (author + detach) |
-| `-F, --one-fixup-per-commit` | Consolidate to one fixup per target commit |
-| `--force-author` | Create fixups for other authors' commits |
-| `--force-detach` | Allow on detached HEAD |
-| `-n, --dry-run` | Show what would happen without making changes |
-| `--no-limit` | Remove stack depth limit |
-| `-r, --and-rebase` | Run autosquash rebase after creating fixups |
-| `-s, --squash` | Create squash commits (edit message) instead of fixup |
-| `-v, --verbose` | Display more output |
-| `-w, --whole-file` | Match first commit touching same file (not line-level) |
+| Flag                         | Description                                            |
+| ---------------------------- | ------------------------------------------------------ |
+| `-f, --force`                | Skip all safety checks (author + detach)               |
+| `-F, --one-fixup-per-commit` | Consolidate to one fixup per target commit             |
+| `--force-author`             | Create fixups for other authors' commits               |
+| `--force-detach`             | Allow on detached HEAD                                 |
+| `-n, --dry-run`              | Show what would happen without making changes          |
+| `--no-limit`                 | Remove stack depth limit                               |
+| `-r, --and-rebase`           | Run autosquash rebase after creating fixups            |
+| `-s, --squash`               | Create squash commits (edit message) instead of fixup  |
+| `-v, --verbose`              | Display more output                                    |
+| `-w, --whole-file`           | Match first commit touching same file (not line-level) |
 
 ### Options
 
-| Option | Description |
-|--------|-------------|
-| `-b, --base <commit>` | Explicit base commit for absorb range |
-| `-m, --message <msg>` | Body text for all generated fixup commits |
+| Option                | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `-b, --base <commit>` | Explicit base commit for absorb range                |
+| `-m, --message <msg>` | Body text for all generated fixup commits            |
 | `-- <REBASE_OPTIONS>` | Pass-through options for `git rebase` (must be last) |
 
 ### Configuration (`[absorb]` in .gitconfig)
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `autoStageIfNothingStaged` | false | Auto-stage tracked changes if nothing staged |
-| `createSquashCommits` | false | Create squash commits instead of fixup |
-| `fixupTargetAlwaysSHA` | false | Reference targets by SHA, not message |
-| `forceAuthor` | false | Allow fixups to other authors' commits |
-| `forceDetach` | false | Allow on detached HEAD |
-| `maxStack` | 10 | Number of ancestor commits to consider |
-| `oneFixupPerCommit` | false | One fixup per target commit |
+| Key                        | Default | Description                                  |
+| -------------------------- | ------- | -------------------------------------------- |
+| `autoStageIfNothingStaged` | false   | Auto-stage tracked changes if nothing staged |
+| `createSquashCommits`      | false   | Create squash commits instead of fixup       |
+| `fixupTargetAlwaysSHA`     | false   | Reference targets by SHA, not message        |
+| `forceAuthor`              | false   | Allow fixups to other authors' commits       |
+| `forceDetach`              | false   | Allow on detached HEAD                       |
+| `maxStack`                 | 10      | Number of ancestor commits to consider       |
+| `oneFixupPerCommit`        | false   | One fixup per target commit                  |
 
 ## Recipes
 
@@ -278,6 +278,7 @@ after absorb to see what's left, then handle manually.
 
 git-absorb uses libgit2 for commits, which does **not** run pre-commit hooks.
 If your workflow requires hooks, run them manually after absorb:
+
 ```bash
 git absorb --and-rebase
 pre-commit run --from-ref HEAD~5 --to-ref HEAD  # if using pre-commit framework
@@ -327,22 +328,23 @@ updates.
 
 These are blocked on libgit2 or git2-rs and have no fix in git-absorb:
 
-| Issue | Limitation | Workaround |
-|-------|------------|------------|
-| `@` alias not supported | `--base @~5` fails, must use `HEAD` | Use `--base HEAD~5` |
-| `extensions.partialclone` | Repos with partial-clone fail to open | Clone without partial-clone |
-| `extensions.worktreeConfig` | Fails in repos with this extension | `git config --unset extensions.worktreeConfig`, run absorb, re-enable |
-| `feature.manyFiles` | Older libgit2 versions fail | Update to git-absorb >= 0.7 (git2 0.19+) |
-| `index.skipHash` | Checksum mismatch error | `git config --local index.skipHash false`, re-stage |
-| `includeIf` not fully supported | Conditional includes ignored | Put overrides in `.git/config` |
-| Reftable format | Repos using reftable backend fail | Awaiting libgit2 reftable support (tummychow/git-absorb#211) |
-| `skip-worktree` bits cleared | Auto-stage resets index entry flags (tummychow/git-absorb#202) | Avoid auto-stage with skip-worktree files |
+| Issue                           | Limitation                                                     | Workaround                                                            |
+| ------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `@` alias not supported         | `--base @~5` fails, must use `HEAD`                            | Use `--base HEAD~5`                                                   |
+| `extensions.partialclone`       | Repos with partial-clone fail to open                          | Clone without partial-clone                                           |
+| `extensions.worktreeConfig`     | Fails in repos with this extension                             | `git config --unset extensions.worktreeConfig`, run absorb, re-enable |
+| `feature.manyFiles`             | Older libgit2 versions fail                                    | Update to git-absorb >= 0.7 (git2 0.19+)                              |
+| `index.skipHash`                | Checksum mismatch error                                        | `git config --local index.skipHash false`, re-stage                   |
+| `includeIf` not fully supported | Conditional includes ignored                                   | Put overrides in `.git/config`                                        |
+| Reftable format                 | Repos using reftable backend fail                              | Awaiting libgit2 reftable support (tummychow/git-absorb#211)          |
+| `skip-worktree` bits cleared    | Auto-stage resets index entry flags (tummychow/git-absorb#202) | Avoid auto-stage with skip-worktree files                             |
 
 ## Integration
 
 ### With git-branchless
 
 The primary workflow for stacked commits:
+
 ```bash
 # Make fixes to code in the stack
 git add -p
@@ -360,6 +362,7 @@ configured (see recommended-config.md).
 ### With git-revise
 
 Alternative to `--and-rebase`:
+
 ```bash
 git absorb                    # create fixup commits only
 git revise --autosquash       # in-memory autosquash (faster than rebase)
@@ -376,8 +379,8 @@ implemented.
 ### Recovery
 
 After any absorb operation, `PRE_ABSORB_HEAD` points to the pre-absorb state:
+
 ```bash
 git reset --soft PRE_ABSORB_HEAD   # undo absorb completely
 git diff PRE_ABSORB_HEAD           # inspect what changed
 ```
-

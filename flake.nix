@@ -97,9 +97,10 @@
 
       formatting =
         pkgs.runCommand "check-formatting" {
-          nativeBuildInputs = [pkgs.alejandra];
+          nativeBuildInputs = [pkgs.dprint pkgs.alejandra];
         } ''
-          alejandra --check --exclude ${self}/overlays/.nvfetcher ${self}
+          cd ${self}
+          dprint check
           touch $out
         '';
 
@@ -122,6 +123,15 @@
         '';
     });
 
-    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+    formatter = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
+      pkgs.writeShellApplication {
+        name = "fmt";
+        runtimeInputs = [pkgs.dprint pkgs.alejandra];
+        text = ''
+          dprint fmt "$@"
+        '';
+      });
   };
 }

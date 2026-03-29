@@ -28,6 +28,7 @@ approves all changes. Implementation uses this repo's own skills.
 ## Phase 1: Fan-Out (Parallel Review)
 
 Spawn **6 reviewer subagents in parallel** using the Agent tool. Each gets:
+
 - Their personality prompt (from `personalities/` in this skill's directory)
 - The review policy
 - The full decision log
@@ -40,6 +41,7 @@ Spawn **6 reviewer subagents in parallel** using the Agent tool. Each gets:
 - Read-only access to the repo
 
 Each reviewer:
+
 1. Reads the files in scope
 2. Does web research for current best practices in their domain
 3. Checks findings against the decision log (skip accepted decisions with
@@ -86,11 +88,13 @@ After all 6 reviewers complete:
 If any findings contradict accepted decisions (confidence >= 0.5):
 
 Spawn a **debate subagent** that receives:
+
 - The contradicting finding(s) with evidence
 - The original decision with its evidence log
 - Arguments from the reviewer(s) who flagged it
 
 The debate agent evaluates both sides and returns a recommendation:
+
 - **Uphold**: The decision stands. Add the new evidence as a consideration
   but don't change the decision.
 - **Challenge**: The decision should be re-evaluated. Lower confidence and
@@ -139,6 +143,7 @@ changes, M observations".
 ```
 
 **Omit from the report:**
+
 - Decision reinforcements (confidence bumps with no action needed)
 - Decision slow-decay (no action until challenge threshold)
 - Findings that match accepted decisions (already decided, skip silently)
@@ -155,6 +160,7 @@ explicit confirmation.
 After presenting the report, ask the user:
 
 > Which recommended changes would you like to implement? You can:
+>
 > - Accept all recommended changes
 > - Cherry-pick specific findings by number
 > - Dismiss findings with reasoning (adds to decision log)

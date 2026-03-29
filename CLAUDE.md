@@ -21,4 +21,8 @@ all agent configs after editing SKILL.md, CLAUDE.md, AGENTS.md, or MCP config
 files. Use `get_rule_docs` to look up specific rule details when fixing
 violations. The pre-commit hook is a safety net — prefer proactive validation.
 
+**Known limitation:** agnix-mcp does not read `.agnix.toml` (uses default
+config). Ignore diagnostics for rules suppressed in `.agnix.toml` — the
+CLI and pre-commit hook apply suppressions correctly.
+
 @.generated/claude-routing.md

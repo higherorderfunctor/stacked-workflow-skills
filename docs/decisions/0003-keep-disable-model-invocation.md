@@ -12,6 +12,7 @@ reinforcement-count: 2
 
 The agentic UX reviewer flagged `disable-model-invocation: true` as the root
 cause of Claude not using skills. Research showed mixed evidence:
+
 - Auto-discovery is unreliable (~77% activation rate with good descriptions)
 - These skills make structural git changes (commits, rebases, force-pushes)
 - Official guidance recommends the flag for "task-driven" skills with side

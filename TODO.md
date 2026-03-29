@@ -3,9 +3,18 @@
 ## Stack status: ruler migration (todo/pre-publish)
 
 19 stacked PRs created (#69–#87) from 20 atomic commits. Sentinel
-(`todo/pre-publish`) pushed but no PR. Merge from #69 down — after each
-squash merge: `git sync --pull`, `gh pr edit <next-PR> --base main`,
-force-push remaining branches.
+(`todo/pre-publish`) pushed but no PR. 4 additional commits at tip
+(not yet in PRs):
+
+- `5daad5c` build: add agnix pre-commit hook and flake check
+- `e7017d4` docs: add agnix validation instructions to AGENTS.md and CLAUDE.md
+- `caec8a7` build: add dprint formatter with alejandra exec plugin and biome JSON
+- `f73fdbf` chore: update TODO.md for pre-publish review tracking (sentinel)
+
+Next: merge PRs #69–#87 from bottom up. After each squash merge:
+`git sync --pull`, `gh pr edit <next-PR> --base main`, force-push
+remaining branches. Then distribute the 3 tip commits into the stack
+or submit as new PRs.
 
 ## Linter and tool integration
 
@@ -17,6 +26,7 @@ All claims verified against upstream repos on 2026-03-28.
 ### Recommended strategy: pre-commit hook + flake check + MCP (later)
 
 **Why this order:**
+
 - Pre-commit hook is universal — works for all three CLIs (Claude, Kiro,
   Copilot) because it's git-level, not tool-level. All three respect commit
   failures and self-correct. Covers the Bash tool bypass gap completely.
@@ -30,12 +40,14 @@ All claims verified against upstream repos on 2026-03-28.
 ### Phase 1: pre-commit hook — DONE
 
 Implemented as `scripts/pre-commit` (standalone shell script, no Python
-`pre-commit` framework). Two checks:
-1. agnix `--strict .` when agent config files are staged
-2. Generated file freshness when `.ruler/` files are staged (also solves
-   generation trigger automation)
+`pre-commit` framework). Four steps in order:
 
-Install: `ln -sfn ../../scripts/pre-commit .git/hooks/pre-commit`
+1. Generated file freshness (regenerate if `.ruler/` files staged)
+2. agnix `--fix` (auto-fix agent config issues)
+3. dprint `fmt` (format everything last, catches all modifications)
+4. agnix `--strict` (final validation on formatted output)
+
+Hook runs in ~330ms. Install: `ln -sfn ../../scripts/pre-commit .git/hooks/pre-commit`
 
 ### Phase 2: nix flake check — DONE
 
@@ -46,10 +58,11 @@ nixpkgs with rust-overlay + agnix overlay) since agnix isn't in nixpkgs.
 
 ### Phase 3: instruction files — DONE
 
-- AGENTS.md: added Validation section with `agnix --strict`, pre-commit
-  hook note, and no-global-installs rule. Fixed `agnix .` → `agnix --strict .`.
-- CLAUDE.md: added MCP Integration section telling Claude to use
-  `validate_project` proactively and `get_rule_docs` for violations.
+- AGENTS.md: added Formatting section (run `dprint fmt` after all edits
+  including Bash), Validation section with `agnix --strict`, and
+  no-global-installs rule.
+- CLAUDE.md: added MCP Integration section with known limitation that
+  agnix-mcp does not read `.agnix.toml` (ignore suppressed rule hits).
 
 ### Phase 4: agnix MCP server — DONE
 
@@ -58,25 +71,66 @@ as a single derivation. `getExe` returns `agnix`, `getExe'` can pick
 `agnix-mcp` or `agnix-lsp`.
 
 MCP server configured in `.mcp.json` for Claude Code. Exposes 4 tools:
+
 - `validate_file` — validate a single agent config file
 - `validate_project` — validate all agent configs in a directory
 - `get_rules` — list all 385 validation rules
 - `get_rule_docs` — look up docs for a specific rule by ID
 
+**Known limitation:** agnix-mcp uses `LintConfig::default()` — does not
+load `.agnix.toml`. The CLI uses `LintConfig::load_or_default()` with
+`resolve_config_path`. MCP returns unfiltered diagnostics including
+suppressed rules. Workaround: ignore rules listed in `.agnix.toml`
+`disabled_rules`. No upstream issue filed — may file later.
+
 Requires devShell (`agnix-mcp` must be on PATH). Kiro/Copilot MCP
 configs deferred.
+
+### Phase 4b: dprint formatter — DONE
+
+dprint configured with three plugins:
+
+- markdown (existing, lineWidth 80)
+- biome (JSON formatting, 2-space indent)
+- exec/alejandra (Nix formatting via stdin)
+
+PostToolUse hook auto-formats after Write/Edit. Bash edits bypass hooks
+— AGENTS.md instructs agents to run `dprint fmt <file>` explicitly.
+`nix fmt` now wraps dprint. Flake check uses `dprint check`.
+
+No dprint MCP or LSP — PostToolUse hook + pre-commit hook + AGENTS.md
+instruction covers it.
+
+### Propagate allowed tools for consumer installs
+
+The `.claude/settings.json` in this repo has allowed tool permissions
+(git branchless commands, dprint, etc.) but consumers installing via
+home-manager or manual symlinks don't get these. They have to approve
+every tool invocation.
+
+- [ ] Research if `programs.claude-code.settings.permissions.allow` in
+      the home-manager module can propagate allowed tool patterns to
+      consumers. The stacked-workflow skills need git-branchless, git-absorb,
+      git-revise, and formatting commands to work without prompting.
+- [ ] Determine the right scope — should allowed tools be per-skill
+      (SKILL.md `allowed-tools` frontmatter) or project-wide (settings.json)?
+      The Agent Skills spec has an `allowed-tools` field but Claude Code
+      may not respect it yet.
+- [ ] If per-skill `allowed-tools` works, add it to each SKILL.md
+      frontmatter so consumers get the permissions automatically when
+      the skill is invoked.
 
 ### Phase 5: nixd via MCP bridge (deferred)
 
 For Nix language diagnostics (not agent config linting):
 
 - [ ] Use `isaacphi/mcp-language-server` (Go, 1504 stars, actively
-  maintained) to bridge nixd as an MCP server. Tools: definition,
-  references, diagnostics, hover, rename, edit.
+      maintained) to bridge nixd as an MCP server. Tools: definition,
+      references, diagnostics, hover, rename, edit.
 - [ ] Alternative: `cclsp` (github.com/ktnyt/cclsp, TypeScript/Bun,
-  596 stars) — handles LLM line/column inaccuracy with fuzzy position.
+      596 stars) — handles LLM line/column inaccuracy with fuzzy position.
 - [ ] `mcps.nix` (github.com/roman/mcps.nix) has `lsp-nix` preset but
-  uses `nil` not `nixd`. Would need a custom preset for nixd.
+      uses `nil` not `nixd`. Would need a custom preset for nixd.
 - [ ] Single MCP config works for all three ecosystems.
 
 ### Phase 6: native LSP per ecosystem (deferred, low priority)
@@ -109,16 +163,16 @@ Context from memory files that applies to all contributors/AI tools working
 on this repo, not just the current user's private preferences:
 
 - [ ] AGENTS.md: add "don't install packages" rule — use tools available
-  in the devShell. If something is missing, ask the user or use
-  `npx`/`uvx`/`nix run` instead of installing globally.
+      in the devShell. If something is missing, ask the user or use
+      `npx`/`uvx`/`nix run` instead of installing globally.
 - [ ] AGENTS.md or CONTRIBUTING.md: add skill fallback guidance — "if the
-  Skill tool invocation fails, read the SKILL.md and execute its instructions
-  step by step." The routing table says MANDATORY but doesn't cover the
-  fallback path when tool invocation is unavailable.
+      Skill tool invocation fails, read the SKILL.md and execute its instructions
+      step by step." The routing table says MANDATORY but doesn't cover the
+      fallback path when tool invocation is unavailable.
 - [ ] CONTRIBUTING.md: consider clarifying generate.sh design rationale —
-  ruler can't do per-target frontmatter injection, so generate.sh exists.
-  Currently only in references/ruler.md note; not obvious to contributors
-  who might try `ruler apply`.
+      ruler can't do per-target frontmatter injection, so generate.sh exists.
+      Currently only in references/ruler.md note; not obvious to contributors
+      who might try `ruler apply`.
 
 ## Skill improvements from 2026-03-27 restructure session
 
@@ -135,14 +189,14 @@ switches to `@.generated` import in commit 6). The skill already warns
 about this in the Tips section, but it needs stronger guidance:
 
 - [ ] Add to stack-plan: "Before staging each commit, Write every file
-  that has intermediate states to its correct content for THIS commit.
-  The working tree contains the FINAL state — you must overwrite files
-  with their intermediate versions before staging. Verify with
-  `git diff --cached` that only the intended content is staged."
+      that has intermediate states to its correct content for THIS commit.
+      The working tree contains the FINAL state — you must overwrite files
+      with their intermediate versions before staging. Verify with
+      `git diff --cached` that only the intended content is staged."
 - [ ] Add to stack-plan: "Plan ALL intermediate states BEFORE flattening.
-  For each file that appears in multiple commits, write out what content
-  it should have at each commit boundary. Don't discover intermediate
-  states as you go — that leads to fixups."
+      For each file that appears in multiple commits, write out what content
+      it should have at each commit boundary. Don't discover intermediate
+      states as you go — that leads to fixups."
 
 ### stack-plan restructure mode — rename/move orphaned deletions
 
@@ -152,8 +206,8 @@ of the old paths are left unstaged. This is subtle because `git status`
 shows them as separate deletions, not as renames.
 
 - [ ] Add to stack-plan: "After staging renamed/moved files, check
-  `git status` for orphaned deletions of the old paths. Stage them in
-  the same commit."
+      `git status` for orphaned deletions of the old paths. Stage them in
+      the same commit."
 
 ### stack-plan restructure mode — hooks fire during inconsistent state
 
@@ -163,8 +217,8 @@ between commits (e.g., flake.nix references overlay files that haven't
 been staged yet). This produces scary error output that is harmless.
 
 - [ ] Add to stack-plan Tips: "Expect hook failures during restructure.
-  The working tree is intentionally inconsistent between commits. Hook
-  errors are harmless — they'll pass once all files are committed."
+      The working tree is intentionally inconsistent between commits. Hook
+      errors are harmless — they'll pass once all files are committed."
 
 ### stack-plan restructure mode — tree hash verification
 
@@ -173,9 +227,9 @@ intermediate content instead of its final state. Without this check the
 broken tree would have been pushed.
 
 - [ ] Strengthen the post-verification step in stack-plan: make tree
-  hash comparison a REQUIRED step, not just suggested. When mismatch
-  is detected, diff against the backup branch to identify which files
-  diverge.
+      hash comparison a REQUIRED step, not just suggested. When mismatch
+      is detected, diff against the backup branch to identify which files
+      diverge.
 
 ### stack-submit — large stack scripting
 
@@ -183,12 +237,12 @@ For stacks > 10 commits, manual branch creation and PR creation is
 error-prone. During this session, bash scripts were written for both.
 
 - [ ] Add to stack-submit: "For stacks > 10 commits, script branch
-  creation and PR creation. Use a bash array of (branch, hash) pairs
-  for branches, and (branch, base, title) tuples for PRs. Add
-  `sleep 1` between `gh pr create` calls to avoid GitHub rate limiting."
+      creation and PR creation. Use a bash array of (branch, hash) pairs
+      for branches, and (branch, base, title) tuples for PRs. Add
+      `sleep 1` between `gh pr create` calls to avoid GitHub rate limiting."
 - [ ] Add to stack-submit: example bash script template for large
-  stack PR creation with stacked bases (each PR targets the previous
-  branch, first targets main).
+      stack PR creation with stacked bases (each PR targets the previous
+      branch, first targets main).
 
 ### stack-submit — autosquash fixups for post-hoc corrections
 
@@ -198,9 +252,9 @@ is the right pattern. This worked well and is faster than checking
 out each commit to amend.
 
 - [ ] Add to stack-plan or philosophy.md: document the fixup pattern
-  as a recovery mechanism during restructure. Currently only mentioned
-  in philosophy.md § Bulk Stack Modification but not connected to
-  the restructure workflow.
+      as a recovery mechanism during restructure. Currently only mentioned
+      in philosophy.md § Bulk Stack Modification but not connected to
+      the restructure workflow.
 
 ### Remove sentinel commit convention from shared skills
 
@@ -211,14 +265,14 @@ and referenced in stack-plan and stack-submit skills.
 
 - [ ] Remove § Sentinel Commits from `references/philosophy.md`
 - [ ] Remove sentinel handling from `skills/stack-plan/SKILL.md`
-  (references to sentinel insertion, tip management)
+      (references to sentinel insertion, tip management)
 - [ ] Remove sentinel handling from `skills/stack-submit/SKILL.md`
-  (sentinel branch exclusion from PRs, tracking-only push)
+      (sentinel branch exclusion from PRs, tracking-only push)
 - [ ] Remove sentinel references from `skills/stack-summary/SKILL.md`
-  (sentinel detection in audit)
+      (sentinel detection in audit)
 - [ ] If the pattern is still useful for some users, move it to a
-  separate "optional patterns" section or a tips doc rather than
-  baking it into the core skills
+      separate "optional patterns" section or a tips doc rather than
+      baking it into the core skills
 
 ### Explore rolling stack workflow pattern
 
@@ -257,20 +311,20 @@ the current skills:
 Things to explore:
 
 - [ ] Document the rolling stack pattern in `references/philosophy.md`
-  or a new `references/rolling-stack.md`
+      or a new `references/rolling-stack.md`
 - [ ] Update stack-submit to handle incremental submission (submit
-  only the first N commits, leave the rest as local-only)
+      only the first N commits, leave the rest as local-only)
 - [ ] Update stack-fix to describe the review-fix-while-developing
-  workflow (stash or commit WIP, switch context, fix, resume)
+      workflow (stash or commit WIP, switch context, fix, resume)
 - [ ] Consider whether stack-plan needs a "continue" mode — add to
-  an existing stack rather than always building from scratch
+      an existing stack rather than always building from scratch
 - [ ] Consider whether `git sync --pull` + selective force-push is
-  sufficient or if the skills need explicit guidance for the
-  post-partial-merge rebase flow
+      sufficient or if the skills need explicit guidance for the
+      post-partial-merge rebase flow
 - [ ] Think about how this interacts with the 10+ PR batching advice
-  in stack-submit — is the rolling pattern actually the natural way
-  to handle large stacks? (submit first batch, keep working, submit
-  next batch after merges)
+      in stack-submit — is the rolling pattern actually the natural way
+      to handle large stacks? (submit first batch, keep working, submit
+      next batch after merges)
 
 ## Deferred: generation trigger automation
 
@@ -282,16 +336,16 @@ build step — contributors must remember to run `generate.sh` after editing
 Lifecycle automation is the mitigation. Options to evaluate:
 
 - [ ] Git pre-commit hook — auto-run `generate.sh` when `.ruler/` files are
-  staged. Most reliable; works for all contributors regardless of editor.
+      staged. Most reliable; works for all contributors regardless of editor.
 - [ ] Claude Code lifecycle hooks (PostToolUse on `.ruler/` edits) — triggers
-  when AI edits `.ruler/` files. Note: the agnix hook bypass issue (below)
-  shows that Bash tool fallback bypasses PostToolUse hooks, so this alone
-  is insufficient.
+      when AI edits `.ruler/` files. Note: the agnix hook bypass issue (below)
+      shows that Bash tool fallback bypasses PostToolUse hooks, so this alone
+      is insufficient.
 - [ ] Kiro hooks — equivalent lifecycle trigger for Kiro users.
 - [ ] GitHub Actions — current CI workflow is a safety net (checks staleness),
-  not a primary trigger. Could be extended to auto-commit regenerated files.
+      not a primary trigger. Could be extended to auto-commit regenerated files.
 - [ ] Combination — pre-commit hook as primary, AI lifecycle hooks as
-  convenience, CI as safety net.
+      convenience, CI as safety net.
 
 Related gap: the agnix PostToolUse hook (`Write|Edit` matcher) doesn't fire
 when Claude falls back to Bash/sed. Same limitation would apply to a
@@ -340,7 +394,7 @@ Full 6-reviewer analysis saved in `docs/reports/ruler-migration-assessment.md`.
 - [ ] sws-* directory names violate Agent Skills spec (name must match dir)
 - [ ] README Quick Start symlink uses fragile `$(pwd)` pattern
 - [ ] home-manager `claudeAvailable` check is fragile (`hasAttrByPath` +
-  direct config access)
+      direct config access)
 - [ ] Copilot module `~/.copilot/` vs manual `.github/` path confusion
 - [ ] generate.sh missing blank line separators between concatenated sections
 - [ ] Reviewer personality files reference deleted `lib/routing-data.nix`

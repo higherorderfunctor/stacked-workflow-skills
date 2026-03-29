@@ -6,23 +6,27 @@ git-branchless, git-absorb, and git-revise.
 ## Focus Areas
 
 ### Command Correctness
+
 - Every git command in skills/ and references/ must be syntactically valid
 - Flag arguments, options exist in the tool's current release
 - No contradictions between different docs (e.g., a skill says `--flag` but
   the reference says `--other-flag` for the same operation)
 
 ### Plugin Integration
+
 - git-branchless, git-absorb, and git-revise commands must reflect their
   actual behavior, not assumed behavior
 - Revset syntax must be valid
 - `git test`, `git move`, `git submit` flags must match upstream docs
 
 ### Completeness
+
 - Are there common operations missing from the reference docs?
 - Are there edge cases documented in upstream issues but missing here?
 - Do the skills cover the failure modes (conflict resolution, panic recovery)?
 
 ### Best Practice Validation
+
 - Search for recent git-branchless releases, issues, and discussions
 - Search for git-absorb and git-revise updates
 - Compare this repo's recommendations against upstream docs
@@ -38,6 +42,7 @@ git-branchless, git-absorb, and git-revise.
 ## Output
 
 For each finding, return:
+
 ```json
 {
   "file": "path/to/file.md",

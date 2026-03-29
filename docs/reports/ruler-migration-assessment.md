@@ -56,13 +56,13 @@ per-ecosystem by `generate.sh`.
 
 ### 6. More generated files (3 → 5)
 
-| Before | After |
-|--------|-------|
-| `.generated/claude-routing.md` | `.generated/claude-routing.md` |
-| `.generated/kiro-routing.md` | `.generated/kiro-routing.md` |
-| `.generated/copilot-routing.md` | `.generated/copilot-routing.md` |
-| | `.kiro/steering/stacked-workflow.md` |
-| | `.github/instructions/stacked-workflow.instructions.md` |
+| Before                          | After                                                   |
+| ------------------------------- | ------------------------------------------------------- |
+| `.generated/claude-routing.md`  | `.generated/claude-routing.md`                          |
+| `.generated/kiro-routing.md`    | `.generated/kiro-routing.md`                            |
+| `.generated/copilot-routing.md` | `.generated/copilot-routing.md`                         |
+|                                 | `.kiro/steering/stacked-workflow.md`                    |
+|                                 | `.github/instructions/stacked-workflow.instructions.md` |
 
 The two new in-repo files exist for local auto-discovery (Kiro's
 `inclusion: auto`, Copilot's `applyTo`). Useful, but more surface area.
@@ -100,15 +100,15 @@ All items below were fixed on 2026-03-27:
 
 ## DRY Scorecard
 
-| Aspect | Before | After | Verdict |
-|--------|--------|-------|---------|
-| Routing table source | 1 place (Nix) | 1 place (markdown) | **Same** (both single-source) |
-| Routing in CLAUDE.md | Inline copy | `@` include | **Better** |
-| Routing in AGENTS.md | None | None | Same |
-| Per-ecosystem content | Computed differently | Identical body | **Better** |
-| Frontmatter | N/A (Nix handled it) | Explicit in generate.sh | Same |
-| Doc references to pipeline | Accurate | Fixed (was stale) | **Same** |
-| Unused config files | None | None (ruler.toml deleted) | **Same** |
+| Aspect                     | Before               | After                     | Verdict                       |
+| -------------------------- | -------------------- | ------------------------- | ----------------------------- |
+| Routing table source       | 1 place (Nix)        | 1 place (markdown)        | **Same** (both single-source) |
+| Routing in CLAUDE.md       | Inline copy          | `@` include               | **Better**                    |
+| Routing in AGENTS.md       | None                 | None                      | Same                          |
+| Per-ecosystem content      | Computed differently | Identical body            | **Better**                    |
+| Frontmatter                | N/A (Nix handled it) | Explicit in generate.sh   | Same                          |
+| Doc references to pipeline | Accurate             | Fixed (was stale)         | **Same**                      |
+| Unused config files        | None                 | None (ruler.toml deleted) | **Same**                      |
 
 ---
 
@@ -170,6 +170,7 @@ lifecycle automation (pre-commit hook + AI lifecycle hooks). Documentation
 staleness has been resolved.
 
 ---
+
 ---
 
 # Full Repo Review Report (2026-03-27)
