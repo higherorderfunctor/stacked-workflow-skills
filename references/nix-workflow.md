@@ -4,7 +4,7 @@ Conventions and gotchas for working with Nix in this repository.
 
 ## Stage Before Nix Commands
 
-Nix flakes only see git-tracked files. **Always `git add` new or modified
+Nix flakes only see git-tracked files. **Always `git add` new (untracked)
 files before running any Nix command that references them.** This includes:
 
 - `nix build`, `nix develop`, `nix flake check`
@@ -58,12 +58,12 @@ ruler, alejandra, dprint, cspell, nvfetcher.
 
 ```bash
 nix fmt             # format all Nix files with alejandra
-alejandra --check . # check without modifying
+alejandra --check --exclude overlays/.nvfetcher .  # check without modifying
 ```
 
-The `.nvfetcher/` directory is excluded from formatting checks in
-`nix flake check`, but `alejandra` may still format `generated.nix`
-when run directly.
+The `overlays/.nvfetcher/` directory is excluded from formatting checks
+in `nix flake check`. When running `alejandra` directly, pass
+`--exclude overlays/.nvfetcher` to match CI behavior.
 
 ## Linting
 

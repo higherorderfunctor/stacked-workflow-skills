@@ -61,6 +61,11 @@ validation catches issues earlier.
 Do not install packages globally — use tools available in the devShell. If
 something is missing, ask the user or use `npx`/`uvx`/`nix run` instead.
 
+If the Skill tool invocation fails (e.g., due to `disable-model-invocation`
+or platform limitations), read the SKILL.md file directly and execute its
+instructions step by step. The routing table is MANDATORY — skills must be
+used even when the tool mechanism is unavailable.
+
 ## Flake Structure
 
 - **.generated/** — pre-generated routing files for Claude, Kiro, Copilot

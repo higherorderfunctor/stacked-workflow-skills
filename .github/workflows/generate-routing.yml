@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - ".ruler/**"
+      - "scripts/generate.sh"
   workflow_dispatch:
 
 concurrency:

@@ -116,7 +116,7 @@
 
       structural =
         pkgs.runCommand "check-structural" {
-          nativeBuildInputs = [pkgs.bash pkgs.diffutils pkgs.gnugrep pkgs.gnused pkgs.coreutils];
+          nativeBuildInputs = [pkgs.bash pkgs.gnugrep pkgs.gnused pkgs.coreutils];
         } ''
           bash ${self}/scripts/test-structural.sh
           touch $out

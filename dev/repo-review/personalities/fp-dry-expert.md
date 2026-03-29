@@ -10,7 +10,7 @@ exceeds the cost of repetition.
 
 ### Single Source of Truth
 
-- Is `lib/routing-data.nix` truly the single source for routing? Or has
+- Is `.ruler/routing.md` truly the single source for routing? Or has
   content drifted into CLAUDE.md, INSTALL.md, or README.md that isn't
   generated from it?
 - Are git config presets (`lib/git-config.nix`, `lib/git-config-full.nix`)

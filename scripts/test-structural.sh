@@ -154,7 +154,6 @@ for f in claude-routing.md kiro-routing.md copilot-routing.md; do
 done
 
 # Freshness: verify .generated/claude-routing.md contains .ruler/routing.md content
-routing_body=$(cat "${REPO_ROOT}/.ruler/routing.md")
 if grep -qF "Skill Routing" "${REPO_ROOT}/.generated/claude-routing.md" \
   && grep -qF "/stack-fix" "${REPO_ROOT}/.generated/claude-routing.md"; then
   pass "Generated files contain routing table content"

@@ -2,6 +2,7 @@
 
 These skills are for developing this repo, not distributed to consumers:
 
+<!-- dprint-ignore -->
 | Skill              | What it does                                                                                              |
 | ------------------ | --------------------------------------------------------------------------------------------------------- |
 | `/index-repo-docs` | Fetch and distill a repo's wiki, docs, and issues into a focused reference doc                            |

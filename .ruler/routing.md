@@ -3,6 +3,7 @@
 When the user is working with stacked commits, use the appropriate skill
 instead of running commands manually via Bash.
 
+<!-- dprint-ignore -->
 | Operation                                               | Skill            | Use INSTEAD of                                                 |
 | ------------------------------------------------------- | ---------------- | -------------------------------------------------------------- |
 | Audit stack quality before restructure                  | `/stack-summary` | Manual `git log` inspection                                    |

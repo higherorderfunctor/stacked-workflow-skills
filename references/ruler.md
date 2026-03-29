@@ -30,7 +30,6 @@ ruler init               # scaffold .ruler/ directory
 
 ```
 .ruler/
-├── AGENTS.md           # highest precedence, generates AGENTS.md
 ├── dev-skills.md       # dev-only skills
 ├── operations.md       # operations without skills
 └── routing.md          # routing table

@@ -50,8 +50,8 @@ printf '%s\n' "${PACKAGE_BODY}" > "${REPO_ROOT}/.generated/claude-routing.md"
 
 # -- Dev profile (full dev guidance) ----------------------------------------
 
-# Concatenate all .ruler/*.md files (sorted, excludes ruler.toml)
-DEV_BODY="$(cat "${RULER_DIR}"/dev-skills.md "${RULER_DIR}"/operations.md "${RULER_DIR}"/routing.md)"
+# Concatenate .ruler/*.md files in explicit order (dev-skills, operations, routing)
+DEV_BODY="$(cat "${RULER_DIR}"/dev-skills.md; echo; cat "${RULER_DIR}"/operations.md; echo; cat "${RULER_DIR}"/routing.md)"
 
 # Kiro in-repo: inclusion: auto + name
 mkdir -p "${REPO_ROOT}/.kiro/steering"

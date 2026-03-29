@@ -28,7 +28,7 @@ check_skills() {
   local found=0 missing=0
 
   for skill in "${EXPECTED_SKILLS[@]}"; do
-    if grep -qi "${skill}" <<< "${output}"; then
+    if grep -qiF "${skill}" <<< "${output}"; then
       found=$((found + 1))
     else
       fail "${tool}: missing ${skill} in response"
@@ -47,12 +47,16 @@ section "Claude Code"
 
 if command -v claude &>/dev/null; then
   tested=$((tested + 1))
-  output=$(cd "${REPO_ROOT}" && claude -p "${PROMPT}" 2>/dev/null) || {
-    fail "claude -p exited with error"
+  stderr_file=$(mktemp)
+  output=$(cd "${REPO_ROOT}" && claude -p "${PROMPT}" 2>"${stderr_file}") || {
+    fail "claude -p exited with error (stderr: $(cat "${stderr_file}"))"
     output=""
   }
+  rm -f "${stderr_file}"
 
-  if [[ -n "${output}" ]]; then
+  if [[ -z "${output}" ]]; then
+    fail "claude: empty response"
+  else
     check_skills "claude" "${output}"
   fi
 else
@@ -65,12 +69,16 @@ section "Kiro CLI"
 
 if command -v kiro-cli &>/dev/null; then
   tested=$((tested + 1))
-  output=$(cd "${REPO_ROOT}" && kiro-cli chat --no-interactive "${PROMPT}" 2>/dev/null) || {
-    fail "kiro-cli exited with error"
+  stderr_file=$(mktemp)
+  output=$(cd "${REPO_ROOT}" && kiro-cli chat --no-interactive "${PROMPT}" 2>"${stderr_file}") || {
+    fail "kiro-cli exited with error (stderr: $(cat "${stderr_file}"))"
     output=""
   }
+  rm -f "${stderr_file}"
 
-  if [[ -n "${output}" ]]; then
+  if [[ -z "${output}" ]]; then
+    fail "kiro-cli: empty response"
+  else
     check_skills "kiro-cli" "${output}"
   fi
 else
@@ -83,12 +91,16 @@ section "Copilot CLI"
 
 if command -v gh &>/dev/null && gh copilot --help &>/dev/null 2>&1; then
   tested=$((tested + 1))
-  output=$(cd "${REPO_ROOT}" && gh copilot -- -p "${PROMPT}" -s 2>/dev/null) || {
-    fail "gh copilot exited with error"
+  stderr_file=$(mktemp)
+  output=$(cd "${REPO_ROOT}" && gh copilot -- -p "${PROMPT}" -s 2>"${stderr_file}") || {
+    fail "gh copilot exited with error (stderr: $(cat "${stderr_file}"))"
     output=""
   }
+  rm -f "${stderr_file}"
 
-  if [[ -n "${output}" ]]; then
+  if [[ -z "${output}" ]]; then
+    fail "gh-copilot: empty response"
+  else
     check_skills "gh-copilot" "${output}"
   fi
 else

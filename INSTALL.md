@@ -29,9 +29,9 @@ per-ecosystem formats by `scripts/generate.sh`:
 
 ### Using pre-generated files (no Nix required)
 
-Append the contents of the appropriate file from `.generated/` into your
-project's instruction file. These are checked into the repo and kept in
-sync by CI.
+Copy the appropriate file from `.generated/` into your project's instruction
+file location. Kiro and Copilot files include YAML frontmatter — use the
+file as-is. These are checked into the repo and kept in sync by CI.
 
 ### Using Nix lib (pass-through)
 

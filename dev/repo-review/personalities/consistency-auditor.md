@@ -10,7 +10,7 @@ apart.
 
 - Does the CLAUDE.md routing table match the INSTALL.md routing table?
 - Do both match the generated files in `.generated/`?
-- Do they all match `lib/routing-data.nix` (the source of truth)?
+- Do they all match `.ruler/routing.md` (the source of truth)?
 - Does the Kiro steering file match? The Copilot instructions file?
 - Does README's install table match INSTALL.md's sections?
 - Do all docs agree on option names, paths, and behavior?
@@ -62,7 +62,7 @@ This reviewer does NOT do external research. Instead:
 
 **When scope is provided:** only scan files within the given scope plus their
 direct source-of-truth dependencies (e.g., if scope is `INSTALL.md`, also
-check `lib/routing-data.nix` and `.generated/` since INSTALL.md references
+check `.ruler/routing.md` and `.generated/` since INSTALL.md references
 them).
 
 ## Output
