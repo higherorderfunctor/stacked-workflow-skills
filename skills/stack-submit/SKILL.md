@@ -297,10 +297,35 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
 - For very large stacks (20+ PRs), consider batching — submit the first 5-10,
   get them merged, then submit the next batch. Reviewers struggle with 20+ open
   PRs at once.
+- **For stacks > 10 commits, script branch creation and PR creation.** Write
+  a standalone bash script (not inline shell — zsh doesn't support bashisms
+  like `${!array[@]}`). Use `#!/usr/bin/env bash` with strict mode. Add
+  `sleep 1` between `gh pr create` calls to avoid GitHub rate limiting.
+
+  Template for scripted stacked PR creation:
+  ```bash
+  #!/usr/bin/env bash
+  set -euETo pipefail
+  shopt -s inherit_errexit 2>/dev/null || :
+
+  # Define stack: branch names and commit messages in order
+  BRANCHES=("feat/first" "feat/second" "feat/third")
+  TITLES=("feat: first change" "feat: second change" "feat: third change")
+  TOTAL=${#BRANCHES[@]}
+
+  for i in "${!BRANCHES[@]}"; do
+    branch="${BRANCHES[$i]}"
+    title="${TITLES[$i]}"
+    pos=$((i + 1))
+    base=$([[ $i -eq 0 ]] && echo "main" || echo "${BRANCHES[$((i - 1))]}")
+
+    echo "Creating PR ${pos}/${TOTAL}: ${branch} -> ${base}"
+    gh pr create --head "${branch}" --base "${base}" \
+      --title "${title}" --body "Stack: ${pos}/${TOTAL}"
+    sleep 1
+  done
+  ```
 - If `git submit -c` fails with "no remote configured", set
   `git config remote.pushDefault origin`.
 - If `git submit -c` produces no output, commits are likely public (on main).
   Use `git push origin <branch> ...` instead.
-- For PR creation scripts, use a standalone bash script file rather than
-  inline shell — zsh does not support `${!array[@]}` and other bashisms.
-  Always use `#!/usr/bin/env bash` with strict mode.

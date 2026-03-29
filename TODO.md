@@ -11,17 +11,30 @@ ready to distribute — Copilot auto-review burns tokens per push.
 
 ## Implementation work
 
-### Remaining review fixes
+### Review fixes
 
-From Copilot + 6-reviewer analysis. Full triage in memory
-`project_copilot_review_triage.md` and report in
-`docs/reports/ruler-migration-assessment.md`.
+Full triage in memory `project_copilot_review_triage.md`.
+
+High confidence (can do without HITL):
+
+- [ ] `references/agnix.md`: use https:// URL for repo link
+- [ ] `references/ruler.md`: fix generate.sh wording (line 99 — says
+      "copying ruler output" but it directly concatenates with printf)
+- [ ] `CONTRIBUTING.md`: change `pip install git-revise` to
+      `pip install --user git-revise` or `pipx install git-revise`
+- [ ] `skills/stack-submit/SKILL.md`: add explicit user approval gate
+      before pushing branches (step 8) — currently auto-invocation can
+      trigger remote side effects without confirmation
+
+Needs design input:
 
 - [ ] Consider ADR 0004 for superseding decision (per review-policy process)
 - [ ] sws-* directory names violate Agent Skills spec (name must match dir)
 - [ ] README Quick Start symlink uses fragile `$(pwd)` pattern
 - [ ] home-manager `claudeAvailable` check fragile (`hasAttrByPath`)
 - [ ] Copilot module `~/.copilot/` vs manual `.github/` path confusion
+- [ ] CONTRIBUTING.md Without Nix section: incomplete tool list — is
+      non-Nix dev actually supported or just for reference?
 
 ### Codify repo instructions
 
@@ -30,15 +43,6 @@ From Copilot + 6-reviewer analysis. Full triage in memory
 
 ### Skill content improvements
 
-Lessons from restructuring sessions. Codify into skills so consumers benefit.
-
-- [ ] stack-plan: strengthen intermediate file state guidance (plan ALL
-      states before flattening, Write correct content before staging each commit)
-- [ ] stack-plan: add rename/move orphaned deletion check
-- [ ] stack-plan: note that hooks fire during inconsistent restructure state
-- [ ] stack-plan: make tree hash verification REQUIRED, not suggested
-- [ ] stack-plan: document fixup pattern as restructure recovery mechanism
-- [ ] stack-submit: add large stack scripting template (>10 commits)
 - [ ] Remove sentinel commit convention from shared skills (personal pattern,
       not universal — remove from philosophy.md, stack-plan, stack-submit,
       stack-summary)

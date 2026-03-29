@@ -181,8 +181,10 @@ Existing commits need to be reorganized into a clean atomic stack.
 4. **Identify files with intermediate states**: before planning the commit
    sequence, list every file that will have DIFFERENT content across multiple
    commits (e.g. README.md, CLAUDE.md, flake.nix growing incrementally).
-   For each, note what content exists at each commit boundary. This prevents
-   accidentally committing the final version too early and having to reset.
+   For each, write out EXACTLY what content it should have at each commit
+   boundary. Plan ALL intermediate states BEFORE flattening — discovering
+   them as you go leads to fixups and tree hash mismatches. This is the #1
+   source of rework during restructure.
 
 5. **Present the plan** (same format as Plan mode step 4).
    **Wait for user approval.**
@@ -234,6 +236,16 @@ Existing commits need to be reorganized into a clean atomic stack.
     Do not rely on the final working tree content — it represents the end
     state, not intermediate states.
 
+    After staging each commit, check for common mistakes:
+    - **Orphaned deletions**: when staging renamed/moved files, the old
+      paths remain as unstaged deletions. Check `git status` and stage
+      them in the same commit.
+    - **`git add -u` during multi-commit rebuild**: stages ALL modified
+      tracked files, not just the ones for this commit. Always use
+      explicit `git add <file>` paths.
+    - **Verify staged content**: run `git diff --cached --stat` to
+      confirm only intended files are staged.
+
 ## Post-execution
 
 1. **Move branch pointer** (from-root only):
@@ -249,17 +261,21 @@ Existing commits need to be reorganized into a clean atomic stack.
    ```
    Show the user the new stack.
 
-3. **Confirm total diff is identical** (Restructure mode only — `$BASE` is
-   only defined in Restructure mode, not Working Tree mode):
+3. **REQUIRED: Confirm total diff is identical** (Restructure mode only):
    ```bash
-   # Standard range:
-   git diff $BASE..HEAD --stat   # should match the original
-
-   # From-root (compare tree hashes):
+   # Tree hash comparison (catches ALL content differences):
    test "$(git rev-parse HEAD^{tree})" = "$FINAL_TREE" && echo "trees match"
-   # Or compare against backup:
+
+   # If MISMATCH, identify which files differ:
    git diff backup-before-restructure HEAD --stat
+
+   # Then inspect each differing file:
+   git diff backup-before-restructure HEAD -- <file>
    ```
+   Do NOT proceed if trees don't match. Fix the diverging files first
+   using fixup commits (`git commit --fixup <hash>` + autosquash rebase).
+   Common causes: intermediate file state written incorrectly, orphaned
+   deletions missed, or `git add -u` pulling unrelated changes.
 
 4. **Clean up stale artifacts**: check for self-referencing symlinks or
    other working tree debris:
@@ -296,6 +312,16 @@ Existing commits need to be reorganized into a clean atomic stack.
   stack. When adding new commits, check the tip first — if it's a sentinel,
   insert before it or move it back to tip afterward with
   `git move -x <sentinel-hash> -d HEAD`.
+- **Expect hook failures during restructure.** PostToolUse hooks (agnix
+  linting, dprint formatting, etc.) fire when using Write/Edit during a
+  restructure. The working tree is intentionally inconsistent between
+  commits — hook errors are harmless and will pass once all files are
+  committed. Use `--no-verify` on intermediate commits if needed.
+- **Fixup pattern for post-hoc corrections:** when you discover a missed
+  change after a commit is already made, use `git commit --fixup <hash>`
+  to create a fixup commit, then squash it with
+  `GIT_SEQUENCE_EDITOR="sed -i '/^pick.*fixup/s/^pick/fixup/'" git rebase -i --autosquash <hash>~1`.
+  This is faster than checking out each commit to amend.
 - **Avoid scripted `GIT_SEQUENCE_EDITOR` reorders when files are built
   incrementally.** Use `git move -x <hash> -d <dest>` for individual
   commit reorders — it's in-memory and avoids context-dependent conflicts.
