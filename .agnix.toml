@@ -12,4 +12,5 @@ kiro = true
 # - AS-014: shell quoting in code blocks mistaken for Windows paths
 # - XP-003: hard-coded paths are intentional in install/reference docs
 # - CC-MEM-008: MANDATORY keyword placement is deliberate
-disabled_rules = ["XML-001", "AS-014", "XP-003", "CC-MEM-008", "PE-001"]
+# - CDX-AG-005: agnix bug — rule message not interpolated (empty warning on scripts/ entry)
+disabled_rules = ["XML-001", "AS-014", "XP-003", "CC-MEM-008", "PE-001", "CDX-AG-005"]
