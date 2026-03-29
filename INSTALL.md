@@ -12,8 +12,9 @@ Every method installs the **`skills/`** directory, which contains:
 - **`references/`** subdirectories with symlinks to the relevant reference
   docs for each skill's dependencies
 
-Plus a **routing table** in your AI tool's instruction file. The routing
-table reinforces when to invoke each skill.
+Plus a **routing table** in your AI tool's instruction file. Skills use
+`disable-model-invocation: true` — without routing rules, the model won't
+invoke them.
 
 ## Routing
 
