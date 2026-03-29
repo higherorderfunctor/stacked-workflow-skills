@@ -21,7 +21,7 @@ Install these globally:
 | [ruler](https://github.com/intellectronica/ruler)           | Rule distribution    | `npm install -g @intellectronica/ruler`             |
 | [git-branchless](https://github.com/arxanas/git-branchless) | Stacked commits      | `cargo install --locked git-branchless`             |
 | [git-absorb](https://github.com/tummychow/git-absorb)       | Fixup absorption     | `cargo install git-absorb`                          |
-| [git-revise](https://github.com/mystor/git-revise)          | Commit editing       | `pip install git-revise`                            |
+| [git-revise](https://github.com/mystor/git-revise)          | Commit editing       | `pipx install git-revise`                           |
 
 <!-- TODO: explore npx/uvx for dev tool execution without global installs -->
 

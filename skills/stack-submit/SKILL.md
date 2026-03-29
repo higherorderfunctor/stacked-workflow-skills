@@ -112,7 +112,16 @@ as a revset to select which commits to submit. Default is the current stack.
 
    Present the branch list to the user for review before proceeding.
 
-8. **Push branches** with `git submit` or `git push`:
+8. **Confirm before pushing** — show the user what will be pushed:
+   ```
+   Ready to push N branches and create N PRs. Proceed? (y/n)
+   ```
+   **Wait for explicit user approval.** Pushing creates remote branches
+   and PRs — these are visible side effects that cannot be easily undone.
+   This gate is especially important when the skill is auto-invoked via
+   `disable-model-invocation: false`.
+
+9. **Push branches** with `git submit` or `git push`:
    ```bash
    git submit -c $ARGUMENTS
    ```
@@ -136,34 +145,34 @@ as a revset to select which commits to submit. Default is the current stack.
    git config remote.pushDefault origin
    ```
 
-9. **Create stacked PRs/MRs** — for each non-sentinel branch, create a
-   pull/merge request targeting the previous branch in the stack (or `main`
-   for the first). Use the commit message as the title. Keep the body
-   minimal — the commit diff speaks for itself.
+10. **Create stacked PRs/MRs** — for each non-sentinel branch, create a
+    pull/merge request targeting the previous branch in the stack (or `main`
+    for the first). Use the commit message as the title. Keep the body
+    minimal — the commit diff speaks for itself.
 
-   **Do NOT create PRs/MRs for sentinel/tracking branches.**
+**Do NOT create PRs/MRs for sentinel/tracking branches.**
 
-   #### GitHub
+#### GitHub
 
-   ```bash
-   # First commit after main:
-   gh pr create --head <branch-1> --base main \
-     --title "<commit message>" --body "$(cat <<'EOF'
-   ## Summary
-   <one-line description>
+```bash
+# First commit after main:
+gh pr create --head <branch-1> --base main \
+  --title "<commit message>" --body "$(cat <<'EOF'
+## Summary
+<one-line description>
 
-   Stack: 1/N
+Stack: 1/N
 
-   🤖 Generated with [Claude Code](https://claude.com/claude-code)
-   EOF
-   )"
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)"
 
-   # Subsequent commits:
-   gh pr create --head <branch-N> --base <branch-N-1> \
-     --title "<commit message>" --body "..."
-   ```
+# Subsequent commits:
+gh pr create --head <branch-N> --base <branch-N-1> \
+  --title "<commit message>" --body "..."
+```
 
-10. **Report results** — show a summary table:
+11. **Report results** — show a summary table:
 
     ```
     | # | Branch | PR/MR | Base | Status |

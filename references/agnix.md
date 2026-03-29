@@ -4,7 +4,7 @@ agnix is a cross-platform linter and LSP for AI coding assistant config
 files. It validates SKILL.md, CLAUDE.md, AGENTS.md, Kiro steering files,
 Copilot instructions, MCP configs, and more.
 
-- **Repo**: github.com/agent-sh/agnix
+- **Repo**: https://github.com/agent-sh/agnix
 - **Version in devShell**: tracking latest GitHub release via nvfetcher
 
 ## CLI

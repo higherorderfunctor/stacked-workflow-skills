@@ -103,8 +103,9 @@ for monorepos.
 - **No YAML frontmatter injection** — Kiro `inclusion:` / `name:` and
   Copilot `applyTo:` must be added outside ruler (see `scripts/generate.sh`).
 - **No consumer vs in-repo variants** — single output per agent.
-  `generate.sh` produces both by copying ruler output and adjusting
-  frontmatter.
+  `generate.sh` handles this by directly concatenating `.ruler/*.md`
+  source files and writing per-ecosystem output with different YAML
+  frontmatter via `printf`.
 
 ## Supported Agents
 

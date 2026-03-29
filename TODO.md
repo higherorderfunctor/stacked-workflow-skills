@@ -11,20 +11,31 @@ ready to distribute — Copilot auto-review burns tokens per push.
 
 ## Implementation work
 
-### Review fixes
+### Review fixes (round 2 — 2026-03-29)
 
-Full triage in memory `project_copilot_review_triage.md`.
+Full details in memory `project_repo_review_round2.md`.
 
-High confidence (can do without HITL):
+High confidence (can fix without HITL):
 
-- [ ] `references/agnix.md`: use https:// URL for repo link
-- [ ] `references/ruler.md`: fix generate.sh wording (line 99 — says
-      "copying ruler output" but it directly concatenates with printf)
-- [ ] `CONTRIBUTING.md`: change `pip install git-revise` to
-      `pip install --user git-revise` or `pipx install git-revise`
-- [ ] `skills/stack-submit/SKILL.md`: add explicit user approval gate
-      before pushing branches (step 8) — currently auto-invocation can
-      trigger remote side effects without confirmation
+- [ ] CONTRIBUTING.md:33 `nix fmt` → `dprint fmt`
+- [ ] AGENTS.md:76 `devShell` → `devShells`
+- [ ] README.md:190 + INSTALL.md:96-98 remove "add applyTo frontmatter" (already in file)
+- [ ] nix-workflow.md: update Formatting section (alejandra → dprint wrapper)
+- [ ] nix-workflow.md: update Checks section (list all 4 checks)
+- [ ] stack-plan: simplify fixup tip to `GIT_SEQUENCE_EDITOR=:` pattern
+- [ ] stack-submit: add `git submit --dry-run` to pre-push confirmation
+- [ ] stack-submit: remove unnecessary `$ARGUMENTS` passthrough in step 9
+- [ ] git-branchless.md: add `git submit --dry-run` to command reference
+- [ ] stack-test: add `--no-cache` flag documentation
+- [ ] stack-fix: rename "tree equivalence" → "no unintended changes"
+- [ ] stack-fix: add note redirecting commit message fixes to `git reword`
+- [ ] recommended-config.md: add fixupTargetAlwaysSHA ↔ git-revise caveat
+- [ ] PostToolUse agnix hook: align file matching with pre-commit pattern
+      (add settings.json, .mcp.json, copilot-instructions)
+- [ ] AGENTS.md: remove duplicate "nix needs tracked files" note (lines 43-44)
+- [ ] stack-submit: remove orphaned git-absorb.md reference symlink
+- [ ] stack-summary: add git-branchless.md reference symlink
+- [ ] Recipe 16 in git-branchless.md: split into two sub-recipes
 
 Needs design input:
 
@@ -33,8 +44,23 @@ Needs design input:
 - [ ] README Quick Start symlink uses fragile `$(pwd)` pattern
 - [ ] home-manager `claudeAvailable` check fragile (`hasAttrByPath`)
 - [ ] Copilot module `~/.copilot/` vs manual `.github/` path confusion
-- [ ] CONTRIBUTING.md Without Nix section: incomplete tool list — is
-      non-Nix dev actually supported or just for reference?
+- [ ] CONTRIBUTING.md Without Nix section: incomplete tool list
+- [ ] Kiro home-manager steering uses `inclusion: manual` — contradicts
+      ADR 0003 auto-invocation intent. Need auto variant for consumers.
+- [ ] Copilot `copilot-instructions.md` may not parse YAML frontmatter
+      (different mechanism than `.github/instructions/`). Need plain
+      markdown variant for global install.
+- [ ] Copilot/Kiro home-manager use flat directory symlinks, blocking
+      user skill additions. Claude uses per-skill entries. Align?
+- [ ] Skill lists hardcoded in 7+ locations — derive from filesystem?
+- [ ] Reference file list hardcoded in home-manager (excludes 3 of 8 docs)
+- [ ] Generated file list hardcoded in 3 scripts independently
+- [ ] sources.nix re-evaluated 5x (once per overlay) — hoist to composition?
+- [ ] Structural check symlink tests may fail in Nix sandbox
+- [ ] README: overlay section under Prerequisites is an install method
+- [ ] README: Git Configuration before Installation (wrong order)
+- [ ] README: Quick Start `cat >>` not idempotent
+- [ ] Routing RULE mentions git-revise but no skill covers it
 
 ### Codify repo instructions
 
