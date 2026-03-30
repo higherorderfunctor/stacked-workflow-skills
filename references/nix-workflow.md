@@ -57,13 +57,14 @@ ruler, alejandra, dprint, cspell, nvfetcher.
 ## Formatting
 
 ```bash
-nix fmt             # format all Nix files with alejandra
-alejandra --check --exclude overlays/.nvfetcher .  # check without modifying
+dprint fmt          # format all files (markdown, JSON, Nix via alejandra)
+dprint check        # check without modifying
+nix fmt             # same as dprint fmt (nix fmt wraps dprint)
 ```
 
-The `overlays/.nvfetcher/` directory is excluded from formatting checks
-in `nix flake check`. When running `alejandra` directly, pass
-`--exclude overlays/.nvfetcher` to match CI behavior.
+dprint handles markdown, JSON, and Nix files. Nix formatting uses
+alejandra as a dprint exec plugin (`dprint.json`). The
+`overlays/.nvfetcher/` directory is excluded via dprint config.
 
 ## Linting
 
@@ -75,7 +76,11 @@ cspell lint '**/*.md' --no-progress  # spellcheck markdown
 ## Checks
 
 ```bash
-nix flake check     # runs formatting + spelling checks
+nix flake check     # runs all checks:
+                    #   agent-configs (agnix --strict)
+                    #   formatting (dprint check)
+                    #   spelling (cspell)
+                    #   structural (symlinks, frontmatter, freshness)
 ```
 
 Only tracked files are included — `git add` new files first.

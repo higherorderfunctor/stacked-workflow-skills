@@ -94,8 +94,8 @@ ln -sfn /path/to/stacked-workflow-skills/skills/* .github/skills/
 ```
 
 Copy `.generated/copilot-routing.md` to
-`.github/instructions/stacked-workflow.instructions.md` and add `applyTo: "**"`
-YAML frontmatter.
+`.github/instructions/stacked-workflow.instructions.md` (it already includes
+`applyTo: "**"` frontmatter).
 
 ## Nix: Home-Manager Module
 

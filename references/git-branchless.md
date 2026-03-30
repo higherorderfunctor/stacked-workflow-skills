@@ -297,6 +297,7 @@ Fix individually: `git move -b <hash> -d main --merge`.
 ```bash
 git submit                # force-push existing remote branches in stack
 git submit -c             # create + push new remote branches
+git submit --dry-run      # preview what would be pushed (no side effects)
 git submit @              # push only branches at HEAD
 git submit 'draft()'      # push all draft branches
 ```
@@ -619,12 +620,19 @@ git record -I -m "new middle commit"   # insert + restack children
 
 ### 16. Resolve "trying to rewrite N public commits"
 
+If main was force-pushed and commits are incorrectly marked as public:
+
 ```bash
-git restack -f                 # force past the check
-git restack 'draft()'          # target only drafts
+git restack -f                 # force past the public commit safety check
 ```
 
-Happens when main was force-pushed or commits unexpectedly became public (arxanas/git-branchless#988).
+If you only want to restack draft commits and skip public ones:
+
+```bash
+git restack 'draft()'          # target only draft commits (this is the default revset)
+```
+
+See arxanas/git-branchless#988 for background on unexpected public status.
 
 ### 17. Clean up stale commits after squash-merge
 

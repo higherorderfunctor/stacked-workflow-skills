@@ -13,24 +13,40 @@ alejandra, dprint, cspell, nvfetcher.
 
 ### Without Nix
 
-Install these globally:
+The following tools are required. Check which are available, then install
+any that are missing using your preferred method:
 
-| Tool                                                        | Purpose              | Install                                             |
-| ----------------------------------------------------------- | -------------------- | --------------------------------------------------- |
-| [agnix](https://github.com/agent-sh/agnix)                  | Agent config linting | `npm install -g agnix` or `cargo install agnix-cli` |
-| [ruler](https://github.com/intellectronica/ruler)           | Rule distribution    | `npm install -g @intellectronica/ruler`             |
-| [git-branchless](https://github.com/arxanas/git-branchless) | Stacked commits      | `cargo install --locked git-branchless`             |
-| [git-absorb](https://github.com/tummychow/git-absorb)       | Fixup absorption     | `cargo install git-absorb`                          |
-| [git-revise](https://github.com/mystor/git-revise)          | Commit editing       | `pipx install git-revise`                           |
+**Required tools:**
 
-<!-- TODO: explore npx/uvx for dev tool execution without global installs -->
+<!-- dprint-ignore -->
+| Tool | Purpose | Upstream |
+|------|---------|----------|
+| [git-branchless](https://github.com/arxanas/git-branchless) | Stacked commits | Rust binary |
+| [git-absorb](https://github.com/tummychow/git-absorb) | Fixup absorption | Rust binary |
+| [git-revise](https://github.com/mystor/git-revise) | Commit editing | Python package |
+| [agnix](https://github.com/agent-sh/agnix) | Agent config linting | Rust/npm |
+| [ruler](https://github.com/intellectronica/ruler) | Rule distribution | npm |
+| [dprint](https://dprint.dev) | Formatting | Rust binary |
+| [alejandra](https://github.com/kamadorueda/alejandra) | Nix formatting | Rust binary |
+
+**Prereq check** (run this to see what's missing):
+
+```bash
+for tool in git-branchless git-absorb git-revise agnix ruler dprint alejandra; do
+  command -v "$tool" &>/dev/null && echo "✓ $tool" || echo "✗ $tool — not found"
+done
+```
+
+Install missing tools however you prefer — package manager, cargo, npm,
+pipx, system packages, or ask your AI assistant to help find the right
+install method for your environment.
 
 ## Validation
 
 Run before committing:
 
 ```bash
-nix fmt              # or: alejandra .
+dprint fmt           # format all files (markdown, JSON, Nix via alejandra)
 agnix --strict .     # lint agent configs
 cspell lint '**/*.md' --no-progress  # spellcheck
 nix flake check      # all checks (requires staged files)
@@ -39,7 +55,9 @@ nix flake check      # all checks (requires staged files)
 ## Generating Routing Files
 
 The routing table is maintained in `.ruler/` and distributed to all
-ecosystems via `scripts/generate.sh`:
+ecosystems via `scripts/generate.sh` (not `ruler apply` — ruler cannot
+inject per-ecosystem YAML frontmatter or produce consumer vs dev output
+variants; see `references/ruler.md` for details):
 
 ```bash
 scripts/generate.sh

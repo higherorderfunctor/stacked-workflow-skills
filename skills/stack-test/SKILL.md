@@ -87,6 +87,8 @@ Run a test command or formatter across commits in the current stack.
 ## Notes
 
 - Test results are cached by command + tree ID. Use `git test clean` to clear.
+  Use `--no-cache` to bypass the cache for the current run without clearing
+  stored results (useful after environment changes).
 - `--jobs >1` implies worktree strategy (concurrent git worktrees).
 - The `BRANCHLESS_TEST_COMMIT` env var is available inside the test command.
 - Fix mode is safe for parallel execution — it works on tree objects directly.

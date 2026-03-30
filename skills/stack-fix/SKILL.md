@@ -193,13 +193,14 @@ Run after either path to confirm the stack is healthy.
    git sl
    ```
 
-2. **Verify tree equivalence** (if only moving/fixing content, not adding new
-   work):
+2. **Verify no unintended changes** (the diff should show ONLY the intended
+   fix — unexpected files or regions indicate content lost/duplicated during
+   conflict resolution):
    ```bash
    git diff $BEFORE_SHA..HEAD --stat
    ```
-   If the diff shows unexpected changes, something was lost or duplicated
-   during conflict resolution.
+   For commit message fixes (not content), use `git reword <hash>` directly
+   — this skill handles content changes only.
 
 3. **Run tests** if a test command is readily identifiable:
    ```bash

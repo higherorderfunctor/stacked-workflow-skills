@@ -2,10 +2,11 @@
 
 ## Stack status
 
-16 stacked PRs (#88–#103) + 5 tip commits not in PRs (agnix hook,
-validation instructions, dprint formatter, review fixes, sentinel).
-Old PRs #69–#87 closed. Don't push branches or recreate PRs until
-ready to distribute — Copilot auto-review burns tokens per push.
+16 stacked PRs (#88–#103) + 8 tip commits not in PRs:
+agnix hook, validation instructions, dprint formatter, Copilot review
+fixes, skill content improvements, round 2 Copilot fixes, round 2
+review fixes, sentinel. Old PRs #69–#87 closed. Don't push branches
+or recreate PRs until ready — Copilot auto-review burns tokens.
 
 ---
 
@@ -15,56 +16,67 @@ ready to distribute — Copilot auto-review burns tokens per push.
 
 Full details in memory `project_repo_review_round2.md`.
 
-High confidence (can fix without HITL):
-
-- [ ] CONTRIBUTING.md:33 `nix fmt` → `dprint fmt`
-- [ ] AGENTS.md:76 `devShell` → `devShells`
-- [ ] README.md:190 + INSTALL.md:96-98 remove "add applyTo frontmatter" (already in file)
-- [ ] nix-workflow.md: update Formatting section (alejandra → dprint wrapper)
-- [ ] nix-workflow.md: update Checks section (list all 4 checks)
-- [ ] stack-plan: simplify fixup tip to `GIT_SEQUENCE_EDITOR=:` pattern
-- [ ] stack-submit: add `git submit --dry-run` to pre-push confirmation
-- [ ] stack-submit: remove unnecessary `$ARGUMENTS` passthrough in step 9
-- [ ] git-branchless.md: add `git submit --dry-run` to command reference
-- [ ] stack-test: add `--no-cache` flag documentation
-- [ ] stack-fix: rename "tree equivalence" → "no unintended changes"
-- [ ] stack-fix: add note redirecting commit message fixes to `git reword`
-- [ ] recommended-config.md: add fixupTargetAlwaysSHA ↔ git-revise caveat
-- [ ] PostToolUse agnix hook: align file matching with pre-commit pattern
-      (add settings.json, .mcp.json, copilot-instructions)
-- [ ] AGENTS.md: remove duplicate "nix needs tracked files" note (lines 43-44)
-- [ ] stack-submit: remove orphaned git-absorb.md reference symlink
-- [ ] stack-summary: add git-branchless.md reference symlink
-- [ ] Recipe 16 in git-branchless.md: split into two sub-recipes
-
-Needs design input:
+Needs design input (independent of fragment pipeline):
 
 - [ ] Consider ADR 0004 for superseding decision (per review-policy process)
 - [ ] sws-* directory names violate Agent Skills spec (name must match dir)
 - [ ] README Quick Start symlink uses fragile `$(pwd)` pattern
 - [ ] home-manager `claudeAvailable` check fragile (`hasAttrByPath`)
-- [ ] Copilot module `~/.copilot/` vs manual `.github/` path confusion
-- [ ] CONTRIBUTING.md Without Nix section: incomplete tool list
-- [ ] Kiro home-manager steering uses `inclusion: manual` — contradicts
-      ADR 0003 auto-invocation intent. Need auto variant for consumers.
-- [ ] Copilot `copilot-instructions.md` may not parse YAML frontmatter
-      (different mechanism than `.github/instructions/`). Need plain
-      markdown variant for global install.
-- [ ] Copilot/Kiro home-manager use flat directory symlinks, blocking
-      user skill additions. Claude uses per-skill entries. Align?
-- [ ] Skill lists hardcoded in 7+ locations — derive from filesystem?
-- [ ] Reference file list hardcoded in home-manager (excludes 3 of 8 docs)
-- [ ] Generated file list hardcoded in 3 scripts independently
 - [ ] sources.nix re-evaluated 5x (once per overlay) — hoist to composition?
-- [ ] Structural check symlink tests may fail in Nix sandbox
 - [ ] README: overlay section under Prerequisites is an install method
 - [ ] README: Git Configuration before Installation (wrong order)
 - [ ] README: Quick Start `cat >>` not idempotent
-- [ ] Routing RULE mentions git-revise but no skill covers it
 
-### Codify repo instructions
+Folded into fragment pipeline migration (decisions made 2026-03-30):
 
-- [ ] CONTRIBUTING.md: generate.sh design rationale (why not ruler apply)
+- Kiro `inclusion: auto` for ALL profiles (no manual anywhere)
+- Per-skill symlinks for Kiro/Copilot in home-manager (match Claude)
+- Copilot frontmatter + path confusion → resolved by ecosystem config
+- CONTRIBUTING.md tool list → rewritten during migration
+- Routing RULE git-revise → fixed when routing-table.md becomes fragment
+- Skill/reference/generated file lists → derived from fragments.nix
+- AGENTS.md duplicate notes → gone when AGENTS.md is generated
+
+### Fragment pipeline (replaces .ruler/ + generate.sh)
+
+Full design in memory `project_fragment_pipeline_design.md`.
+
+Replace `.ruler/` + `scripts/generate.sh` with a Nix-driven fragment
+pipeline. All instruction content lives as composable markdown fragments.
+Nix declares profiles (package vs dev) and generates per-ecosystem
+outputs with correct frontmatter and placement. No `.generated/`
+intermediate — outputs go directly to ecosystem paths.
+
+Migration steps:
+
+- [ ] Create `fragments/` directory from `.ruler/*.md` + AGENTS.md sections:
+      routing-table.md, dev-skills.md, operations.md (from .ruler/),
+      project-overview.md, commit-convention.md, coding-standards.md,
+      tooling-preference.md, build-commands.md, validation.md,
+      flake-structure.md, nix-workflow.md, development.md,
+      continuous-improvement.md (from AGENTS.md sections)
+- [ ] Create `lib/fragments.nix` with:
+      - Fragment registry (paths to all fragment files)
+      - Profile definitions (package = routing only, dev = all fragments)
+      - Ecosystem config (frontmatter per ecosystem)
+      - `mkContent` / `mkOutput` functions
+- [ ] Create Nix app (`apps.generate`) that writes dev profile outputs:
+      - `.claude/references/stacked-workflow.md` (no frontmatter)
+      - `.kiro/steering/stacked-workflow.md` (inclusion: auto)
+      - `.github/instructions/stacked-workflow.instructions.md` (applyTo)
+      - `AGENTS.md` (from dev fragments, no frontmatter)
+- [ ] Update CLAUDE.md: `@.generated/claude-routing.md` →
+      `@.claude/references/stacked-workflow.md`
+- [ ] Update home-manager module to use new lib functions for package
+      profile. Claude gets `.claude/references/stacked-workflow.md`
+      instead of `memory.text` blob. Kiro/Copilot same pattern.
+- [ ] Update pre-commit hook: `scripts/generate.sh` → `nix run .#generate`
+- [ ] Update flake.nix: replace old lib exports with fragment-based ones
+- [ ] Remove: `.generated/`, `.ruler/`, `scripts/generate.sh`,
+      `lib/routing-{claude,kiro,copilot}.nix`
+- [ ] Update: INSTALL.md, CONTRIBUTING.md, references/ruler.md, CI workflow
+- [ ] Slim structural test: keep skills + symlink checks only, drop
+      generated file validation (pipeline guarantees those)
 - [ ] Evaluate adding agnix to CI workflow alongside structural check
 
 ### Skill content improvements
@@ -136,9 +148,8 @@ git push --force-with-lease origin <remaining-branches>
 
 ### Post-merge: distribute tip commits
 
-5 tip commits not in PRs (agnix hook, validation instructions, dprint
-formatter, review fixes, sentinel). After main PRs merged, absorb into
-existing commits or submit as new PRs.
+8 tip commits not in PRs. After main PRs merged, absorb into existing
+commits or submit as new PRs.
 
 ### Post-merge: validation
 

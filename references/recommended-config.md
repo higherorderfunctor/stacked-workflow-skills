@@ -24,6 +24,8 @@ These prevent common pain points in stacked workflows.
 ```gitconfig
 [absorb]
   # Route fixes by SHA, not message — stable across rewording
+  # Note: breaks `git revise --autosquash` (see git-revise.md).
+  # Prefer `git absorb --and-rebase` with this setting.
   fixupTargetAlwaysSHA = true
   # Default stack depth is 10; stacks regularly exceed this
   maxStack = 50

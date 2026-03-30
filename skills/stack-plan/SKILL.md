@@ -320,7 +320,8 @@ Existing commits need to be reorganized into a clean atomic stack.
 - **Fixup pattern for post-hoc corrections:** when you discover a missed
   change after a commit is already made, use `git commit --fixup <hash>`
   to create a fixup commit, then squash it with
-  `GIT_SEQUENCE_EDITOR="sed -i '/^pick.*fixup/s/^pick/fixup/'" git rebase -i --autosquash <hash>~1`.
+  `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <hash>~1`
+  (the no-op editor `:` lets `--autosquash` do the work).
   This is faster than checking out each commit to amend.
 - **Avoid scripted `GIT_SEQUENCE_EDITOR` reorders when files are built
   incrementally.** Use `git move -x <hash> -d <dest>` for individual

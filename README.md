@@ -187,7 +187,7 @@ cp /path/to/stacked-workflow-skills/.generated/copilot-routing.md \
   .github/instructions/stacked-workflow.instructions.md
 ```
 
-Add `applyTo: "**"` YAML frontmatter to the instructions file.
+The file already includes `applyTo: "**"` frontmatter — no additional setup needed.
 
 ## License
 

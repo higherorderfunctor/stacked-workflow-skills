@@ -40,8 +40,8 @@ nix flake check      # Validate flake, formatting, spelling, and agent configs
 agnix --strict .     # Lint AI agent config files
 ```
 
-**Note:** `nix flake check` only includes tracked files; add new files with
-`git add` before running it in a dirty git tree.
+**Note:** `nix flake check` only includes tracked files — see
+[Nix Workflow](#nix-workflow) below.
 
 ### Formatting
 
@@ -73,7 +73,7 @@ used even when the tool mechanism is unavailable.
 - **CONTRIBUTING.md** — development setup and workflow
 - **dev/** — dev-only skills (repo-review, index-repo-docs)
 - **docs/decisions/** — MADR-style architecture decision records with confidence scoring
-- **flake.nix** — nixpkgs + nvfetcher + rust-overlay inputs, overlays, packages, devShell, lib, homeManagerModules
+- **flake.nix** — nixpkgs + nvfetcher + rust-overlay inputs, overlays, packages, devShells, lib, homeManagerModules
 - **home-manager/** — home-manager module for declarative per-user installation
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — canonical reference docs (symlinked into each skill's `references/`)
@@ -102,6 +102,18 @@ headers for readability, sort entries within each group.
 Never duplicate logic, configuration, or patterns. When the same thing appears
 twice, extract it. Skills reference shared docs in `references/` rather than
 duplicating content.
+
+## External Tooling
+
+When accessing external services, prefer the highest-fidelity integration
+available:
+
+1. **MCP server** — richest context, structured responses, stays in-conversation
+2. **CLI tool** (e.g., `gh`, `curl`) — scriptable, good for batch operations
+3. **Direct web access** — last resort, use only when MCP and CLI are unavailable
+
+For GitHub specifically: prefer the `github-mcp` server over `gh` CLI over
+raw API calls or web fetches.
 
 ## Development
 

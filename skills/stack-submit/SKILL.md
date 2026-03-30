@@ -45,12 +45,12 @@ as a revset to select which commits to submit. Default is the current stack.
 
 1. **Visualize the stack** with `git sl` to understand what will be submitted.
 
-2. **Determine the commit range**:
+2. **Determine the commit range** from `$ARGUMENTS`:
    ```bash
-   # If argument is a revset (use git sl or git branchless log, not git log):
+   # If $ARGUMENTS is a revset (use git sl or git branchless log, not git log):
    git sl
 
-   # If no argument, try stack():
+   # If $ARGUMENTS is empty, try stack():
    git sl
 
    # If on main with no stack, use draft():
@@ -112,7 +112,11 @@ as a revset to select which commits to submit. Default is the current stack.
 
    Present the branch list to the user for review before proceeding.
 
-8. **Confirm before pushing** — show the user what will be pushed:
+8. **Confirm before pushing** — preview what will be pushed:
+   ```bash
+   git submit --dry-run    # or: git submit -c --dry-run (first push)
+   ```
+   Show the dry-run output to the user and ask for confirmation:
    ```
    Ready to push N branches and create N PRs. Proceed? (y/n)
    ```
@@ -123,7 +127,7 @@ as a revset to select which commits to submit. Default is the current stack.
 
 9. **Push branches** with `git submit` or `git push`:
    ```bash
-   git submit -c $ARGUMENTS
+   git submit -c
    ```
 
    **Gotcha:** `git submit -c` silently does nothing when commits are on main
