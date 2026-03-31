@@ -17,26 +17,25 @@ table reinforces when to invoke each skill.
 
 ## Routing
 
-The routing table is maintained in `.ruler/routing.md` and generated into
-per-ecosystem formats by `scripts/generate.sh`:
+Instruction content is maintained as composable fragments in `fragments/`
+and generated per-ecosystem by `nix run .#generate`:
 
 <!-- dprint-ignore -->
-| Platform | Pre-generated file | Instruction file |
-|----------|--------------------|------------------|
-| Claude Code | `.generated/claude-routing.md` | `CLAUDE.md` or `~/.claude/CLAUDE.md` |
-| GitHub Copilot | `.generated/copilot-routing.md` | `.github/instructions/*.md` |
-| Kiro | `.generated/kiro-routing.md` | `.kiro/steering/*.md` |
+| Platform | Instruction file | Frontmatter |
+|----------|-----------------|-------------|
+| Claude Code | `.claude/references/stacked-workflow.md` | none |
+| Kiro | `.kiro/steering/stacked-workflow.md` | `inclusion: auto` |
+| GitHub Copilot | `.github/instructions/stacked-workflow.instructions.md` | `applyTo: "**"` |
 
-### Using pre-generated files (no Nix required)
+### Using checked-in files (no Nix required)
 
-Copy the appropriate file from `.generated/` into your project's instruction
-file location. Kiro and Copilot files include YAML frontmatter — use the
-file as-is. These are checked into the repo and kept in sync by CI.
+Copy the appropriate file from the repo into your project. Each file is
+ready to use as-is — frontmatter is included where needed.
 
-### Using Nix lib (pass-through)
+### Using Nix lib
 
-The Nix lib functions read from `.generated/` and return strings. Useful
-for wiring into home-manager or other Nix expressions:
+The Nix lib functions generate instruction content from fragments.
+Useful for wiring into home-manager or other Nix expressions:
 
 ```bash
 nix eval --raw github:higherorderfunctor/stacked-workflow-skills#lib.mkClaudeRouting
@@ -57,12 +56,15 @@ mkdir -p ~/.claude
 ln -sfn "$(pwd)/stacked-workflow-skills/skills" ~/.claude/skills
 ```
 
-Then add the routing table to `~/.claude/CLAUDE.md`. Copy from
-`.generated/claude-routing.md` or evaluate with `nix eval`.
+Then copy the routing instruction file:
+
+```bash
+cp stacked-workflow-skills/.claude/references/stacked-workflow.md \
+  ~/.claude/references/stacked-workflow.md
+```
 
 The top-level `references/` directory is also useful for global CLAUDE.md
-reference loading (the `RULE` about reading reference docs before running
-stacked workflow commands):
+reference loading:
 
 ```bash
 ln -sfn "$(pwd)/stacked-workflow-skills/references" ~/.claude/references
@@ -71,11 +73,13 @@ ln -sfn "$(pwd)/stacked-workflow-skills/references" ~/.claude/references
 ### Claude Code (Per-Project)
 
 ```bash
-mkdir -p .claude
-ln -sfn /path/to/stacked-workflow-skills/skills .claude/skills
+mkdir -p .claude/skills .claude/references
+ln -sfn /path/to/stacked-workflow-skills/skills/* .claude/skills/
+cp /path/to/stacked-workflow-skills/.claude/references/stacked-workflow.md \
+  .claude/references/stacked-workflow.md
 ```
 
-Add the routing table to the project's `CLAUDE.md`.
+Add `@.claude/references/stacked-workflow.md` to the project's `CLAUDE.md`.
 
 ### Kiro
 
@@ -84,7 +88,12 @@ mkdir -p .kiro/steering .kiro/skills
 ln -sfn /path/to/stacked-workflow-skills/skills/* .kiro/skills/
 ```
 
-Copy `.generated/kiro-routing.md` to `.kiro/steering/stacked-workflow.md`.
+Copy the steering file:
+
+```bash
+cp /path/to/stacked-workflow-skills/.kiro/steering/stacked-workflow.md \
+  .kiro/steering/stacked-workflow.md
+```
 
 ### GitHub Copilot
 
@@ -93,9 +102,12 @@ mkdir -p .github/instructions .github/skills
 ln -sfn /path/to/stacked-workflow-skills/skills/* .github/skills/
 ```
 
-Copy `.generated/copilot-routing.md` to
-`.github/instructions/stacked-workflow.instructions.md` (it already includes
-`applyTo: "**"` frontmatter).
+Copy the instructions file (already includes `applyTo: "**"` frontmatter):
+
+```bash
+cp /path/to/stacked-workflow-skills/.github/instructions/stacked-workflow.instructions.md \
+  .github/instructions/stacked-workflow.instructions.md
+```
 
 ## Nix: Home-Manager Module
 
@@ -175,11 +187,11 @@ fetch pruning, push defaults).
 
 **`integrations.claude.enable`** — requires `programs.claude-code.enable =
 true`. Sets per-skill `programs.claude-code.skills` entries (additive —
-merges with your personal skills), appends routing table to
-`programs.claude-code.memory.text`, places per-file references in
-`~/.claude/references/`. Note: if you already manage `~/.claude/references`
-via `home.file` (e.g., outOfStoreSymlinks), don't enable this — it will
-conflict. Use the [direct](#nix-programsclaude-code-direct) method instead.
+merges with your personal skills), places instruction file and per-file
+tool references in `~/.claude/references/`. Note: if you already manage
+`~/.claude/references` via `home.file` (e.g., outOfStoreSymlinks), don't
+enable this — it will conflict. Use the
+[direct](#nix-programsclaude-code-direct) method instead.
 
 **`integrations.kiro.enable`** — symlinks skills to `~/.kiro/skills/`,
 places routing steering file at `~/.kiro/steering/stacked-workflow.md`.
@@ -230,10 +242,13 @@ programs.claude-code = {
     stack-summary = "${inputs.stacked-workflow-skills}/skills/stack-summary";
     stack-test = "${inputs.stacked-workflow-skills}/skills/stack-test";
   };
-  memory.text = lib.mkAfter (import "${inputs.stacked-workflow-skills}/lib/routing-claude.nix");
 };
 
-# Per-file references for global CLAUDE.md reference loading (optional)
+# Instruction file (routing table for consumers)
+home.file.".claude/references/stacked-workflow.md".text =
+  inputs.stacked-workflow-skills.lib.mkClaudeRouting;
+
+# Per-file tool references (optional — reference docs for skill pre-flight)
 home.file.".claude/references/git-absorb.md".source = "${inputs.stacked-workflow-skills}/references/git-absorb.md";
 home.file.".claude/references/git-branchless.md".source = "${inputs.stacked-workflow-skills}/references/git-branchless.md";
 home.file.".claude/references/git-revise.md".source = "${inputs.stacked-workflow-skills}/references/git-revise.md";
@@ -340,7 +355,7 @@ Tell the user what you found and what's missing.
 > `home.file.".claude/references"` definitions. You have two options:
 >
 > 1. Skip the claude integration (`integrations.claude.enable` stays
->    `false`) and wire `programs.claude-code.skills` + `memory.text`
+>    `false`) and wire `programs.claude-code.skills` + `home.file` references
 >    manually (see [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct))
 > 2. Remove your existing `~/.claude/references` management and let the
 >    module handle it via `integrations.claude.enable = true`
@@ -369,7 +384,7 @@ Ask the user:
 >
 > 1. **Home-manager module** — `stacked-workflows.enable = true`
 >    (best for personal machine setup, configures git + ecosystems declaratively)
-> 2. **programs.claude-code** — direct skills + memory.text
+> 2. **programs.claude-code** — direct skills + home.file references
 >    (if you already configure Claude Code via HM and want manual control)
 > 3. **DevShell** — per-project shellHook symlinks
 >    (skills available only when `nix develop` is active)
@@ -412,7 +427,7 @@ Ask which git config preset:
 **programs.claude-code (option 2):**
 
 See [Nix: programs.claude-code (Direct)](#nix-programsclaude-code-direct).
-Wire `skills`, `memory.text`, and optionally `home.file` for references.
+Wire `skills` and `home.file` for instruction file and references.
 
 **DevShell (option 3):**
 
@@ -425,23 +440,23 @@ See [Manual Install](#manual-install). Clone, symlink, add routing table.
 
 #### Step 5: Add routing table (non-HM-module paths only)
 
-**Guard:** skip if using the HM module (it adds the routing table
-automatically via `programs.claude-code.memory.text`).
+**Guard:** skip if using the HM module (it adds the instruction file
+automatically via `.claude/references/`).
 
-**Guard:** skip if the routing table is already in the instruction file.
+**Guard:** skip if the instruction file is already in place.
 
-For Claude Code, append to `CLAUDE.md`:
+For Claude Code, copy the instruction file and add a reference:
 
 ```bash
-cat .generated/claude-routing.md >> CLAUDE.md
-# or for global:
-cat .generated/claude-routing.md >> ~/.claude/CLAUDE.md
+cp .claude/references/stacked-workflow.md ~/.claude/references/
+# Then add to CLAUDE.md: @.claude/references/stacked-workflow.md
 ```
 
-For Kiro, copy `.generated/kiro-routing.md` to `.kiro/steering/`.
+For Kiro, copy `.kiro/steering/stacked-workflow.md` to
+`.kiro/steering/`.
 
-For Copilot, copy `.generated/copilot-routing.md` to
-`.github/instructions/`.
+For Copilot, copy `.github/instructions/stacked-workflow.instructions.md`
+to `.github/instructions/`.
 
 #### Step 6: Verify
 
