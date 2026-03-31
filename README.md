@@ -39,53 +39,67 @@ Canonical reference docs in `references/`:
 - [git-revise](https://github.com/mystor/git-revise) (optional, used by some
   recipes)
 
-### Manual install
+Install using your preferred method. This flake also provides an overlay
+with packages built from latest release sources — see
+[INSTALL.md](INSTALL.md) for Nix overlay details.
+
+## Installation
+
+### Quick Start
+
+#### Claude Code
 
 ```bash
-cargo install --git https://github.com/arxanas/git-branchless git-branchless
-cargo install --git https://github.com/tummychow/git-absorb
-# Optional:
-pip install git-revise
+git clone https://github.com/higherorderfunctor/stacked-workflow-skills.git
+mkdir -p ~/.claude/skills ~/.claude/references
+ln -sfn /path/to/stacked-workflow-skills/skills/* ~/.claude/skills/
+cp /path/to/stacked-workflow-skills/.claude/references/stacked-workflow.md \
+  ~/.claude/references/stacked-workflow.md
 ```
 
-### Nix overlay
-
-This flake provides an overlay with packages built from the latest release
-sources (tracked via nvfetcher). Use per-package overlays for selective
-installation:
-
-```nix
-{
-  inputs.stacked-workflow-skills = {
-    url = "github:higherorderfunctor/stacked-workflow-skills";
-    inputs.nixpkgs.follows = "nixpkgs";
-  };
-}
-
-# In your configuration or home-manager:
-nixpkgs.overlays = [
-  inputs.stacked-workflow-skills.overlays.git-branchless
-];
-# Then use pkgs.git-branchless anywhere
-```
-
-Or use the combined overlay for all tools:
-
-```nix
-nixpkgs.overlays = [
-  inputs.stacked-workflow-skills.overlays.default
-];
-```
-
-Or with `nix develop` (provides all three tools):
+#### Kiro
 
 ```bash
-nix develop github:higherorderfunctor/stacked-workflow-skills
+mkdir -p .kiro/skills .kiro/steering
+ln -sfn /path/to/stacked-workflow-skills/skills/* .kiro/skills/
+cp /path/to/stacked-workflow-skills/.kiro/steering/stacked-workflow.md \
+  .kiro/steering/stacked-workflow.md
 ```
 
-Optional: [direnv](https://direnv.net/) with
-[nix-direnv](https://github.com/nix-community/nix-direnv) to automatically
-load the flake dev shell (`.envrc` uses `use flake` which requires nix-direnv).
+#### GitHub Copilot
+
+```bash
+mkdir -p .github/skills .github/instructions
+ln -sfn /path/to/stacked-workflow-skills/skills/* .github/skills/
+cp /path/to/stacked-workflow-skills/.github/instructions/stacked-workflow.instructions.md \
+  .github/instructions/stacked-workflow.instructions.md
+```
+
+### All Methods
+
+<!-- dprint-ignore -->
+| Method | Best for | Details |
+|--------|----------|---------|
+| **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `stacked-workflows.enable = true` |
+| **Nix (programs.claude-code)** | Direct Claude Code config | `skills` + `home.file` references |
+| **Nix overlay** | Packages only | `overlays.default` or per-package overlays |
+| **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
+| **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
+| **Agentic** | AI tool self-installs | Interactive flow in `INSTALL.md` |
+
+See **[INSTALL.md](INSTALL.md)** for detailed instructions, routing table
+setup, and examples for Claude Code, Kiro, and GitHub Copilot.
+
+#### Agentic Install
+
+Tell your AI tool:
+
+> Read the Agentic Installation section of INSTALL.md from
+> github:higherorderfunctor/stacked-workflow-skills and follow the
+> interactive install flow for this project.
+
+The agent detects your environment, asks what to configure, skips what's
+already done, and executes one step at a time with your approval.
 
 ## Git Configuration
 
@@ -128,63 +142,6 @@ stacked-workflows = {
   gitPreset = "full"; # or "minimal"
 };
 ```
-
-## Installation
-
-<!-- dprint-ignore -->
-| Method | Best for | Details |
-|--------|----------|---------|
-| **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `stacked-workflows.enable = true` |
-| **Nix (programs.claude-code)** | Direct Claude Code config | `skills` + `home.file` references |
-| **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
-| **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
-| **Agentic** | AI tool self-installs | Interactive flow in `INSTALL.md` |
-
-See **[INSTALL.md](INSTALL.md)** for detailed instructions, routing table
-setup, and examples for Claude Code, Kiro, and GitHub Copilot.
-
-#### Agentic Install
-
-Tell your AI tool:
-
-> Read the Agentic Installation section of INSTALL.md from
-> github:higherorderfunctor/stacked-workflow-skills and follow the
-> interactive install flow for this project.
-
-The agent detects your environment, asks what to configure, skips what's
-already done, and executes one step at a time with your approval.
-
-### Quick Start
-
-#### Claude Code
-
-```bash
-git clone https://github.com/higherorderfunctor/stacked-workflow-skills.git
-mkdir -p ~/.claude/skills ~/.claude/references
-ln -sfn /path/to/stacked-workflow-skills/skills/* ~/.claude/skills/
-cp /path/to/stacked-workflow-skills/.claude/references/stacked-workflow.md \
-  ~/.claude/references/stacked-workflow.md
-```
-
-#### Kiro
-
-```bash
-mkdir -p .kiro/skills .kiro/steering
-ln -sfn /path/to/stacked-workflow-skills/skills/* .kiro/skills/
-cp /path/to/stacked-workflow-skills/.kiro/steering/stacked-workflow.md \
-  .kiro/steering/stacked-workflow.md
-```
-
-#### GitHub Copilot
-
-```bash
-mkdir -p .github/skills .github/instructions
-ln -sfn /path/to/stacked-workflow-skills/skills/* .github/skills/
-cp /path/to/stacked-workflow-skills/.github/instructions/stacked-workflow.instructions.md \
-  .github/instructions/stacked-workflow.instructions.md
-```
-
-The file already includes `applyTo: "**"` frontmatter — no additional setup needed.
 
 ## License
 

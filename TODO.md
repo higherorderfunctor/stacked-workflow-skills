@@ -15,8 +15,6 @@ ready — Copilot auto-review burns tokens.
 
 Needs design input:
 
-- [ ] README: overlay section under Prerequisites is an install method
-- [ ] README: Git Configuration before Installation (wrong order)
 - [ ] Routing RULE mentions git-revise but no skill covers it
 - [ ] Clean up `docs/reports/ruler-migration-assessment.md` — contains
       stale references to `.ruler/`, `.generated/`, `generate.sh`, and
