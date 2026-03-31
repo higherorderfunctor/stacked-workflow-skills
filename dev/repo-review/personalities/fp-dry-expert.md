@@ -10,9 +10,9 @@ exceeds the cost of repetition.
 
 ### Single Source of Truth
 
-- Is `.ruler/routing.md` truly the single source for routing? Or has
-  content drifted into CLAUDE.md, INSTALL.md, or README.md that isn't
-  generated from it?
+- Is `fragments/routing-table.md` truly the single source for routing?
+  Or has content drifted into CLAUDE.md, INSTALL.md, or README.md that
+  isn't generated from it?
 - Are git config presets (`lib/git-config.nix`, `lib/git-config-full.nix`)
   the single source? Or are the same values repeated in docs?
 - Is there content in multiple skills that should be in a shared reference?

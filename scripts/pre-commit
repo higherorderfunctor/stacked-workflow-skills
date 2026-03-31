@@ -5,7 +5,7 @@ shopt -s inherit_errexit 2>/dev/null || :
 # Pre-commit hook: regenerates, auto-fixes, formats, then validates.
 #
 # Order matters — each step can modify files, so formatting runs last:
-#   1. freshness check (regenerate .ruler/ → .generated/ if stale)
+#   1. freshness check (regenerate from fragments/ if stale)
 #   2. agnix --fix (auto-fix agent config issues)
 #   3. dprint fmt (format everything last, catches all modifications)
 #   4. agnix --strict (final lint on formatted output)

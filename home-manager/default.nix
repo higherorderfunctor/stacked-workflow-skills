@@ -49,8 +49,7 @@
   };
 
   claudeAvailable =
-    (lib.hasAttrByPath ["programs" "claude-code" "enable"] options)
-    && config.programs.claude-code.enable;
+    lib.attrByPath ["programs" "claude-code" "enable"] false config;
 in {
   options.stacked-workflows = {
     enable = lib.mkEnableOption "stacked workflow skills and references";

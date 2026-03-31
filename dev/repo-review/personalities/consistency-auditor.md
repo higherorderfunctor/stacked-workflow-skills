@@ -9,8 +9,7 @@ apart.
 ### Cross-Document Agreement
 
 - Does the CLAUDE.md routing table match the INSTALL.md routing table?
-- Do both match the generated files in `.generated/`?
-- Do they all match `.ruler/routing.md` (the source of truth)?
+- Do all ecosystem outputs match `fragments/routing-table.md` (the source)?
 - Does the Kiro steering file match? The Copilot instructions file?
 - Does README's install table match INSTALL.md's sections?
 - Do all docs agree on option names, paths, and behavior?
@@ -46,10 +45,10 @@ apart.
 
 ### Generated File Freshness
 
-- Do `.generated/` files match what `nix eval` produces?
-- Does `.kiro/steering/stacked-workflow.md` match `.generated/kiro-routing.md`?
-- Does `.github/instructions/stacked-workflow.instructions.md` match
-  `.generated/copilot-routing.md` (plus frontmatter)?
+- Do ecosystem instruction files match what `nix run .#generate` produces?
+- Does `.claude/references/stacked-workflow.md` match the dev profile?
+- Does `.kiro/steering/stacked-workflow.md` match the dev profile + frontmatter?
+- Does `.github/instructions/stacked-workflow.instructions.md` match?
 
 ## Method
 
@@ -62,8 +61,8 @@ This reviewer does NOT do external research. Instead:
 
 **When scope is provided:** only scan files within the given scope plus their
 direct source-of-truth dependencies (e.g., if scope is `INSTALL.md`, also
-check `.ruler/routing.md` and `.generated/` since INSTALL.md references
-them).
+check `fragments/routing-table.md` and ecosystem output files since
+INSTALL.md references them).
 
 ## Output
 

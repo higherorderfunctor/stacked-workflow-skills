@@ -16,14 +16,13 @@ ready — Copilot auto-review burns tokens.
 Needs design input:
 
 - [ ] Consider ADR 0004 for superseding decision (per review-policy process)
-- [ ] sws-* directory names violate Agent Skills spec (name must match dir)
-- [ ] README Quick Start symlink uses fragile `$(pwd)` pattern
-- [ ] home-manager `claudeAvailable` check fragile (`hasAttrByPath`)
 - [ ] sources.nix re-evaluated 5x (once per overlay) — hoist to composition?
 - [ ] README: overlay section under Prerequisites is an install method
 - [ ] README: Git Configuration before Installation (wrong order)
-- [ ] README: Quick Start `cat >>` not idempotent
 - [ ] Routing RULE mentions git-revise but no skill covers it
+- [ ] Clean up `docs/reports/ruler-migration-assessment.md` — contains
+      stale references to `.ruler/`, `.generated/`, `generate.sh`, and
+      old pipeline. Either update to reflect fragment pipeline or archive.
 
 ### Skill content improvements
 

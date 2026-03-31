@@ -135,7 +135,7 @@ stacked-workflows = {
 | Method | Best for | Details |
 |--------|----------|---------|
 | **Nix home-manager module** (HM >= 25.11) | Declarative per-user | `stacked-workflows.enable = true` |
-| **Nix (programs.claude-code)** | Direct Claude Code config | `skills` + `memory.text` |
+| **Nix (programs.claude-code)** | Direct Claude Code config | `skills` + `home.file` references |
 | **Nix raw paths** | DevShells, home.file | `${inputs.stacked-workflow-skills}/skills` |
 | **Manual symlink** | Non-Nix users | Symlink `skills/` into tool config dir |
 | **Agentic** | AI tool self-installs | Interactive flow in `INSTALL.md` |
@@ -160,14 +160,10 @@ already done, and executes one step at a time with your approval.
 
 ```bash
 git clone https://github.com/higherorderfunctor/stacked-workflow-skills.git
-mkdir -p ~/.claude
-ln -sfn "$(pwd)/stacked-workflow-skills/skills" ~/.claude/skills
-```
-
-Then add the routing table to `~/.claude/CLAUDE.md`:
-
-```bash
-cat stacked-workflow-skills/.generated/claude-routing.md >> ~/.claude/CLAUDE.md
+mkdir -p ~/.claude/skills ~/.claude/references
+ln -sfn /path/to/stacked-workflow-skills/skills/* ~/.claude/skills/
+cp /path/to/stacked-workflow-skills/.claude/references/stacked-workflow.md \
+  ~/.claude/references/stacked-workflow.md
 ```
 
 #### Kiro
@@ -175,7 +171,8 @@ cat stacked-workflow-skills/.generated/claude-routing.md >> ~/.claude/CLAUDE.md
 ```bash
 mkdir -p .kiro/skills .kiro/steering
 ln -sfn /path/to/stacked-workflow-skills/skills/* .kiro/skills/
-cp /path/to/stacked-workflow-skills/.generated/kiro-routing.md .kiro/steering/stacked-workflow.md
+cp /path/to/stacked-workflow-skills/.kiro/steering/stacked-workflow.md \
+  .kiro/steering/stacked-workflow.md
 ```
 
 #### GitHub Copilot
@@ -183,7 +180,7 @@ cp /path/to/stacked-workflow-skills/.generated/kiro-routing.md .kiro/steering/st
 ```bash
 mkdir -p .github/skills .github/instructions
 ln -sfn /path/to/stacked-workflow-skills/skills/* .github/skills/
-cp /path/to/stacked-workflow-skills/.generated/copilot-routing.md \
+cp /path/to/stacked-workflow-skills/.github/instructions/stacked-workflow.instructions.md \
   .github/instructions/stacked-workflow.instructions.md
 ```
 
