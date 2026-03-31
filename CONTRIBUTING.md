@@ -52,25 +52,26 @@ cspell lint '**/*.md' --no-progress  # spellcheck
 nix flake check      # all checks (requires staged files)
 ```
 
-## Generating Routing Files
+## Generating Instruction Files
 
-The routing table is maintained in `.ruler/` and distributed to all
-ecosystems via `scripts/generate.sh` (not `ruler apply` — ruler cannot
-inject per-ecosystem YAML frontmatter or produce consumer vs dev output
-variants; see `references/ruler.md` for details):
+All instruction content lives as composable markdown fragments in
+`fragments/`. A Nix app generates per-ecosystem outputs with appropriate
+frontmatter and placement:
 
 ```bash
-scripts/generate.sh
+nix run .#generate
 ```
 
 This produces:
 
-- **In-repo files** — `.kiro/steering/stacked-workflow.md`,
-  `.github/instructions/stacked-workflow.instructions.md`
-- **Published files** — `.generated/claude-routing.md`,
-  `.generated/kiro-routing.md`, `.generated/copilot-routing.md`
+- `.claude/references/stacked-workflow.md` — Claude (no frontmatter)
+- `.kiro/steering/stacked-workflow.md` — Kiro (`inclusion: auto`)
+- `.github/instructions/stacked-workflow.instructions.md` — Copilot (`applyTo`)
+- `AGENTS.md` — generated from dev profile fragments
 
-Run after modifying `.ruler/` source files.
+Profiles (package vs dev) and ecosystem config are declared in
+`lib/fragments.nix`. Run after modifying `fragments/` source files.
+The pre-commit hook auto-regenerates when fragments are staged.
 
 ## Reference Docs
 

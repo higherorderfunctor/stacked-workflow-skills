@@ -140,63 +140,21 @@ else
   fail ".github/instructions/stacked-workflow.instructions.md missing"
 fi
 
-# -- Generated files (.generated/) -------------------------------------------
+# -- Fragments ---------------------------------------------------------------
 
-section "Generated files"
+section "Fragments"
 
-for f in claude-routing.md kiro-routing.md copilot-routing.md; do
-  gen="${REPO_ROOT}/.generated/${f}"
-  if [[ -f "${gen}" ]]; then
-    pass ".generated/${f} exists"
-  else
-    fail ".generated/${f} missing"
-  fi
-done
-
-# Freshness: verify .generated/claude-routing.md contains .ruler/routing.md content
-if grep -qF "Skill Routing" "${REPO_ROOT}/.generated/claude-routing.md" \
-  && grep -qF "/stack-fix" "${REPO_ROOT}/.generated/claude-routing.md"; then
-  pass "Generated files contain routing table content"
-else
-  fail "Generated files may be stale — run scripts/generate.sh"
-fi
-
-# Freshness: dev profile includes all .ruler/ sections
-steering="${REPO_ROOT}/.kiro/steering/stacked-workflow.md"
-if grep -qF "Dev-Only Skills" "${steering}" \
-  && grep -qF "Operations Without Skills" "${steering}" \
-  && grep -qF "Skill Routing" "${steering}"; then
-  pass "Kiro dev profile includes all .ruler/ sections"
-else
-  fail "Kiro steering missing .ruler/ sections — run scripts/generate.sh"
-fi
-
-# -- Routing table content ---------------------------------------------------
-
-section "Routing table content"
-
-routing="${REPO_ROOT}/.ruler/routing.md"
-if [[ -f "${routing}" ]]; then
-  pass ".ruler/routing.md exists"
-  for skill in /stack-fix /stack-plan /stack-split /stack-submit /stack-summary /stack-test; do
-    if grep -qF "${skill}" "${routing}"; then
-      pass "Routing table references ${skill}"
+if [[ -d "${REPO_ROOT}/fragments" ]]; then
+  pass "fragments/ directory exists"
+  for f in routing-table.md dev-skills.md operations.md; do
+    if [[ -f "${REPO_ROOT}/fragments/${f}" ]]; then
+      pass "fragments/${f} exists"
     else
-      fail "Routing table missing ${skill}"
+      fail "fragments/${f} missing"
     fi
   done
 else
-  fail ".ruler/routing.md missing"
-fi
-
-# -- AGENTS.md ---------------------------------------------------------------
-
-section "AGENTS.md"
-
-if [[ -f "${REPO_ROOT}/AGENTS.md" ]]; then
-  pass "AGENTS.md exists"
-else
-  fail "AGENTS.md missing"
+  fail "fragments/ directory missing"
 fi
 
 # -- Summary -----------------------------------------------------------------
