@@ -4,7 +4,7 @@ description: >-
   Use when you need to push, submit, or create pull requests for a commit
   stack. Syncs, validates, and pushes INSTEAD of manual git sync + git submit
   + PR/MR creation. Handles branch creation, stacked PR/MR creation with
-  correct base branches, and sentinel commit exclusion.
+  correct base branches.
 argument-hint: "[revset]"
 disable-model-invocation: false
 compatibility: "Requires git-branchless"
@@ -87,22 +87,13 @@ as a revset to select which commits to submit. Default is the current stack.
    vague messages ("fix", "WIP", "update") and suggest rewording with
    `git reword <commit>`.
 
-6. **Identify sentinel commits** — commits that should be pushed but NOT get
-   PRs (e.g. TODO.md, CHANGELOG.md, tracking metadata). Look for:
-   - Commits with messages starting with `chore: add TODO` or similar metadata
-   - The tip commit if the user mentioned keeping it as a tracking branch
-   - Any commits the user explicitly excluded from PR creation
-
-   For sentinel commits, create a tracking branch (e.g. `todo/pre-publish`)
-   that will be pushed but skipped during PR creation.
-
-7. **Ensure branches exist** on each commit. For commits without branches,
+6. **Ensure branches exist** on each commit. For commits without branches,
    generate branch names from commit messages:
    ```bash
    # Pattern: type/scope or type/short-description
    # feat(flake): add minimal flake skeleton → feat/flake-skeleton
    # docs(references): add git-branchless reference → docs/git-branchless-reference
-   # chore: add TODO.md → todo/pre-publish (sentinel)
+   # chore: add TODO.md → chore/add-todo
    ```
 
    Create branches:
@@ -112,7 +103,7 @@ as a revset to select which commits to submit. Default is the current stack.
 
    Present the branch list to the user for review before proceeding.
 
-8. **Confirm before pushing** — preview what will be pushed:
+7. **Confirm before pushing** — preview what will be pushed:
    ```bash
    git submit --dry-run    # or: git submit -c --dry-run (first push)
    ```
@@ -125,7 +116,7 @@ as a revset to select which commits to submit. Default is the current stack.
    This gate is especially important when the skill is auto-invoked via
    `disable-model-invocation: false`.
 
-9. **Push branches** with `git submit` or `git push`:
+8. **Push branches** with `git submit` or `git push`:
    ```bash
    git submit -c
    ```
@@ -149,12 +140,10 @@ as a revset to select which commits to submit. Default is the current stack.
    git config remote.pushDefault origin
    ```
 
-10. **Create stacked PRs/MRs** — for each non-sentinel branch, create a
-    pull/merge request targeting the previous branch in the stack (or `main`
-    for the first). Use the commit message as the title. Keep the body
-    minimal — the commit diff speaks for itself.
-
-**Do NOT create PRs/MRs for sentinel/tracking branches.**
+9. **Create stacked PRs/MRs** — for each branch, create a
+   pull/merge request targeting the previous branch in the stack (or `main`
+   for the first). Use the commit message as the title. Keep the body
+   minimal — the commit diff speaks for itself.
 
 #### GitHub
 
@@ -176,7 +165,7 @@ gh pr create --head <branch-N> --base <branch-N-1> \
   --title "<commit message>" --body "..."
 ```
 
-11. **Report results** — show a summary table:
+10. **Report results** — show a summary table:
 
     ```
     | # | Branch | PR/MR | Base | Status |
@@ -305,8 +294,6 @@ When a reviewer (human, Copilot, etc.) comments on a specific PR in the stack:
 
 - Always start with `git sl` to understand the stack before submitting.
 - One branch per commit. If a commit has multiple branches, `git submit` skips it.
-- Sentinel branches (TODO, CHANGELOG) are pushed for backup but don't get PRs.
-  Delete them after publish with `git push origin --delete todo/pre-publish`.
 - For very large stacks (20+ PRs), consider batching — submit the first 5-10,
   get them merged, then submit the next batch. Reviewers struggle with 20+ open
   PRs at once.

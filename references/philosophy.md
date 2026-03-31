@@ -132,29 +132,6 @@ When rebuilding a stack from scratch (`git reset --soft` + recommit):
   restructuring a stack, expect to create new PRs rather than reopen closed
   ones.
 
-### Sentinel Commits
-
-Metadata commits like TODO.md, CHANGELOG.md, or pre-publish checklists should
-stay at the tip of the stack. When adding new feature commits to an existing
-stack, check what the tip commit is — if it's a sentinel, insert new work
-before it using `git record -I` or move the sentinel back to tip afterward
-with `git move -x <sentinel-hash> -d HEAD`.
-
-If a sentinel commit has been modified by later commits in the stack (e.g., a
-TODO update commit removes a completed section), squash those changes into the
-sentinel before moving it. `git move -x` often causes conflicts when
-descendants depend on its changes — for example, when a dependent commit
-modifies a file that no longer exists or has been renamed at the destination.
-
-**New commits that also touch sentinel files:** when inserting a commit before
-the sentinel, do NOT include changes to the sentinel's files (e.g., TODO.md)
-in the new commit. The reorder can conflict when both commits touch the
-same file regions. Instead: (1) commit new work WITHOUT sentinel file changes,
-(2) reorder so it sits before the sentinel, (3) then amend the sentinel to
-include any updates. Alternatively, commit at the tip (after the sentinel)
-and keep sentinel file changes in a separate commit that can be squashed into
-the sentinel without reordering.
-
 ### Dependency Audit Before `git move -x`
 
 `git move -x` extracts a single commit without its descendants. Before using

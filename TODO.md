@@ -11,12 +11,6 @@ ready — Copilot auto-review burns tokens.
 
 ## Implementation work
 
-### Skill content improvements
-
-- [ ] Remove sentinel commit convention from shared skills (personal pattern,
-      not universal — remove from philosophy.md, stack-plan, stack-submit,
-      stack-summary)
-
 ### CI improvements
 
 - [ ] Evaluate adding agnix to CI workflow alongside structural check

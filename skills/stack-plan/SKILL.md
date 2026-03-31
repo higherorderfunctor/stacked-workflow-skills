@@ -308,10 +308,6 @@ Existing commits need to be reorganized into a clean atomic stack.
 - For files with complex structure (nested sections, cross-references), a
   full rewrite at the appropriate commit is often cleaner than incremental
   Edit operations that can cause structural nesting errors.
-- **Sentinel commits** (TODO.md, CHANGELOG.md) must stay at the tip of the
-  stack. When adding new commits, check the tip first — if it's a sentinel,
-  insert before it or move it back to tip afterward with
-  `git move -x <sentinel-hash> -d HEAD`.
 - **Expect hook failures during restructure.** PostToolUse hooks (agnix
   linting, dprint formatting, etc.) fire when using Write/Edit during a
   restructure. The working tree is intentionally inconsistent between

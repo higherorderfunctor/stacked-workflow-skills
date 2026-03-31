@@ -228,8 +228,7 @@ If mergeable commits are found, list them:
    Could merge into one docs commit.
 
 2. Commit 8 (chore: update TODO.md) is 15 lines and only adds checklist
-   items — could absorb into the sentinel commit (a metadata commit like
-   TODO.md or CHANGELOG.md that stays at the stack tip) if one exists.
+   items — could merge with an adjacent metadata commit if one exists.
 ```
 
 Only suggest groupings where the merged result would still be a single
