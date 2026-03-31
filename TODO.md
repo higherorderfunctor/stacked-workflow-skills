@@ -47,43 +47,20 @@ Nix declares profiles (package vs dev) and generates per-ecosystem
 outputs with correct frontmatter and placement. No `.generated/`
 intermediate — outputs go directly to ecosystem paths.
 
-Migration steps:
+Remaining:
 
-- [ ] Create `fragments/` directory from `.ruler/*.md` + AGENTS.md sections:
-      routing-table.md, dev-skills.md, operations.md (from .ruler/),
-      project-overview.md, commit-convention.md, coding-standards.md,
-      tooling-preference.md, build-commands.md, validation.md,
-      flake-structure.md, nix-workflow.md, development.md,
-      continuous-improvement.md (from AGENTS.md sections)
-- [ ] Create `lib/fragments.nix` with:
-      - Fragment registry (paths to all fragment files)
-      - Profile definitions (package = routing only, dev = all fragments)
-      - Ecosystem config (frontmatter per ecosystem)
-      - `mkContent` / `mkOutput` functions
-- [ ] Create Nix app (`apps.generate`) that writes dev profile outputs:
-      - `.claude/references/stacked-workflow.md` (no frontmatter)
-      - `.kiro/steering/stacked-workflow.md` (inclusion: auto)
-      - `.github/instructions/stacked-workflow.instructions.md` (applyTo)
-      - `AGENTS.md` (from dev fragments, no frontmatter)
-- [ ] Update CLAUDE.md: `@.generated/claude-routing.md` →
-      `@.claude/references/stacked-workflow.md`
-- [ ] Update home-manager module to use new lib functions for package
-      profile. Claude gets `.claude/references/stacked-workflow.md`
-      instead of `memory.text` blob. Kiro/Copilot same pattern.
-- [ ] Update pre-commit hook: `scripts/generate.sh` → `nix run .#generate`
-- [ ] Update flake.nix: replace old lib exports with fragment-based ones
-- [ ] Remove: `.generated/`, `.ruler/`, `scripts/generate.sh`,
-      `lib/routing-{claude,kiro,copilot}.nix`
-- [ ] Update: INSTALL.md, CONTRIBUTING.md, references/ruler.md, CI workflow
-- [ ] Slim structural test: keep skills + symlink checks only, drop
-      generated file validation (pipeline guarantees those)
-- [ ] Evaluate adding agnix to CI workflow alongside structural check
+- [ ] Update INSTALL.md for fragment pipeline
+- [ ] Update references/ruler.md for fragment pipeline
 
 ### Skill content improvements
 
 - [ ] Remove sentinel commit convention from shared skills (personal pattern,
       not universal — remove from philosophy.md, stack-plan, stack-submit,
       stack-summary)
+
+### CI improvements
+
+- [ ] Evaluate adding agnix to CI workflow alongside structural check
 
 ### Reduce tool approval friction
 
