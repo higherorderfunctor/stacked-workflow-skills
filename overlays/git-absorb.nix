@@ -1,5 +1,4 @@
-_: final: prev: let
-  sources = import ./sources.nix {inherit (final) fetchurl fetchgit fetchFromGitHub dockerTools;};
+sources: final: prev: let
   nv = sources.git-absorb;
 
   rustPlatform = final.makeRustPlatform {

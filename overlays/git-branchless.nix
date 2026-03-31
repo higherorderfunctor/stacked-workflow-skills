@@ -1,5 +1,4 @@
-_: final: prev: let
-  sources = import ./sources.nix {inherit (final) fetchurl fetchgit fetchFromGitHub dockerTools;};
+sources: final: prev: let
   nv = sources.git-branchless;
 
   # Pin to 1.88.0 — git-branchless v0.10.0 has esl01-indexedlog build

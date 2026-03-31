@@ -1,3 +1,5 @@
+# First arg unused — consumed by import' currying in flake.nix.
+# sources evaluated here since agnix is composed independently of default overlay.
 _: final: _: let
   sources = import ./sources.nix {inherit (final) fetchurl fetchgit fetchFromGitHub dockerTools;};
   nv = sources.agnix;

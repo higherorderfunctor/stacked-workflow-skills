@@ -1,5 +1,4 @@
-_: final: _: let
-  sources = import ./sources.nix {inherit (final) fetchurl fetchgit fetchFromGitHub dockerTools;};
+sources: final: _: let
   nv = sources.git-revise;
   inherit (final) lib stdenv;
 in {
