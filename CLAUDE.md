@@ -5,8 +5,6 @@
 Claude Code-specific routing and skill configuration. When instructions
 conflict, this file takes precedence over `AGENTS.md`.
 
-<!-- Generated from .ruler/ via scripts/generate.sh — edit .ruler/ sources instead -->
-
 ## Local Skill Priority
 
 This repo's `.claude/skills/` contains `sws-*` prefixed skills that point to
@@ -25,4 +23,4 @@ violations. The pre-commit hook is a safety net — prefer proactive validation.
 config). Ignore diagnostics for rules suppressed in `.agnix.toml` — the
 CLI and pre-commit hook apply suppressions correctly.
 
-@.generated/claude-routing.md
+@.claude/references/stacked-workflow.md

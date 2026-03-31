@@ -68,16 +68,15 @@ used even when the tool mechanism is unavailable.
 
 ## Flake Structure
 
-- **.generated/** — pre-generated routing files for Claude, Kiro, Copilot
-- **.ruler/** — source of truth for routing rules (modular markdown files)
 - **CONTRIBUTING.md** — development setup and workflow
 - **dev/** — dev-only skills (repo-review, index-repo-docs)
 - **docs/decisions/** — MADR-style architecture decision records with confidence scoring
 - **flake.nix** — nixpkgs + nvfetcher + rust-overlay inputs, overlays, packages, devShells, lib, homeManagerModules
+- **fragments/** — source markdown fragments for instruction generation
 - **home-manager/** — home-manager module for declarative per-user installation
 - **INSTALL.md** — installation and routing setup for all platforms and methods
 - **references/** — canonical reference docs (symlinked into each skill's `references/`)
-- **scripts/** — `generate.sh` produces routing files from `.ruler/` source
+- **scripts/** — pre-commit hook
 - **skills/** — SKILL.md files with per-skill `references/` subdirectories
 
 ## Coding Standards
@@ -127,6 +126,7 @@ Reference docs for dev tools live in `references/`. When tools are upgraded
 reference doc. Use `/index-repo-docs <tool>` to refresh from upstream, then
 curate the output.
 
+<!-- dprint-ignore -->
 | Doc                          | Covers                                           |
 | ---------------------------- | ------------------------------------------------ |
 | `references/agnix.md`        | agnix CLI, `.agnix.toml` config, rule categories |
@@ -152,3 +152,49 @@ benefit — that's the purpose of this package.
    an error, note it for the user
 3. **Codify, don't repeat** — if the same mistake or correction happens twice,
    it belongs in a reference doc, not just in memory
+
+## Skill Routing — MANDATORY
+
+When the user is working with stacked commits, use the appropriate skill
+instead of running commands manually via Bash.
+
+<!-- dprint-ignore -->
+| Operation                                               | Skill            | Use INSTEAD of                                                 |
+| ------------------------------------------------------- | ---------------- | -------------------------------------------------------------- |
+| Audit stack quality before restructure                  | `/stack-summary` | Manual `git log` inspection                                    |
+| Commit uncommitted work as an atomic stack              | `/stack-plan`    | `git add -A && git commit` (single monolithic commit)          |
+| Edit earlier commit (content moves, structural changes) | `/stack-fix`     | Manual `git prev` + edit + `git amend` + `git restack --merge` |
+| Fix lines in earlier commit                             | `/stack-fix`     | `git absorb`, `git commit --fixup`, manual checkout + amend    |
+| Plan and build a commit stack from a description        | `/stack-plan`    | Ad-hoc `git record` / `git commit` without a plan              |
+| Push stack for review                                   | `/stack-submit`  | Manual `git sync` + `git submit` + `gh pr create`              |
+| Restructure/reorder existing commits                    | `/stack-plan`    | `git rebase -i`, `git reset --soft`, `git move` sequences      |
+| Split a large commit                                    | `/stack-split`   | `git rebase -i` + edit, `git reset HEAD^`                      |
+| Test across stack                                       | `/stack-test`    | Manual `git test run` or looping `git checkout` + test         |
+
+**RULE: Before running any git-branchless, git-absorb, or git-revise command
+via Bash, check if a skill covers the operation.** Skills include pre-flight
+checks, dry-run previews, conflict guidance, and post-operation verification
+that manual commands miss.
+
+## Dev-Only Skills
+
+These skills are for developing this repo, not distributed to consumers:
+
+<!-- dprint-ignore -->
+| Skill              | What it does                                                                                              |
+| ------------------ | --------------------------------------------------------------------------------------------------------- |
+| `/index-repo-docs` | Fetch and distill a repo's wiki, docs, and issues into a focused reference doc                            |
+| `/repo-review`     | Multi-perspective repo review with 6 specialized reviewers, decision tracking, and human-approved changes |
+
+## Operations Without Skills
+
+Some stack operations are not fully covered by skills — use direct commands
+when a skill doesn't apply (e.g., single quick reorder, one-off reword):
+
+- **Reorder commits:** `git move -s <src> -d <dest>` (prefer `/stack-plan` for multi-commit reorders)
+- **Reword a message:** `git reword <commit>`
+- **Squash commits:** `git move` + manual amend
+
+See `references/philosophy.md` and `references/git-branchless.md` for
+full command reference, revsets, and tool selection guidance.
+

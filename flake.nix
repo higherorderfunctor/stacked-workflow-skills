@@ -25,12 +25,25 @@
     perPkg = name:
       lib.composeManyExtensions [rustOverlay (import' ./overlays/${name}.nix)];
   in {
-    lib = {
+    lib = let
+      fragments = import ./lib/fragments.nix {inherit lib;};
+    in {
+      inherit fragments;
       gitConfig = import ./lib/git-config.nix;
       gitConfigFull = import ./lib/git-config-full.nix;
-      mkClaudeRouting = import ./lib/routing-claude.nix;
-      mkCopilotInstructions = import ./lib/routing-copilot.nix;
-      mkKiroSteering = import ./lib/routing-kiro.nix;
+      # Legacy exports — now backed by fragments
+      mkClaudeRouting = fragments.mkInstructions {
+        profile = "package";
+        ecosystem = "claude";
+      };
+      mkCopilotInstructions = fragments.mkInstructions {
+        profile = "package";
+        ecosystem = "copilot";
+      };
+      mkKiroSteering = fragments.mkInstructions {
+        profile = "package";
+        ecosystem = "kiro";
+      };
     };
 
     homeManagerModules.default = import ./home-manager;
@@ -121,6 +134,69 @@
           bash ${self}/scripts/test-structural.sh
           touch $out
         '';
+    });
+
+    apps = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      fragments = import ./lib/fragments.nix {inherit lib;};
+
+      generateScript = pkgs.writeShellApplication {
+        name = "generate";
+        text = let
+          # Dev profile outputs
+          claudeDev = fragments.mkInstructions {
+            profile = "dev";
+            ecosystem = "claude";
+          };
+          kiroDev = fragments.mkInstructions {
+            profile = "dev";
+            ecosystem = "kiro";
+          };
+          copilotDev = fragments.mkInstructions {
+            profile = "dev";
+            ecosystem = "copilot";
+          };
+          agentsmDev = fragments.mkInstructions {
+            profile = "dev";
+            ecosystem = "agentsmd";
+          };
+        in ''
+          REPO_ROOT="$(pwd)"
+
+          # Dev profile outputs — written directly to ecosystem paths
+          mkdir -p "$REPO_ROOT/.claude/references"
+          cat > "$REPO_ROOT/.claude/references/stacked-workflow.md" << 'FRAGMENT_EOF'
+          ${claudeDev}
+          FRAGMENT_EOF
+
+          mkdir -p "$REPO_ROOT/.kiro/steering"
+          cat > "$REPO_ROOT/.kiro/steering/stacked-workflow.md" << 'FRAGMENT_EOF'
+          ${kiroDev}
+          FRAGMENT_EOF
+
+          mkdir -p "$REPO_ROOT/.github/instructions"
+          cat > "$REPO_ROOT/.github/instructions/stacked-workflow.instructions.md" << 'FRAGMENT_EOF'
+          ${copilotDev}
+          FRAGMENT_EOF
+
+          cat > "$REPO_ROOT/AGENTS.md" << 'FRAGMENT_EOF'
+          # AGENTS.md
+
+          Project instructions for AI coding assistants working in this repository.
+          Read by Claude Code, Kiro, GitHub Copilot, Codex, and other tools that
+          support the [AGENTS.md standard](https://agents.md).
+
+          ${agentsmDev}
+          FRAGMENT_EOF
+
+          echo "Generated instruction files from fragments."
+        '';
+      };
+    in {
+      generate = {
+        type = "app";
+        program = "${generateScript}/bin/generate";
+      };
     });
 
     formatter = forAllSystems (system: let

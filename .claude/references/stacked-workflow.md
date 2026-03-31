@@ -1,9 +1,3 @@
----
-description: Skill routing for stacked commit workflows
-inclusion: auto
-name: stacked-workflow
----
-
 ## Project Overview
 
 stacked-workflow-skills is a collection of SKILL.md files and reference docs
