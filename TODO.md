@@ -15,7 +15,6 @@ ready — Copilot auto-review burns tokens.
 
 Needs design input:
 
-- [ ] Consider ADR 0004 for superseding decision (per review-policy process)
 - [ ] sources.nix re-evaluated 5x (once per overlay) — hoist to composition?
 - [ ] README: overlay section under Prerequisites is an install method
 - [ ] README: Git Configuration before Installation (wrong order)
