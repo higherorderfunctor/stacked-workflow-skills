@@ -2,21 +2,18 @@
 
 ## Stack status
 
-16 stacked PRs (#88–#103) + 8 tip commits not in PRs:
-agnix hook, validation instructions, dprint formatter, Copilot review
-fixes, skill content improvements, round 2 Copilot fixes, round 2
-review fixes, sentinel. Old PRs #69–#87 closed. Don't push branches
-or recreate PRs until ready — Copilot auto-review burns tokens.
+16 stacked PRs (#88–#103) + 18 tip commits not in PRs (fragment pipeline,
+agnix/dprint tooling, review fixes, ruler removal, INSTALL.md update).
+Old PRs #69–#87 closed. Don't push branches or recreate PRs until
+ready — Copilot auto-review burns tokens.
 
 ---
 
 ## Implementation work
 
-### Review fixes (round 2 — 2026-03-29)
+### Review fixes
 
-Full details in memory `project_repo_review_round2.md`.
-
-Needs design input (independent of fragment pipeline):
+Needs design input:
 
 - [ ] Consider ADR 0004 for superseding decision (per review-policy process)
 - [ ] sws-* directory names violate Agent Skills spec (name must match dir)
@@ -26,30 +23,7 @@ Needs design input (independent of fragment pipeline):
 - [ ] README: overlay section under Prerequisites is an install method
 - [ ] README: Git Configuration before Installation (wrong order)
 - [ ] README: Quick Start `cat >>` not idempotent
-
-Folded into fragment pipeline migration (decisions made 2026-03-30):
-
-- Kiro `inclusion: auto` for ALL profiles (no manual anywhere)
-- Per-skill symlinks for Kiro/Copilot in home-manager (match Claude)
-- Copilot frontmatter + path confusion → resolved by ecosystem config
-- CONTRIBUTING.md tool list → rewritten during migration
-- Routing RULE git-revise → fixed when routing-table.md becomes fragment
-- Skill/reference/generated file lists → derived from fragments.nix
-- AGENTS.md duplicate notes → gone when AGENTS.md is generated
-
-### Fragment pipeline (replaces .ruler/ + generate.sh)
-
-Full design in memory `project_fragment_pipeline_design.md`.
-
-Replace `.ruler/` + `scripts/generate.sh` with a Nix-driven fragment
-pipeline. All instruction content lives as composable markdown fragments.
-Nix declares profiles (package vs dev) and generates per-ecosystem
-outputs with correct frontmatter and placement. No `.generated/`
-intermediate — outputs go directly to ecosystem paths.
-
-Remaining:
-
-- [ ] Update INSTALL.md for fragment pipeline
+- [ ] Routing RULE mentions git-revise but no skill covers it
 
 ### Skill content improvements
 
@@ -105,9 +79,6 @@ ecosystems. `mcps.nix` has `lsp-nix` preset (uses nil, not nixd).
 is needed. Claude Code plugin marketplace, Kiro `lsp.json`, Copilot
 experimental `--experimental` flag.
 
-**Dev tools without Nix** — `npx agnix`, `npx ruler` as devShell
-alternatives. Document in CONTRIBUTING.md once validated.
-
 ---
 
 ## Distribution work
@@ -124,7 +95,7 @@ git push --force-with-lease origin <remaining-branches>
 
 ### Post-merge: distribute tip commits
 
-8 tip commits not in PRs. After main PRs merged, absorb into existing
+18 tip commits not in PRs. After main PRs merged, absorb into existing
 commits or submit as new PRs.
 
 ### Post-merge: validation
@@ -134,23 +105,12 @@ commits or submit as new PRs.
 - [ ] Test Kiro/Copilot skill discovery with real stack operations
 - [ ] nix-mcp-servers integration test (add as flake input, test skills)
 
-### Dismiss stale Copilot threads (old PRs #69–#87)
-
-Old PRs are closed. Threads are moot. If any reopen, dismiss:
-
-- PR #69: rename confusion (Copilot misread diff)
-- PR #70: 7x ADR 0003 (absorbed into restructured commit)
-- PR #73: lib/routing still used (retired in next commit)
-- PR #74: docs reference old pipeline (absorbed into restructured commit)
-- PR #78: reference files don't exist yet (reordered after references)
-
 ---
 
 ## Observations
 
 - rust-overlay in all perPkg including Python git-revise — harmless
 - CDX-AG-005 suppressed in `.agnix.toml` — agnix bug, review on upgrade
-- Ruler `--project-root` doesn't isolate config loading — abandoned
 - agnix-mcp doesn't read `.agnix.toml` — uses `LintConfig::default()`
   instead of `load_or_default()`. May file upstream issue later.
 - PostToolUse hooks don't fire on Bash tool edits (known limitation)
