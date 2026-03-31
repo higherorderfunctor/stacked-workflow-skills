@@ -105,6 +105,11 @@ If the user wants to restructure multiple commits (not just split one), use
 
 ## Tips
 
+- **`git revise -c <hash>` for two-way splits:** Splits a commit into
+  exactly two pieces in-memory (no checkout). Select hunks for the first
+  commit; remainder becomes the second. Faster for simple splits, but
+  limited: no 3+ way splits, no binary files, no empty file additions.
+  Requires `git restack` afterward.
 - Format changes should ALWAYS be a separate commit (they dominate diffs and
   hide functional changes)
 - If a file has both refactoring and new logic, use `git add -p` to split

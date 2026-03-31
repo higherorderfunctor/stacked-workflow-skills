@@ -184,6 +184,39 @@ new file additions to earlier commits.
 
 9. **Post-fix verification** (see below).
 
+## Path C: In-memory amend (git-revise)
+
+Use this path when the fix is small (a few lines), the target is deep in
+the stack (5+ commits back), and you want to avoid checking out the target
+commit (preserves build cache, avoids "local changes would be overwritten"
+errors).
+
+**Limitations:** No rename detection. Requires `git restack` afterward
+(branchless can't track git-revise rewrites). Not suitable for structural
+changes, new file additions, or complex multi-hunk edits.
+
+1. **Stage the fix** at the current position (stack tip):
+   ```bash
+   git add -p   # or git add <files>
+   ```
+
+2. **Apply in-memory** to the target commit:
+   ```bash
+   git revise <target-hash>
+   ```
+   If conflicts occur, git-revise opens an editor for resolution. If
+   the conflict is too complex for editor-based resolution, abort and
+   use Path B instead.
+
+3. **Fix branchless tracking**:
+   ```bash
+   git restack
+   ```
+   If restack reports conflicts, resolve with `git restack --merge`
+   (same as Path B step 6-7).
+
+4. **Post-fix verification** (see below).
+
 ## Post-fix Verification
 
 Run after either path to confirm the stack is healthy.

@@ -11,15 +11,6 @@ ready — Copilot auto-review burns tokens.
 
 ## Implementation work
 
-### Review fixes
-
-Needs design input:
-
-- [ ] Routing RULE mentions git-revise but no skill covers it
-- [ ] Clean up `docs/reports/ruler-migration-assessment.md` — contains
-      stale references to `.ruler/`, `.generated/`, `generate.sh`, and
-      old pipeline. Either update to reflect fragment pipeline or archive.
-
 ### Skill content improvements
 
 - [ ] Remove sentinel commit convention from shared skills (personal pattern,

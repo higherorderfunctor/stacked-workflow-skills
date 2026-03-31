@@ -326,3 +326,8 @@ Existing commits need to be reorganized into a clean atomic stack.
 - **Avoid scripted `GIT_SEQUENCE_EDITOR` reorders when files are built
   incrementally.** Use `git move -x <hash> -d <dest>` for individual
   commit reorders — it's in-memory and avoids context-dependent conflicts.
+- **`git revise -i` for pure reorders** (no content changes, no splits,
+  no drops). Operates in-memory, faster than scripted editors. But same
+  logical conflicts with incrementally-built files, no `drop`/`exec`
+  support, and requires `git restack` afterward for branchless tracking.
+  Use `git move -x` for individual reorders, `git revise -i` for bulk.

@@ -1,4 +1,11 @@
-# Ruler Migration: Before vs After Assessment
+# Ruler Migration: Before vs After Assessment (ARCHIVED)
+
+> **Superseded:** This report covers the `.ruler/` + `generate.sh` pipeline
+> which was replaced by the fragment pipeline (`fragments/` +
+> `lib/fragments.nix` + `nix run .#generate`) on 2026-03-31. References to
+> `.ruler/`, `.generated/`, `scripts/generate.sh`, and `lib/routing-*.nix`
+> are historical. The fragment pipeline design is documented in memory file
+> `project_fragment_pipeline_design.md`.
 
 Report generated 2026-03-27 from analysis of `todo/pre-publish` branch
 (12 commits ahead of main).
