@@ -131,7 +131,6 @@ curate the output.
 | ---------------------------- | ------------------------------------------------ |
 | `references/agnix.md`        | agnix CLI, `.agnix.toml` config, rule categories |
 | `references/nix-workflow.md` | Nix conventions, devShell, packaging patterns    |
-| `references/ruler.md`        | Ruler CLI, `.ruler/` source format, profiles     |
 
 ### Nix Workflow
 

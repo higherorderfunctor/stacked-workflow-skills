@@ -8,7 +8,7 @@
 nix develop
 ```
 
-Provides all tools: git-branchless, git-absorb, git-revise, agnix, ruler,
+Provides all tools: git-branchless, git-absorb, git-revise, agnix,
 alejandra, dprint, cspell, nvfetcher.
 
 ### Without Nix
@@ -25,14 +25,13 @@ any that are missing using your preferred method:
 | [git-absorb](https://github.com/tummychow/git-absorb) | Fixup absorption | Rust binary |
 | [git-revise](https://github.com/mystor/git-revise) | Commit editing | Python package |
 | [agnix](https://github.com/agent-sh/agnix) | Agent config linting | Rust/npm |
-| [ruler](https://github.com/intellectronica/ruler) | Rule distribution | npm |
 | [dprint](https://dprint.dev) | Formatting | Rust binary |
 | [alejandra](https://github.com/kamadorueda/alejandra) | Nix formatting | Rust binary |
 
 **Prereq check** (run this to see what's missing):
 
 ```bash
-for tool in git-branchless git-absorb git-revise agnix ruler dprint alejandra; do
+for tool in git-branchless git-absorb git-revise agnix dprint alejandra; do
   command -v "$tool" &>/dev/null && echo "✓ $tool" || echo "✗ $tool — not found"
 done
 ```
@@ -80,7 +79,6 @@ Tool-specific reference docs live in `references/`:
 | Doc                            | Covers                               |
 | ------------------------------ | ------------------------------------ |
 | `references/agnix.md`          | agnix CLI, config, rule categories   |
-| `references/ruler.md`          | Ruler CLI, config, source format     |
 | `references/nix-workflow.md`   | Nix conventions, devShell, packaging |
 | `references/git-branchless.md` | git-branchless commands, revsets     |
 | `references/git-absorb.md`     | git-absorb usage and patterns        |

@@ -66,7 +66,6 @@ agnix
 dedup
 derefs
 frontloaded
-intellectronica
 kiro
 kirodotdev
 libgit

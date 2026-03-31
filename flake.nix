@@ -68,16 +68,15 @@
       pkgs = import nixpkgs {
         inherit system;
         # default overlay for consumer packages + agnix (dev-only, not in default overlay)
-        overlays = [self.overlays.default (import' ./overlays/agnix.nix) (import' ./overlays/ruler.nix)];
+        overlays = [self.overlays.default (import' ./overlays/agnix.nix)];
       };
     in {
       default = pkgs.mkShellNoCC {
         packages =
           builtins.attrValues self.packages.${system}
           ++ [
-            # Agent config linting and routing
+            # Agent config linting
             pkgs.agnix
-            pkgs.ruler
 
             # Formatting
             pkgs.alejandra

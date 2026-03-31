@@ -35,7 +35,7 @@ nix develop
 ```
 
 This provides all tools: git-branchless, git-absorb, git-revise, agnix,
-ruler, alejandra, dprint, cspell, nvfetcher.
+alejandra, dprint, cspell, nvfetcher.
 
 ## Adding a Package
 
@@ -52,7 +52,7 @@ ruler, alejandra, dprint, cspell, nvfetcher.
 
 - **Rust**: `buildRustPackage` + `cargoHash` (see `overlays/agnix.nix`)
 - **Python**: `buildPythonApplication` + pyproject (see `overlays/git-revise.nix`)
-- **npm**: `buildNpmPackage` + `npmDepsHash` (see `overlays/ruler.nix`)
+- **npm**: `buildNpmPackage` + `npmDepsHash`
 
 ## Formatting
 
