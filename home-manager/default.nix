@@ -17,12 +17,23 @@
 }: let
   cfg = config.stacked-workflows;
 
+  fragments = import ../lib/fragments.nix {inherit lib;};
+
   self = {
     skillsDir = ../skills;
     referencesDir = ../references;
-    routingClaude = import ../lib/routing-claude.nix;
-    routingCopilot = import ../lib/routing-copilot.nix;
-    routingKiro = import ../lib/routing-kiro.nix;
+    instructionsClaude = fragments.mkInstructions {
+      profile = "package";
+      ecosystem = "claude";
+    };
+    instructionsCopilot = fragments.mkInstructions {
+      profile = "package";
+      ecosystem = "copilot";
+    };
+    instructionsKiro = fragments.mkInstructions {
+      profile = "package";
+      ecosystem = "kiro";
+    };
     gitConfig = import ../lib/git-config.nix;
     gitConfigFull = import ../lib/git-config-full.nix;
   };
@@ -126,28 +137,52 @@ in {
           stack-summary = "${self.skillsDir}/stack-summary";
           stack-test = "${self.skillsDir}/stack-test";
         };
-        memory.text = lib.mkAfter self.routingClaude;
       };
-      # Per-file references so user's existing entries aren't clobbered
-      home.file = {
-        ".claude/references/git-absorb.md".source = "${self.referencesDir}/git-absorb.md";
-        ".claude/references/git-branchless.md".source = "${self.referencesDir}/git-branchless.md";
-        ".claude/references/git-revise.md".source = "${self.referencesDir}/git-revise.md";
-        ".claude/references/philosophy.md".source = "${self.referencesDir}/philosophy.md";
-        ".claude/references/recommended-config.md".source = "${self.referencesDir}/recommended-config.md";
-      };
+      # Per-file references — instructions + tool docs
+      home.file = let
+        refFiles =
+          lib.filterAttrs (n: _: lib.hasSuffix ".md" n)
+          (builtins.readDir self.referencesDir);
+      in
+        # Tool reference docs (git-absorb.md, philosophy.md, etc.)
+        lib.mapAttrs' (name: _:
+          lib.nameValuePair
+          ".claude/references/${name}"
+          {source = "${self.referencesDir}/${name}";})
+        refFiles
+        // {
+          # Instruction file (routing table for consumers)
+          ".claude/references/stacked-workflow.md".text =
+            self.instructionsClaude;
+        };
     })
 
     # ── Copilot CLI ────────────────────────────────────────────────────
     (lib.mkIf cfg.integrations.copilot.enable {
-      home.file.".copilot/skills".source = self.skillsDir;
-      home.file.".copilot/copilot-instructions.md".text = self.routingCopilot;
+      home.file = {
+        # Per-skill entries so user can add their own alongside
+        ".copilot/skills/stack-fix".source = "${self.skillsDir}/stack-fix";
+        ".copilot/skills/stack-plan".source = "${self.skillsDir}/stack-plan";
+        ".copilot/skills/stack-split".source = "${self.skillsDir}/stack-split";
+        ".copilot/skills/stack-submit".source = "${self.skillsDir}/stack-submit";
+        ".copilot/skills/stack-summary".source = "${self.skillsDir}/stack-summary";
+        ".copilot/skills/stack-test".source = "${self.skillsDir}/stack-test";
+        ".copilot/copilot-instructions.md".text = self.instructionsCopilot;
+      };
     })
 
     # ── Kiro ───────────────────────────────────────────────────────────
     (lib.mkIf cfg.integrations.kiro.enable {
-      home.file.".kiro/skills".source = self.skillsDir;
-      home.file.".kiro/steering/stacked-workflow.md".text = self.routingKiro;
+      home.file = {
+        # Per-skill entries so user can add their own alongside
+        ".kiro/skills/stack-fix".source = "${self.skillsDir}/stack-fix";
+        ".kiro/skills/stack-plan".source = "${self.skillsDir}/stack-plan";
+        ".kiro/skills/stack-split".source = "${self.skillsDir}/stack-split";
+        ".kiro/skills/stack-submit".source = "${self.skillsDir}/stack-submit";
+        ".kiro/skills/stack-summary".source = "${self.skillsDir}/stack-summary";
+        ".kiro/skills/stack-test".source = "${self.skillsDir}/stack-test";
+        ".kiro/steering/stacked-workflow.md".text = self.instructionsKiro;
+      };
     })
   ]);
 }

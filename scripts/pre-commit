@@ -17,18 +17,21 @@ STAGED=$(git diff --cached --name-only --diff-filter=ACM || true)
 
 # -- generated file freshness ------------------------------------------------
 
-RULER_FILES=$(echo "${STAGED}" | grep -E '^\.ruler/' || true)
+FRAGMENT_FILES=$(echo "${STAGED}" | grep -E '^fragments/' || true)
 
-if [[ -n "${RULER_FILES}" ]]; then
-  echo "pre-commit: checking generated file freshness..."
+if [[ -n "${FRAGMENT_FILES}" ]]; then
+  echo "pre-commit: fragments changed — regenerating instruction files..."
+
+  GEN_FILES=(
+    .claude/references/stacked-workflow.md
+    .kiro/steering/stacked-workflow.md
+    .github/instructions/stacked-workflow.instructions.md
+    AGENTS.md
+  )
 
   tmpdir=$(mktemp -d)
   trap 'rm -rf "${tmpdir}"' EXIT
 
-  GEN_FILES=(
-    .generated/claude-routing.md .generated/kiro-routing.md .generated/copilot-routing.md
-    .kiro/steering/stacked-workflow.md .github/instructions/stacked-workflow.instructions.md
-  )
   for f in "${GEN_FILES[@]}"; do
     if [[ -f "${f}" ]]; then
       mkdir -p "${tmpdir}/before/$(dirname "${f}")"
@@ -36,11 +39,11 @@ if [[ -n "${RULER_FILES}" ]]; then
     fi
   done
 
-  bash scripts/generate.sh >/dev/null 2>&1
+  nix run .#generate 2>/dev/null
 
   for f in "${GEN_FILES[@]}"; do
     if [[ -f "${f}" ]] && ! diff -q "${tmpdir}/before/${f}" "${f}" &>/dev/null; then
-      echo "pre-commit: ${f} is stale — regenerated and staged."
+      echo "pre-commit: ${f} regenerated and staged."
       git add "${f}"
     fi
   done

@@ -1,15 +1,15 @@
-name: Generate Routing
+name: Generate Instructions
 
 on:
   push:
     branches: [main]
     paths:
-      - ".ruler/**"
-      - "scripts/generate.sh"
+      - "fragments/**"
+      - "lib/fragments.nix"
   workflow_dispatch:
 
 concurrency:
-  group: generate-routing
+  group: generate-instructions
   cancel-in-progress: true
 
 permissions:
@@ -27,8 +27,8 @@ jobs:
       - uses: actions/checkout@v6
       - uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Generate routing files
-        run: nix develop --command bash scripts/generate.sh
+      - name: Generate instruction files
+        run: nix run .#generate
 
       - name: Check for changes
         id: changes
@@ -43,12 +43,12 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
-          branch: auto/generate-routing
-          commit-message: "chore(ci): regenerate routing files"
-          title: "chore(ci): regenerate routing files"
+          branch: auto/generate-instructions
+          commit-message: "chore(ci): regenerate instruction files"
+          title: "chore(ci): regenerate instruction files"
           body: |
-            Automated regeneration of routing files from `.ruler/` source
-            via `scripts/generate.sh`.
+            Automated regeneration of instruction files from `fragments/`
+            source via `nix run .#generate`.
 
-            Review the diffs to verify routing table accuracy.
+            Review the diffs to verify content accuracy.
           labels: automated
