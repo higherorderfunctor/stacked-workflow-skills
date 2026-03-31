@@ -50,7 +50,6 @@ intermediate — outputs go directly to ecosystem paths.
 Remaining:
 
 - [ ] Update INSTALL.md for fragment pipeline
-- [ ] Update references/ruler.md for fragment pipeline
 
 ### Skill content improvements
 
